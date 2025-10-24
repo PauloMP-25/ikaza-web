@@ -1,0 +1,40 @@
+<nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark custom-navbar">
+    <div class="container-fluid d-flex align-items-center">
+        <!-- ← CLAVE: d-flex simple, sin justify-between; distribución por mx-auto/ms-auto -->
+
+        <!-- Izquierda: Logo (siempre a la izquierda) -->
+        <div class="d-flex align-items-center"> <!-- ← Wrapper simple para logo -->
+            <a class="navbar-brand" routerLink="/"> <!-- ← Quité order-1; left por default -->
+                <img src="assets/ui/logo.jpg" alt="Logo" width="100" height="50" class="me-2">
+                <span class="d-none d-lg-inline">Ikaza-Imports</span> <!-- Texto solo en desktop -->
+            </a>
+        </div>
+
+        <!-- Derecha: Contenido dinámico -->
+        <div class="d-flex align-items-center ms-auto">
+            <!-- Centro: Búsqueda + Links (solo en rutas específicas y desktop) -->
+            <div class="d-none d-lg-flex ms-auto align-items-center" id="navbarNav" 
+                 *ngIf="shouldShowSearchAndLinks()">
+                <!-- Buscador -->
+                <form class="d-flex me-3" (ngSubmit)="onSearchSubmit()" #searchForm="ngForm">
+                    <input type="search" class="form-control me-2" placeholder="Buscar..." aria-label="Buscar"
+                        name="searchTerm" [(ngModel)]="searchTerm">
+                    <button class="btn btn-outline-light btn-sm" type="submit">Buscar</button>
+                </form>
+                
+                <!-- Links de navegación -->
+                <app-navbar-links></app-navbar-links>
+            </div>
+
+            <!-- Hamburguesa (solo en móvil) -->
+            <button class="navbar-toggler me-2 d-lg-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#sidebarMenu" title="Abrir menú de navegación" aria-label="Abrir menú de navegación">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Auth y Carrito (siempre visibles) -->
+            <app-navbar-auth class="me-2"></app-navbar-auth>
+            <app-navbar-cart></app-navbar-cart>
+        </div>
+    </div>
+</nav>

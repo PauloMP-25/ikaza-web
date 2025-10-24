@@ -1,0 +1,284 @@
+// navbar-auth.scss
+
+// Variables
+$primary-color: #0d6efd;
+$admin-color: #ffc107;
+$danger-color: #dc3545;
+$transition: all 0.2s ease-in-out;
+
+// Contenedor principal
+.user-dropdown {
+    .btn-user-profile {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 0.4rem 0.75rem;
+        border-radius: 50px;
+        transition: $transition;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+}
+
+// Avatar principal en el botón
+.user-avatar {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+
+    .avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-icon {
+        color: $primary-color;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .admin-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        font-size: 0.65rem;
+        background: $admin-color;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+}
+
+// Dropdown menu
+.dropdown-menu {
+    min-width: 280px;
+    border-radius: 12px;
+    border: none;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+
+    // Header con info del usuario
+    .user-info-header {
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        margin: 0;
+        border-radius: 12px 12px 0 0;
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+
+            .avatar-image-small {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .avatar-icon-small {
+                color: $primary-color;
+                font-size: 1.3rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+
+            .fw-bold {
+                font-size: 0.95rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            small {
+                font-size: 0.75rem;
+                opacity: 0.9;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: block;
+            }
+        }
+    }
+
+    .dropdown-divider {
+        margin: 0.5rem 0;
+        opacity: 0.1;
+    }
+
+    .dropdown-header {
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        padding: 0.5rem 1rem;
+
+        i {
+            color: $admin-color;
+        }
+    }
+
+    .dropdown-item {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        transition: $transition;
+        display: flex;
+        align-items: center;
+
+        i {
+            width: 20px;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        &:hover {
+            background-color: #f8f9fa;
+            padding-left: 1.2rem;
+
+            i {
+                opacity: 1;
+            }
+        }
+
+        &.admin-item {
+            color: #6f42c1;
+
+            &:hover {
+                background-color: rgba(111, 66, 193, 0.1);
+                color: #5a32a3;
+            }
+
+            i {
+                color: $admin-color;
+            }
+        }
+
+        &.logout-item {
+            font-weight: 500;
+
+            &:hover {
+                background-color: rgba($danger-color, 0.1);
+            }
+
+            i {
+                color: $danger-color;
+            }
+        }
+
+        &:active {
+            background-color: #e9ecef;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .user-dropdown {
+        .btn-user-profile {
+            .user-name {
+                max-width: 100px;
+            }
+        }
+    }
+
+    .dropdown-menu {
+        min-width: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-dropdown {
+        .btn-user-profile {
+            padding: 0.3rem 0.6rem;
+
+            .user-name {
+                display: none; // Ocultar nombre en móviles muy pequeños
+            }
+        }
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+// Animaciones
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu.show {
+    animation: slideDown 0.2s ease-out;
+}
+
+// Mejoras visuales
+.dropdown-menu {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+// Estado de carga
+.btn-user-profile:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

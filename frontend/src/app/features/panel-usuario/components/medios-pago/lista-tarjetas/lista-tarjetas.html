@@ -1,0 +1,46 @@
+<div class="list-group mb-4">
+    <p *ngIf="tarjetas.length === 0" class="text-secondary">
+        No tienes tarjetas guardadas
+    </p>
+
+    <div *ngFor="let tarjeta of tarjetas; let i = index"
+        class="list-group-item d-flex justify-content-between align-items-start py-3">
+        <div class="card-info flex-grow-1">
+            <div class="d-flex align-items-start mb-2">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="fw-bold mb-0 me-2">
+                            {{ tarjeta.alias || 'Tarjeta sin alias' }}
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini preview de la tarjeta -->
+            <div class="mini-card-preview mt-2" [ngClass]="getCardClasses(tarjeta)">
+                <div class="card-header-info">
+                    <div class="bank-logo">{{ tarjetasUtilsService.getBankShortName(tarjeta.bancoEmisor || '') }}</div>
+                    <div class="secondary-text">{{ formatearTipoParaDisplay(tarjeta.tipo) }}</div>
+                </div>
+                <div class="mini-card-number">
+                    **{{ tarjeta.ultimos4Digitos | formatoUltimosDigitos }}**
+                </div>
+                <div class="mini-card-holder"><strong>Vence:</strong> {{ tarjeta.fechaExpiracion || 'N/A' }}</div>
+                <div class="mini-card-brand-logo">{{ tarjeta.tipoTarjeta || 'TARJETA' }}</div>
+            </div>
+        </div>
+
+        <div class="card-actions d-flex gap-2">
+            <button (click)="onEstablecerPrincipal.emit(i)" class="btn btn-sm" [class.btn-success]="tarjeta.esPrincipal"
+                [class.btn-outline-secondary]="!tarjeta.esPrincipal" [disabled]="tarjeta.esPrincipal || isLoading"
+                title="Marcar como tarjeta principal">
+                <i class="bi bi-star-fill"></i>
+                {{ tarjeta.esPrincipal ? 'Principal' : 'Marcar Principal' }}
+            </button>
+
+            <button (click)="onEliminar.emit(i)" class="btn btn-sm btn-danger" [disabled]="isLoading">
+                🗑️ Eliminar
+            </button>
+        </div>
+    </div>
+</div>

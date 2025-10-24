@@ -1,0 +1,74 @@
+<div class="card">
+    <div class="card-header bg-c1 text-white">
+        <h4 class="mb-0"><i class="bi bi-chat-left-text me-2"></i>Reseñas de Clientes</h4>
+    </div>
+    <div class="card-body">
+        <!-- Resumen de calificaciones -->
+        <div class="rating-summary mb-4 p-3 bg-light rounded">
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center">
+                    <h2 class="display-4 fw-bold text-c2 mb-0">{{ averageRating | number:'1.1-1' }}</h2>
+                    <div class="stars">
+                        <i *ngFor="let star of [1,2,3,4,5]"
+                            [class]="star <= averageRating ? 'bi bi-star-fill text-warning' : 'bi bi-star text-warning'"></i>
+                    </div>
+                    <p class="text-muted mb-0">{{ reviews.length }} reseñas</p>
+                </div>
+                <div class="col-md-9">
+                    <div *ngFor="let rating of [5,4,3,2,1]" class="mb-2">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <span class="small">{{ rating }} <i class="bi bi-star-fill text-warning"></i></span>
+                            </div>
+                            <div class="col">
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" [style.width.%]="getRatingPercentage(rating)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <span class="small text-muted">{{ getRatingCount(rating) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de reseñas -->
+        <div class="reviews-list" *ngIf="reviews.length > 0; else noReviews">
+            <div class="review mb-4 pb-4 border-bottom" *ngFor="let review of paginatedReviews">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="fw-bold mb-1">{{ review.userName }}</h6>
+                        <div class="stars small">
+                            <i *ngFor="let star of [1,2,3,4,5]"
+                                [class]="star <= review.rating ? 'bi bi-star-fill text-warning' : 'bi bi-star text-warning'"></i>
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ review.date | date:'dd/MM/yyyy' }}</small>
+                </div>
+                <p class="mb-0">{{ review.comment }}</p>
+            </div>
+
+            <!-- Paginación -->
+            <div class="text-center mt-4" *ngIf="reviews.length > reviewsPerPage">
+                <button class="btn btn-outline-primary me-2" (click)="previousPage()" [disabled]="currentPage === 1">
+                    Anterior
+                </button>
+                <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+                <button class="btn btn-outline-primary ms-2" (click)="nextPage()"
+                    [disabled]="currentPage === totalPages">
+                    Siguiente
+                </button>
+            </div>
+        </div>
+
+        <ng-template #noReviews>
+            <div class="text-center py-5">
+                <i class="bi bi-chat-left-text-fill fs-1 text-muted"></i>
+                <p class="text-muted mt-3">Aún no hay reseñas para este producto.</p>
+            </div>
+        </ng-template>
+    </div>
+</div>

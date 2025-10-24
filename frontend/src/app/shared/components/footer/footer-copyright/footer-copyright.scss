@@ -1,0 +1,13 @@
+.footer-copy {
+  font-size: 1.1rem; /* copyright */
+}
+
+a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 1.1rem;
+
+    &:hover {
+        color: #fff;
+    }
+}

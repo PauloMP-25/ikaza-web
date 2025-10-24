@@ -1,0 +1,125 @@
+// Sidebar (tus estilos base + ajustes)
+.custom-sidebar {
+    background-color: #4a90e2 !important;
+    color: #fff;
+    width: 300px; // Ancho fijo para offcanvas (ajusta si quieres)
+
+    .offcanvas-body {
+        padding: 0; // Quita padding default para control total
+
+        // Búsqueda en sidebar
+        .input-group {
+            .form-control {
+                background-color: rgba(255, 255, 255, 0.9);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: #333;
+                width: 100%; // Full-width en sidebar
+
+                &::placeholder {
+                    color: #999;
+                }
+
+                &:focus {
+                    background-color: #fff;
+                    border-color: #112288;
+                    box-shadow: 0 0 0 0.2rem rgba(17, 34, 136, 0.25);
+                }
+            }
+
+            .btn-outline-light {
+                background-color: #112288;
+                border-color: #112288;
+                color: #fff;
+
+                &:hover {
+                    background-color: #1a3bb8;
+                }
+            }
+        }
+
+        // Separador
+        hr {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            margin-top: 5px;
+        }
+    }
+}
+
+// Sidebar (sin cambios mayores, solo ajustes para integración)
+.custom-sidebar {
+    background-color: #4a90e2 !important;
+    color: #fff;
+    width: 300px;
+
+    .offcanvas-body {
+        padding: 0;
+
+        // Búsqueda en sidebar
+        .input-group {
+            .form-control {
+                background-color: rgba(255, 255, 255, 0.9);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: #333;
+                width: 100%;
+
+                &::placeholder {
+                    color: #999;
+                }
+
+                &:focus {
+                    background-color: #fff;
+                    border-color: #112288;
+                    box-shadow: 0 0 0 0.2rem rgba(17, 34, 136, 0.25);
+                }
+            }
+
+            .btn-outline-light {
+                background-color: #112288;
+                border-color: #112288;
+                color: #fff;
+
+                &:hover {
+                    background-color: #1a3bb8;
+                }
+            }
+        }
+
+        hr {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+.custom-sidebar-header {
+    background-color: #4a90e2 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    h5 {
+        color: #fff;
+        margin: 0;
+    }
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+/* Links en sidebar */
+.sidebar-link {
+    display: block;
+    padding: 12px 20px;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease; // Suave hover
+    border-radius: 0.375rem; // Bordes redondeados
+
+    &:hover,
+    &.active {
+        background-color: rgba(255, 255, 255, 0.1); // Más sutil que #555
+        color: #fff;
+        transform: translateX(5px); // Efecto slide-in
+    }
+}

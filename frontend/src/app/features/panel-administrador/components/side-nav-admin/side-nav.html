@@ -1,0 +1,39 @@
+<div class="bg-white p-4 rounded shadow-sm">
+    <nav class="nav flex-column">
+        <a routerLink="dashboard" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">person</span>
+            <span class="small fw-semibold">Reportes</span>
+        </a>
+        <a routerLink="lista-productos" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">location_on</span>
+            <span class="small fw-medium">Productos</span>
+        </a>
+        <a routerLink="inventario" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">overview</span>
+            <span class="small fw-medium">Inventario</span>
+        </a>
+        <a routerLink="lista-clientes" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">payment</span>
+            <span class="small fw-medium">Clientes</span>
+        </a>
+        <a routerLink="buzon-virtual" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="small fw-medium">Sugerencias y Reclamos</span>
+        </a>
+        <a routerLink="configuracion" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="small fw-medium">Configuracion</span>
+        </a>
+        <hr />
+        <a (click)="cerrarSesion()" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="small fw-medium">Cerrar Sesión</span>
+        </a>
+    </nav>
+</div>

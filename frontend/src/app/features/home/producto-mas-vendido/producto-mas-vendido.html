@@ -1,0 +1,49 @@
+<section class="mb-5">
+    <h2 class="h2 fw-bold text-success mb-4"> Producto Más Vendido </h2>
+    <div class="row g-0 align-items-center bg-white px-2 py-3 rounded shadow border border-success">
+        <!-- Detalles del producto -->
+        <div class="col-12 col-lg-6 order-1 order-lg-2 ps-1 ps-lg-1">
+            <!-- Nombre clicable para navegar -->
+            <h3 class="h4 fw-bold text-success text-sucesivo" (click)="onImageClick()">
+                {{ product.nombreProducto }}
+            </h3>
+            <p class="text-secondary mt-2">{{ product.descripcionProducto }}</p>
+
+            <!-- Selector de colores -->
+            <div class="mb-3" *ngIf="uniqueColors.length">
+                <h5 class="small fw-semibold text-secondary mb-2">Colores</h5>
+                <div class="d-flex gap-2">
+                    <button *ngFor="let color of uniqueColors" type="button"
+                        class="color-option rounded-circle border border-white"
+                        [class.selected]="selectedColorValue === color" [style.backgroundColor]="getColorHex(color)"
+                        [attr.aria-label]="'Seleccionar color ' + color" [attr.title]="'Seleccionar color ' + color"
+                        (click)="onSeleccionarColor(color)" role="button">
+                        <span class="visually-hidden">{{ color }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selector de tallas -->
+            <div class="mb-3" *ngIf="uniqueSizes.length">
+                <h5 class="small fw-semibold text-secondary mb-2">Tallas</h5>
+                <div class="d-flex gap-2">
+                    <button *ngFor="let size of uniqueSizes" type="button" class="size-option border rounded"
+                        [class.selected]="selectedSizeValue === size" (click)="onSeleccionarSize(size)">
+                        {{ size }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Precio y botón de compra -->
+            <div class="mb-3">
+                <h4 class="text-success fw-bold">S/.{{ (product.precio || product.precio).toFixed(2) }}</h4> 
+            </div>
+            <button class="btn btn-success px-4 py-2 fw-bold" (click)="agregarCarrito()">Comprar ahora</button>
+        </div>
+
+        <div class="col-12 col-lg-6 order-2 order-lg-1 imagen-navegable" (click)="onImageClick()">
+            <img [src]="currentImage" alt="{{ product.nombreProducto }}" [attr.title]="product.nombreProducto"
+                class="img-fluid rounded product-image" loading="lazy" />
+        </div>
+    </div>
+</section>

@@ -1,0 +1,35 @@
+table {
+    th {
+        .general {
+            width: 5%;
+        }
+
+        .producto {
+            width: 30%;
+        }
+
+        .codigo {
+            width: 15%;
+        }
+
+        .stock {
+            width: 15%;
+        }
+
+        .precio {
+            width: 15%;
+        }
+
+        .acciones {
+            width: 20%;
+        }
+    }
+}
+
+tbody {
+    td {
+        .producto {
+            max-width: 250px;
+        }
+    }
+}

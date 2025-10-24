@@ -1,0 +1,27 @@
+.modal-header {
+    background-color: #11adb9;
+}
+
+.tabla-responsive {
+    max-height: 480px;
+    overflow-y: auto;
+
+    th {
+        .dato-fecha {
+            width: 25%;
+        }
+
+        .dato-ajuste{
+            width: 15%;
+        }
+
+        .dato-stock{
+            width: 20%;
+        }
+
+        .dato-razon {
+            width: 40%;
+        }
+
+    }
+}

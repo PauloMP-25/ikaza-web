@@ -1,0 +1,113 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close" (click)="onClose()">&times;</span>
+
+    <div *ngIf="infoMessage && !successMessage" class="alert alert-info custom-message">
+      {{ infoMessage }}
+    </div>
+
+    <div class="container" [class.right-panel-active]="isSignUp">
+      <div class="form-container sign-up-container">
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <h1>IKAZA IMPORT</h1>
+
+          <div *ngIf="errorMessage && isSignUp" class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+          <div *ngIf="successMessage" class="alert alert-success">
+            {{ successMessage }}
+          </div>
+
+          <input type="email" placeholder="Email" formControlName="email"
+            [class.error]="hasFieldError(registerForm, 'email')" required />
+          <small class="error-text" *ngIf="getFieldError(registerForm, 'email')">
+            {{ getFieldError(registerForm, 'email') }}
+          </small>
+
+          <input type="password" placeholder="Password" formControlName="password"
+            [class.error]="hasFieldError(registerForm, 'password')" required />
+          <small class="error-text" *ngIf="getFieldError(registerForm, 'password')">
+            {{ getFieldError(registerForm, 'password') }}
+          </small>
+
+          <input type="password" placeholder="Repeat Password" formControlName="confirmPassword"
+            [class.error]="hasFieldError(registerForm, 'confirmPassword')" required />
+          <small class="error-text" *ngIf="getFieldError(registerForm, 'confirmPassword')">
+            {{ getFieldError(registerForm, 'confirmPassword') }}
+          </small>
+
+          <input type="text" placeholder="Nombre de usuario (opcional)" formControlName="username"
+            [class.error]="hasFieldError(registerForm, 'username')" />
+          <small class="error-text" *ngIf="getFieldError(registerForm, 'username')">
+            {{ getFieldError(registerForm, 'username') }}
+          </small>
+
+          <div class="button-group">
+            <button type="submit" [disabled]="registerForm.invalid || isLoading" class="primary-btn">
+              <span *ngIf="isLoading && isSignUp">Registrando...</span>
+              <span *ngIf="!isLoading || !isSignUp">Sign Up</span>
+            </button>
+            <button type="button" class="ghost" (click)="toggleSignUp(false)">Login</button>
+          </div>
+
+          <div class="social-media">
+            <button type="button" class="social-btn google-btn" (click)="onGoogleLogin()" [disabled]="isLoading">
+              <span *ngIf="!isLoading">📧 Google</span>
+              <span *ngIf="isLoading">Cargando...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="form-container sign-in-container">
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <h1>Login</h1>
+
+          <div *ngIf="errorMessage && !isSignUp" class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+
+          <input type="email" placeholder="Email" formControlName="email"
+            [class.error]="hasFieldError(loginForm, 'email')" required />
+          <small class="error-text" *ngIf="getFieldError(loginForm, 'email')">
+            {{ getFieldError(loginForm, 'email') }}
+          </small>
+
+          <input type="password" placeholder="Password" formControlName="password"
+            [class.error]="hasFieldError(loginForm, 'password')" required />
+          <small class="error-text" *ngIf="getFieldError(loginForm, 'password')">
+            {{ getFieldError(loginForm, 'password') }}
+          </small>
+
+          <div class="button-group">
+            <button type="submit" [disabled]="loginForm.invalid || isLoading" class="primary-btn">
+              <span *ngIf="isLoading && !isSignUp">Iniciando sesión...</span>
+              <span *ngIf="!isLoading || isSignUp">Login</span>
+            </button>
+            <button type="button" class="ghost" (click)="toggleSignUp(true)">Sign Up</button>
+          </div>
+
+          <div class="social-media">
+            <button type="button" class="social-btn google-btn" (click)="onGoogleLogin()" [disabled]="isLoading">
+              <span *ngIf="!isLoading">📧 Continuar con Google</span>
+              <span *ngIf="isLoading">Cargando...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>¡Hola, nuevo usuario!</h1>
+            <p>Ingresa tus datos para comenzar o usa tu cuenta de Google.</p>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>¡Bienvenido!</h1>
+            <p>Inicia sesión con tu cuenta registrada o con Google.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

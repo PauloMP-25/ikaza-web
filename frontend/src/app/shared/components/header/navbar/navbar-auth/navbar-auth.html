@@ -1,0 +1,127 @@
+<div class="d-flex align-items-center">
+    <!-- Si el usuario NO está autenticado -->
+    <ng-container *ngIf="!isAuthenticated; else loggedIn">
+        <button class="btn btn-outline-light btn-sm me-2" (click)="openModal()" [disabled]="isLoading">
+            <span *ngIf="!isLoading">Ingresar</span>
+            <span *ngIf="isLoading">Cargando...</span>
+        </button>
+    </ng-container>
+
+    <!-- Si el usuario SÍ está autenticado -->
+    <ng-template #loggedIn>
+        <div class="dropdown user-dropdown" *ngIf="currentUser ">
+            <button class="btn btn-user-profile dropdown-toggle d-flex align-items-center gap-2" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <!-- Avatar del usuario -->
+                <div class="user-avatar">
+                    <!-- Foto de perfil -->
+                    <img *ngIf="userAvatar.type === 'image'" [src]="userAvatar.value" alt="Avatar"
+                        class="avatar-image" />
+
+                    <!-- Icono personalizado -->
+                    <div *ngIf="userAvatar.type === 'icon'" class="avatar-icon">
+                        <i [class]="userAvatar.value"></i>
+                    </div>
+
+                    <!-- Indicador de admin -->
+                    <span *ngIf="isAdmin" class="admin-badge" title="Administrador">👑</span>
+                </div>
+
+                <!-- Nombre del usuario -->
+                <span class="user-name">{{ displayName }}</span>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userMenu">
+                <!-- Header del dropdown con info del usuario -->
+                <li class="dropdown-header user-info-header">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="user-avatar-small">
+                            <img *ngIf="userAvatar.type === 'image'" [src]="userAvatar.value" alt="Avatar"
+                                class="avatar-image-small" />
+                            <div *ngIf="userAvatar.type === 'icon'" class="avatar-icon-small">
+                                <i [class]="userAvatar.value"></i>
+                            </div>
+                        </div>
+                        <div class="user-details">
+                            <div class="fw-bold">{{ displayName }}</div>
+                            <small class="text-muted">{{ currentUser .email || currentUser .displayName }}</small>
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+
+                <!-- Opciones comunes para todos los usuarios -->
+                <li>
+                    <a class="dropdown-item" routerLink="/panel-usuario/datos-personales">
+                        <i class="bi bi-person me-2"></i>Mi Perfil
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" routerLink="/panel-usuario/configuracion">
+                        <i class="bi bi-gear me-2"></i>Configuración
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" routerLink="/panel-usuario/historial-compras">
+                        <i class="bi bi-bag me-2"></i>Mis Pedidos
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" routerLink="/panel-usuario/medios-pago">
+                        <i class="bi bi-credit-card me-2"></i>Mis Tarjetas
+                    </a>
+                </li>
+
+                <!-- Opciones específicas para administradores -->
+                <li *ngIf="isAdmin">
+                    <ul class="list-unstyled mb-0">
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li class="dropdown-header">
+                            <i class="bi bi-shield-check me-1"></i> Administración
+                        </li>
+                        <li>
+                            <a class="dropdown-item admin-item" routerLink="/admin/dashboard">
+                                <i class="bi bi-speedometer2 me-2"></i>Panel Admin
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item admin-item" routerLink="/admin/productos">
+                                <i class="bi bi-box me-2"></i>Gestionar Productos
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item admin-item" routerLink="/admin/lista-clientes">
+                                <i class="bi bi-people me-2"></i>Gestionar Usuarios
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item admin-item" routerLink="/admin/pedidos">
+                                <i class="bi bi-list-check me-2"></i>Gestionar Pedidos
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+
+                <!-- Logout -->
+                <li>
+                    <button class="dropdown-item text-danger logout-item" (click)="logout()" [disabled]="isLoading">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        <span *ngIf="!isLoading">Cerrar sesión</span>
+                        <span *ngIf="isLoading">Cerrando...</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </ng-template>
+</div>
+
+<app-modal-login [isOpen]="isModalOpen" (close)="isModalOpen = false"></app-modal-login>

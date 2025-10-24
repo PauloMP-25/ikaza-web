@@ -1,0 +1,24 @@
+<div class="footer-contact text-center text-md-start">
+    <h5 class="text-light">Contacto</h5>
+
+    <ul class="list-unstyled contact-info">
+        <li><i class="fas fa-phone-alt me-2"></i><a class="text-decoration-none" href="tel:{{phone}}">{{ phone }}</a>
+        </li>
+        <li><i class="fas fa-envelope me-2"></i><a class="text-decoration-none" href="mailto:{{email}}">{{ email }}</a>
+        </li>
+
+        <li><i class="fas fa-map-marker-alt me-2"></i> <a class="text-decoration-none"
+                href="https://www.google.com/maps/search/?api=1&query={{ address }}" target="_blank" rel="noopener">
+                {{ address }}
+            </a></li>
+        <li>Horario: <span class="text-decoration-none">{{ hours }}</span></li>
+    </ul>
+
+    <h6 class="small mb-2">Métodos de pago</h6>
+    <div class="d-flex gap-2 align-items-center justify-content-center justify-content-md-start">
+        <!-- Ejemplo: si pones iconos en assets/payments/, usa rutas assets -->
+        <img src="assets/ui/payvisa.svg" alt="Visa" height="28" *ngIf="true">
+        <img src="assets/ui/paymastercard.svg" alt="Mastercard" height="28" *ngIf="true">
+        <img src="assets/ui/paymercado.svg" alt="MercadoPago" height="28" *ngIf="true">
+    </div>
+</div>

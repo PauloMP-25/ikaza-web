@@ -1,0 +1,47 @@
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" *ngIf="product">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="main-image-container mb-3">
+                            <img [src]="productImages[selectedImageIndex]" [alt]="product.nombreProducto"
+                                class="img-fluid rounded shadow-sm">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h2 class="descripcion text-success">{{product.descripcionProducto}}</h2>
+                        </div>
+                        <div class="mb-3">
+                            <h3 class="precio"><span>{{product.precio | currency:'PEN'}}</span></h3>
+                        </div>
+                        <div *ngIf="product.variantes && product.variantes.length > 0"></div>
+                        <div class="mb-3" *ngIf="selectedVariant?.color">
+                            <small class="text-muted d-block mb-1">Color:</small>
+                            <span class="badge bg-secondary">{{ selectedVariant?.color }}</span>
+                        </div>
+
+                        <div class="mb-3" *ngIf="selectedVariant?.talla">
+                            <small class="text-muted d-block mb-1">Talla:</small>
+                            <span class="badge bg-secondary">{{ selectedVariant?.talla }}</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="qtyInput" class="form-label">Cantidad:</label>
+                            <input type="number" id="qtyInput" [(ngModel)]="qty" min="1" max="99"
+                                class="form-control w-auto">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-primary" [disabled]="product.stock <= 0" (click)="onAddToCart()">
+                    <i class="bi bi-cart-plus me-1"></i> Añadir al carrito
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+// Variables de colores (ajusta según tu paleta)
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$warning-color: #ffc107;
+$danger-color: #dc3545;
+$success-color: #28a745;
+
+// Breadcrumb
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.5rem 0;
+
+    a {
+        color: $primary-color;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.imagen-principal {
+    max-height: 500px;
+    object-fit: contain;
+}
+
+.miniatura-imagen {
+    cursor: pointer;
+    height: 80px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.input-group{
+    max-width: 150px;
+}
+
+// Productos similares
+.similar-products {
+    margin-top: 3rem;
+
+    h3 {
+        position: relative;
+        padding-bottom: 1rem;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: $primary-color;
+        }
+    }
+}
+
+// Utilidades
+.cursor-pointer {
+    cursor: pointer;
+}
+
+// Responsivo
+@media (max-width: 768px) {
+    .product-images {
+        .main-image img {
+            max-height: 300px;
+        }
+    }
+
+    .product-info {
+        .actions {
+            .row {
+                >div {
+                    width: 100%;
+                }
+            }
+        }
+
+        .additional-info {
+            .row {
+                >div {
+                    margin-bottom: 1rem;
+                }
+            }
+        }
+    }
+
+    .rating-summary {
+        .row {
+            flex-direction: column;
+
+            .col-md-3,
+            .col-md-9 {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+        }
+    }
+}
+
+.card-body{
+    th{
+        width: 40%;
+    }
+}

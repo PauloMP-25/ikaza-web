@@ -1,0 +1,15 @@
+.footer-links h5 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-weight: bold;
+}
+
+.footer-links a {
+    display: block;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+    color: #ccc;
+    &:hover {
+        color: #fff;
+    }
+}

@@ -1,0 +1,33 @@
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: #112288;
+    color: #fff;
+    border-bottom: none;
+
+    .btn-close {
+        filter: invert(1);
+    }
+}
+
+.modal-body {
+    .form-label {
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: #112288;
+        border: none;
+
+        &:hover {
+            background-color: #0d1a66;
+        }
+    }
+}
+
+.btn{
+    width: 250px;
+}

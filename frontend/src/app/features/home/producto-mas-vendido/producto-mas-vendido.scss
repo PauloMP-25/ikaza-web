@@ -1,0 +1,94 @@
+/* best-selling-product.component.css */
+.text-sucesivo{
+    cursor:pointer;
+}
+
+.imagen-navegable{
+    cursor:pointer
+}
+/* Row: Refuerza padding mínimo */
+.row {
+    padding-left: 0.5rem !important;  //Mínimo horizontal total
+    padding-right: 0.5rem !important;
+    padding-top: 1rem !important;  //Moderado vertical
+    padding-bottom: 1rem !important;
+
+    // En desktop:
+    @media (min-width: 992px) {
+        .col-lg-6:last-child {  //(derecha en desktop)
+            padding-left: 0.25rem !important;  //Separación ultra-mínima con imagen
+            padding-right: 0 !important;
+        }
+
+        .col-lg-6:first-child {  //(izquierda en desktop)
+            padding-right: 0 !important;
+        }
+    }
+
+    // En móvil: detalles arriba, imagen abajo
+    @media (max-width: 991.98px) {
+        padding: 1rem !important;
+        .col-12 {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+}
+
+.product-image {
+    width:500px;  //tamaño original en desktop
+    height: 400px;
+    object-fit: cover; 
+    margin: 0 !important;  
+    display: block;
+
+    // En móvil:
+    @media (max-width: 768px) {
+        width: 100%;
+        height: 300px;
+        padding-top: 15px;
+    }
+
+    // Refuerzo para desktop
+    @media (min-width: 992px) {
+        max-width: 100%;
+        padding-top: 15px;
+    }
+}
+
+.color-option {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.color-option.selected {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+    border-width: 3px !important;
+}
+
+.size-option {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.size-option.selected {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+}
+
+.size-option:hover,
+.color-option:hover {
+    transform: scale(1.1);
+}

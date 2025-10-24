@@ -1,0 +1,40 @@
+<div class="container mt-4">
+    <div *ngIf="searchTerm; else noSearch">
+        <h2>Resultados para: "{{ searchTerm }}"</h2>
+
+        <div *ngIf="filteredProducts.length > 0; else noResults" class="row">
+            <div class="col-md-4 mb-3" *ngFor="let product of filteredProducts">
+                <div class="card">
+                    <img [src]="product.imagenPrincipal" class="card-img-top" alt="{{product.nombreProducto}}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.nombreProducto }}</h5>
+                        <p class="card-text">{{ product.descripcionProducto }}</p>
+                        <p class="card-text"><strong>Precio: ${{ product.precio }}</strong></p>
+                        <!-- --- BOTONES NUEVOS --- -->
+                        <div class="mt-auto d-grid gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" (click)="onViewDetails(product)">
+                                Ver Detalles
+                            </button>
+                            <button class="btn btn-primary btn-sm" (click)="onAddToCart(product)">
+                                Añadir al Carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ng-template #noResults>
+            <div class="alert alert-warning" role="alert">
+                😕 No se encontraron productos que coincidan con tu búsqueda.
+            </div>
+        </ng-template>
+
+    </div>
+
+    <ng-template #noSearch>
+        <p>Por favor, utiliza la barra de búsqueda para encontrar productos.</p>
+    </ng-template>
+</div>
+
+<app-product-detail-modal [product]="selectedProduct" [showModal]="!!selectedProduct"></app-product-detail-modal>

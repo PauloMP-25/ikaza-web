@@ -1,0 +1,59 @@
+<div class="container my-4">
+    <h3 class="fw-bold mb-3">Datos para reembolso</h3>
+    <p class="text-muted">
+        Ingresa una cuenta bancaria asociada al <b>DNI o carnet de extranjería registrado</b> para
+        futuros reembolsos.
+    </p>
+
+    <form>
+        <div class="row g-4">
+            <!-- Banco -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="banco" class="form-label">Banco</label>
+                    <select id="banco" class="form-select">
+                        <option selected disabled>Selecciona un banco</option>
+                        <option>BCP</option>
+                        <option>BBVA</option>
+                        <option>Interbank</option>
+                        <option>Scotiabank</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tipo de cuenta -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="tipoCuenta" class="form-label">Tipo de cuenta</label>
+                    <select id="tipoCuenta" class="form-select">
+                        <option selected disabled>Selecciona tipo de cuenta</option>
+                        <option>Ahorros</option>
+                        <option>Corriente</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cuenta Interbancaria -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="cci" class="form-label">Cuenta Interbancaria (CCI)</label>
+                    <input type="text" id="cci" class="form-control" maxlength="20" placeholder="Número de CCI">
+                </div>
+            </div>
+
+            <!-- Confirmación de cuenta -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="confirmCuenta" class="form-label">Confirma tu número de cuenta bancaria</label>
+                    <input type="text" id="confirmCuenta" class="form-control" maxlength="20"
+                        placeholder="Repite tu número de cuenta">
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón Guardar -->
+        <div class="mt-4">
+            <button type="submit" class="btn btn-secondary" disabled>Guardar</button>
+        </div>
+    </form>
+</div>

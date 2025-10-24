@@ -1,0 +1,164 @@
+<div class="modal fade" id="crearProductoModal" tabindex="-1" aria-labelledby="crearProductoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg rounded-3">
+      <div class="modal-header text-white" style="background-color: #008C8C;">
+        <h5 class="modal-title fw-bold" id="crearProductoLabel">
+          <i class="bi bi-box-seam me-2"></i>
+          Agregar Nuevo Producto
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <form #productForm="ngForm" (ngSubmit)="guardarProducto()">
+        <div class="modal-body p-4" style="max-height: 75vh; overflow-y: auto;">
+          <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+              <h6 class="fw-bold text-secondary mb-3">Detalles Primarios</h6>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Nombre del Producto <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" [(ngModel)]="producto.name" name="name"
+                    placeholder="Ej: Laptop Lenovo Legion 5" required />
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Código / SKU <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" [(ngModel)]="producto.sku" name="sku"
+                    placeholder="Ej: LLG5-2023" required />
+                  <div class="form-text">Identificador único.</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
+                  <select class="form-select" [(ngModel)]="producto.category" name="category" required>
+                    <option value="" disabled selected>Selecciona una categoría</option>
+
+                    <option *ngFor="let cat of categoriasUnicas" [value]="cat">
+                      {{ cat }}
+                    </option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+              <h6 class="fw-bold text-secondary mb-3">Precios e Inventario</h6>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Precio Unitario (S/. ) <span
+                      class="text-danger">*</span></label>
+                  <input type="number" class="form-control" [(ngModel)]="producto.price" name="price" step="0.01"
+                    min="0" required />
+                </div>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Stock Inicial <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" [(ngModel)]="producto.stock" name="stock" min="0"
+                    required />
+                </div>
+                <div class="col-12">
+                  <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="activarPrecioPorPaquete"
+                      [(ngModel)]="producto.activarPrecioPorPaquete" name="activarPrecioPorPaquete" />
+                    <label class="form-check-label fw-medium" for="activarPrecioPorPaquete">
+                      Activar Precio por Docena/Paquete
+                    </label>
+                  </div>
+                  <div *ngIf="producto.activarPrecioPorPaquete" class="mt-2">
+                    <label class="form-label fw-semibold">Precio por Docena/Paquete (S/. )</label>
+                    <input type="number" class="form-control" [(ngModel)]="producto.precioPorPaquete"
+                      name="precioPorPaquete" step="0.01" min="0" required />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-12">
+              <h6 class="fw-bold text-secondary mb-3">Imagen Principal</h6>
+              <div class="imagen-dropzone" (click)="!producto.imagenPreview && fileInput.click()"
+                (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+                <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)"
+                  accept="image/*" />
+                <img *ngIf="producto.imagenPreview" [src]="producto.imagenPreview" alt="Previsualización"
+                  class="preview-imagen" />
+                <button *ngIf="producto.imagenPreview" type="button" class="btn btn-sm btn-danger"
+                  (click)="eliminarImagen($event)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+                <div *ngIf="!producto.imagenPreview" class="contenido-dropzone">
+                  <i class="bi bi-cloud-arrow-up-fill"></i>
+                  <p>Arrastra o <strong>selecciona</strong></p>
+                </div>
+              </div>
+              <p *ngIf="producto.imagenFileName" class="mt-2 mb-0 text-dark small text-center">
+                {{ producto.imagenFileName }}
+              </p>
+            </div>
+
+            <div class="col-12">
+              <hr class="my-2 border-secondary-subtle" />
+            </div>
+
+            <div class="col-12">
+              <h6 class="fw-bold text-secondary mb-3">Variaciones del Producto</h6>
+
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="hasSizes" [(ngModel)]="producto.hasSizes"
+                  name="hasSizes" (change)="onTieneTallasChange()" />
+                <label class="form-check-label" for="hasSizes">Tiene Tallas</label>
+              </div>
+
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="hasColors" [(ngModel)]="producto.hasColors"
+                  name="hasColors" (change)="onTieneColoresChange()" />
+                <label class="form-check-label" for="hasColors">Tiene Colores</label>
+              </div>
+
+              <div *ngIf="producto.hasSizes" class="mb-3 p-3 border rounded bg-light">
+                <label class="fw-semibold mb-2">Tallas disponibles (Separadas por comas):</label>
+                <input type="text" class="form-control" placeholder="Ej: S, M, L, XL" [(ngModel)]="tallasInput"
+                  name="tallasInput" required />
+                <div class="form-text mt-1">Ingresa las tallas separadas por comas (ej: S, M, L).</div>
+              </div>
+
+              <div *ngIf="producto.hasColors" class="mb-3 p-3 border rounded bg-light">
+                <label class="fw-semibold mb-2">Colores disponibles (Separados por comas):</label>
+                <input type="text" class="form-control" placeholder="Ej: Rojo, Azul, Negro" [(ngModel)]="coloresInput"
+                  name="coloresInput" required />
+                <div class="form-text mt-1">Ingresa los colores separados por comas (ej: Rojo, Azul).</div>
+              </div>
+
+            </div>
+
+            <div class="col-12">
+              <hr class="my-2 border-secondary-subtle" />
+            </div>
+
+            <div class="col-md-9">
+              <label class="form-label fw-semibold">Descripción Detallada</label>
+              <textarea class="form-control" [(ngModel)]="producto.description" name="description" rows="3"></textarea>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+              <div class="form-check form-switch w-100 mb-1">
+                <input class="form-check-input" type="checkbox" id="newEstado" [(ngModel)]="producto.estado"
+                  name="estado" />
+                <label class="form-check-label fw-semibold" for="newEstado">
+                  Producto Activo
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between p-3 border-top">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg me-2"></i> Cancelar
+          </button>
+          <button type="submit" class="btn text-white shadow-sm" style="background-color: #008C8C;"
+            [disabled]="!productForm.valid">
+            <i class="bi bi-plus-lg me-2"></i> Crear Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

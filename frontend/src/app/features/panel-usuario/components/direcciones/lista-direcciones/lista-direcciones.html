@@ -1,0 +1,32 @@
+<div class="list-group mb-3">
+    <p *ngIf="direcciones.length === 0" class="text-secondary">
+        No tienes direcciones guardadas.
+    </p>
+
+    <div *ngFor="let direccion of direcciones; let i = index"
+        class="list-group-item d-flex justify-content-between align-items-start py-3">
+
+        <div class="flex-grow-1">
+            <h5 class="fw-bold mb-1">{{ direccion.alias || 'Dirección sin Alias' }}</h5>
+            <p class="mb-0 text-muted small">{{ obtenerDireccionCompleta(direccion) }}</p>
+            <span *ngIf="direccion.esPrincipal" class="badge bg-success mt-2">Principal</span>
+        </div>
+
+        <div class="btn-group-actions d-flex gap-2">
+            <button (click)="onEstablecerPrincipal.emit(i)" class="btn btn-sm"
+                [class.btn-success]="direccion.esPrincipal" [class.btn-outline-secondary]="!direccion.esPrincipal"
+                [disabled]="direccion.esPrincipal || isLoading" title="Marcar como dirección principal">
+                <i class="bi bi-star-fill"></i>
+                {{ direccion.esPrincipal ? 'Principal' : 'Marcar Principal' }}
+            </button>
+
+            <button (click)="onEditar.emit(i)" class="btn btn-sm btn-primary" [disabled]="isLoading">
+                ✏️ Editar
+            </button>
+
+            <button (click)="onEliminar.emit(i)" class="btn btn-sm btn-danger" [disabled]="isLoading">
+                🗑️ Eliminar
+            </button>
+        </div>
+    </div>
+</div>

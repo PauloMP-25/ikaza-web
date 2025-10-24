@@ -1,0 +1,196 @@
+// Sección de Categoría
+.category-section {
+    margin-bottom: 3rem;
+    padding: 0 1rem;
+}
+
+// Header de Categoría
+.category-header {
+    position: relative;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+}
+
+// Wrapper del Título (Centrado)
+.category-title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+// Icono de Categoría
+.title-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--c2, #0d6efd) 0%, var(--c3, #198754) 100%);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+// Título de Categoría
+.category-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--c1, #212529);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--c2, #0d6efd) 0%, var(--c3, #198754) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+// Línea Decorativa Centrada
+.title-underline {
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent 0%, var(--c2, #0d6efd) 50%, transparent 100%);
+    border-radius: 2px;
+    margin: 0 auto;
+}
+
+// GRID DE 4 COLUMNAS PRIORITARIO
+.row.g-4 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    margin: 0 -0.5rem !important;
+    gap: 0; // Usar padding en lugar de gap para mejor control
+}
+
+// COLUMNAS: 4 por defecto, responsive en pantallas menores
+.col-12,
+.col-sm-6,
+.col-md-4,
+.col-lg-3 {
+    padding: 0.5rem !important;
+}
+
+// Forzar 4 columnas en pantallas grandes (≥1200px)
+@media (min-width: 1200px) {
+    .col-lg-3 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+    }
+}
+
+// 4 columnas también en desktop mediano (≥992px)
+@media (min-width: 992px) and (max-width: 1199px) {
+    .col-lg-3 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+    }
+}
+
+// 3 columnas en tablets (768px - 991px)
+@media (min-width: 768px) and (max-width: 991px) {
+    .col-md-4 {
+        flex: 0 0 33.333% !important;
+        max-width: 33.333% !important;
+    }
+}
+
+// 2 columnas en móviles grandes (576px - 767px)
+@media (min-width: 576px) and (max-width: 767px) {
+    .col-sm-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+}
+
+// 1 columna en móviles pequeños (<576px)
+@media (max-width: 575px) {
+    .col-12 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+// Estilos para las tarjetas dentro del grid
+app-product-card {
+    display: block;
+    height: 100%;
+
+    .card {
+        height: 100%;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+    }
+}
+
+// Animación de entrada
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category-section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+// Responsive
+@media (max-width: 992px) {
+    .category-title {
+        font-size: 1.5rem;
+    }
+
+    .title-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.25rem;
+    }
+
+    .title-underline {
+        width: 80px;
+        height: 3px;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-title-wrapper {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .category-title {
+        font-size: 1.25rem;
+    }
+
+    .title-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.125rem;
+    }
+
+    .title-underline {
+        width: 60px;
+    }
+}
+
+// Ocultar secciones si es necesario
+.d-none {
+    display: none !important;
+}

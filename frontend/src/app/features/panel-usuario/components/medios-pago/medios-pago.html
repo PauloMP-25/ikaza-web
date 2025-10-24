@@ -1,0 +1,18 @@
+<div class="container-fluid px-4">
+    <h1 class="h3 fw-bold text-dark mb-4">Tarjetas de crédito/débito</h1>
+
+    <!-- Lista de tarjetas -->
+    <app-lista-tarjetas [tarjetas]="tarjetasGuardadas" [isLoading]="isLoading" (onEliminar)="eliminarTarjeta($event)"
+        (onEstablecerPrincipal)="establecerPrincipal($event)">
+    </app-lista-tarjetas>
+
+    <!-- Botón para agregar tarjeta -->
+    <button (click)="toggleFormulario()" class="btn btn-primary mb-3">
+        {{ mostrarForm ? 'Cancelar' : '+ Agregar tarjeta' }}
+    </button>
+
+    <!-- Formulario de tarjeta -->
+    <app-formulario-tarjeta *ngIf="mostrarForm" (onGuardar)="guardarTarjeta($event)"
+        (onCancelar)="cancelarAgregarTarjeta()">
+    </app-formulario-tarjeta>
+</div>

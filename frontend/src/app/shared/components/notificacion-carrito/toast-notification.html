@@ -1,0 +1,15 @@
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div *ngIf="toast" #toastElement class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" [ngClass]="{
+            'bg-success text-white': toast.type === 'success',
+            'bg-danger text-white': toast.type === 'error',
+            'bg-info text-white': toast.type === 'info'}">
+            <strong class="me-auto">{{ getTitle(toast.type) }}</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                aria-label="Cerrar"></button>
+        </div>
+        <div class="toast-body">
+            {{ toast.message }}
+        </div>
+    </div>
+</div>

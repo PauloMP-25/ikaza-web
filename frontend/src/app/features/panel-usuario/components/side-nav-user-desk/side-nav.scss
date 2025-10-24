@@ -1,0 +1,24 @@
+.nav-link{
+    cursor: pointer;
+}
+
+/* Estilo para el botón activo del menú lateral */
+:host .nav-link.active {
+    background-color: #137fec;
+    color: white !important;
+    font-weight: 600;
+}
+
+/* Hover para todos los botones del menú lateral excepto el activo */
+:host .nav-link:not(.active):hover {
+    background-color: #e7f1ff;
+    color: var(--primary-color) !important;
+    text-decoration: none;
+}
+
+/* Hover para el botón de cerrar sesión */
+:host #btn-cerrar-sesion:hover {
+    background-color: #dc3545 !important;
+    color: white !important;
+    text-decoration: none;
+}

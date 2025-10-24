@@ -1,0 +1,40 @@
+/* Estilos específicos para promociones (adaptados para usuario) */
+.promo-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #e0e0e0;
+}
+
+.promo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.badge-promo {
+    font-size: 0.75rem;
+}
+
+.promo-status-active {
+    background-color: #198754;
+}
+
+.promo-status-upcoming {
+    background-color: #0dcaf0;
+    color: #000;
+}
+
+.promo-status-expired {
+    background-color: #6c757d;
+}
+
+.discount-badge {
+    background: linear-gradient(45deg, #ff6b6b, #ffa726);
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.code-input {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    letter-spacing: 1px;
+}

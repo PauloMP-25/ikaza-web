@@ -1,0 +1,22 @@
+<!-- Sección de Categoría -->
+<section *ngIf="showSection && filteredProducts.length > 0" class="category-section mb-5">
+    <!-- Header Centrado con Icono -->
+    <div class="category-header text-center mb-4">
+        <div class="category-title-wrapper">
+            <span class="title-icon">
+                <i class="bi" [ngClass]="getCategoryIcon()"></i>
+            </span>
+            <h2 class="category-title">{{ category.name }}</h2>
+        </div>
+        <div class="title-underline"></div>
+    </div>
+
+    <!-- Grid de Productos (Bootstrap) -->
+    <div class="row g-4">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let product of filteredProducts">
+            <app-product-card [product]="product" (quickView)="quickView($event)" (viewDetails)="viewDetails($event)"
+                (addToCart)="addToCart($event)">
+            </app-product-card>
+        </div>
+    </div>
+</section>

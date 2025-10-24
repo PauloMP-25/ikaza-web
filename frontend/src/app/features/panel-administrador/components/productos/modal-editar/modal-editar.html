@@ -1,0 +1,199 @@
+<div class="modal fade" id="editarProductoModal" tabindex="-1" aria-labelledby="editarProductoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header text-white" style="background-color: #28a745;">
+                <h5 class="modal-title fw-bold" id="editarProductoLabel">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Editar Producto
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+            </div>
+
+            <form (ngSubmit)="guardarCambios()">
+                <div class="modal-body p-0">
+                    <ul class="nav nav-tabs nav-justified bg-light pt-2" id="editProductTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold text-success" id="detalles-tab" data-bs-toggle="tab"
+                                data-bs-target="#detalles-generales" type="button" role="tab"
+                                aria-controls="detalles-generales" aria-selected="true">Detalles</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold text-success" id="variaciones-tab" data-bs-toggle="tab"
+                                data-bs-target="#variaciones-stock" type="button" role="tab"
+                                aria-controls="variaciones-stock" aria-selected="false">Variaciones y Stock</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content p-4" style="max-height: 70vh; overflow-y: auto;">
+
+                        <div class="tab-pane fade show active" id="detalles-generales" role="tabpanel"
+                            aria-labelledby="detalles-tab">
+                            <div class="row g-4">
+                                <div class="col-lg-4 col-md-6">
+                                    <h6 class="fw-bold text-secondary mb-3">Detalles Primarios</h6>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Nombre del Producto <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" class="form-control"
+                                                [(ngModel)]="productoEditadoLocal.name" name="editName"
+                                                placeholder="Nombre del Producto" required />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Código / SKU <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" class="form-control"
+                                                [(ngModel)]="productoEditadoLocal.sku" name="editSku"
+                                                placeholder="Código / SKU" required />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Categoría <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-select" [(ngModel)]="productoEditadoLocal.category"
+                                                name="editCategory" required>
+                                                <option value="" disabled>Selecciona una categoría</option>
+                                                <option *ngFor="let cat of categorias" [value]="cat">
+                                                    {{ cat }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6">
+                                    <h6 class="fw-bold text-secondary mb-3">Precios e Inventario</h6>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Precio Unitario (S/. ) <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="number" class="form-control"
+                                                [(ngModel)]="productoEditadoLocal.price" name="editPrice" step="0.01"
+                                                min="0" required />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Stock Total <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="number" class="form-control"
+                                                [(ngModel)]="productoEditadoLocal.stock" name="editStock" min="0"
+                                                required />
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-check form-switch mt-2">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="editActivarPrecioPorPaquete"
+                                                    [(ngModel)]="productoEditadoLocal.activarPrecioPorPaquete"
+                                                    name="editActivarPrecioPorPaquete" />
+                                                <label class="form-check-label fw-medium"
+                                                    for="editActivarPrecioPorPaquete">
+                                                    Activar Precio por Docena/Paquete
+                                                </label>
+                                            </div>
+                                            <div *ngIf="productoEditadoLocal.activarPrecioPorPaquete" class="mt-2">
+                                                <label class="form-label fw-semibold">Precio por Docena/Paquete (S/.
+                                                    )</label>
+                                                <input type="number" class="form-control"
+                                                    [(ngModel)]="productoEditadoLocal.precioPorPaquete"
+                                                    name="editPrecioPorPaquete" step="0.01" min="0" required />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-12">
+                                    <h6 class="fw-bold text-secondary mb-3">Imagen Principal</h6>
+                                    <div class="imagen-dropzone"
+                                        (click)="!productoEditadoLocal.imagenPreview && fileInput.click()"
+                                        (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+                                        (drop)="onDrop($event)">
+                                        <input type="file" #fileInput style="display: none;"
+                                            (change)="onFileSelected($event)" accept="image/*" />
+
+                                        <img *ngIf="productoEditadoLocal.imagenPreview || productoEditadoLocal.image"
+                                            [src]="productoEditadoLocal.imagenPreview || productoEditadoLocal.image"
+                                            alt="Previsualización" class="preview-imagen" />
+
+                                        <button *ngIf="productoEditadoLocal.imagenPreview || productoEditadoLocal.image"
+                                            type="button" class="btn btn-sm btn-danger"
+                                            (click)="eliminarImagen($event)">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                        <div *ngIf="!productoEditadoLocal.imagenPreview && !productoEditadoLocal.image"
+                                            class="contenido-dropzone">
+                                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                                            <p>Arrastra o <strong>selecciona</strong></p>
+                                        </div>
+                                    </div>
+                                    <p *ngIf="productoEditadoLocal.imagenFileName"
+                                        class="mt-2 mb-0 text-dark small text-center">
+                                        {{ productoEditadoLocal.imagenFileName }}
+                                    </p>
+                                </div>
+
+                                <div class="col-md-9">
+                                    <label class="form-label fw-semibold">Descripción Detallada</label>
+                                    <textarea class="form-control" [(ngModel)]="productoEditadoLocal.description"
+                                        name="editDescription" rows="3"></textarea>
+                                </div>
+
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="form-check form-switch w-100 mb-1">
+                                        <input class="form-check-input" type="checkbox" id="editEstado"
+                                            [(ngModel)]="productoEditadoLocal.estado" name="editEstado" />
+                                        <label class="form-check-label fw-semibold" for="editEstado">
+                                            Producto Activo
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="variaciones-stock" role="tabpanel"
+                            aria-labelledby="variaciones-tab">
+                            <h6 class="fw-bold text-secondary mb-3">Gestión de Variaciones</h6>
+
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="editHasSizes"
+                                    [(ngModel)]="productoEditadoLocal.hasSizes" name="editHasSizes"
+                                    (change)="onTieneTallasChange()" />
+                                <label class="form-check-label" for="editHasSizes">Tiene Tallas</label>
+                            </div>
+
+                            <div *ngIf="productoEditadoLocal.hasSizes" class="mb-4 p-3 border rounded bg-light">
+                                <label class="fw-semibold mb-2">Tallas disponibles (Separadas por comas):</label>
+                                <input type="text" class="form-control" placeholder="Ej: S, M, L, XL"
+                                    [(ngModel)]="tallasInput" name="editTallasInput" required />
+                                <div class="form-text mt-1">Edita las tallas separadas por comas (ej: S, M, L).</div>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="editHasColors"
+                                    [(ngModel)]="productoEditadoLocal.hasColors" name="editHasColors"
+                                    (change)="onTieneColoresChange()" />
+                                <label class="form-check-label" for="editHasColors">Tiene Colores</label>
+                            </div>
+
+                            <div *ngIf="productoEditadoLocal.hasColors" class="mb-4 p-3 border rounded bg-light">
+                                <label class="fw-semibold mb-2">Colores disponibles (Separados por comas):</label>
+                                <input type="text" class="form-control" placeholder="Ej: Rojo, Azul, Negro"
+                                    [(ngModel)]="coloresInput" name="editColoresInput" required />
+                                <div class="form-text mt-1">Edita los colores separados por comas (ej: Rojo, Azul).
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-between p-3 border-top">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-2"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn text-white shadow-sm" style="background-color: #28a745;">
+                        <i class="bi bi-check-lg me-2"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

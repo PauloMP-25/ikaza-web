@@ -1,0 +1,38 @@
+.footer-contact h5 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-weight: bold;
+}
+
+.footer-contact h6 {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.footer-contact a {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.footer-contact a:hover {
+    color: #ffc107;
+    text-decoration: none;
+}
+
+.contact-info li {
+    color: #fff;
+    margin-bottom: 10px;
+
+    i {
+        color: #ffc107;
+    }
+}
+
+/* Opcionales si tienes mapa o tarjetas */
+.ratio.ratio-16x9 {
+    height: 300px;
+}
+
+.contact-card {
+    padding: 2rem;
+    height: 100%;
+}

@@ -1,0 +1,10 @@
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div *ngIf="isLoading" class="text-center">Cargando...</div>
+        <div *ngIf="!isLoading && error" class="text-center">Error: {{ error }}</div>
+        <div *ngIf="!isLoading && !error && pedidoConfirmado" class="text-center">
+            <h1>¡Pago Exitoso!</h1>
+            <p>Tu pedido {{ numeroPedido }} ha sido confirmado.</p>
+        </div>
+    </div>
+</div>

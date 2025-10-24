@@ -1,0 +1,25 @@
+<div class="card bg-light mb-3">
+    <div class="card-header fw-bold">Tarjetas Guardadas</div>
+    <div class="list-group list-group-flush">
+        <div *ngIf="isLoading" class="p-3 text-center">Cargando tarjetas...</div>
+
+        <div *ngIf="!isLoading && tarjetas.length === 0" class="p-3 text-muted small">
+            No tienes tarjetas guardadas.
+        </div>
+
+        <button *ngFor="let t of tarjetas" class="list-group-item list-group-item-action"
+            [class.active]="t.idMetodo === tarjetaSeleccionada?.idMetodo" (click)="seleccionarTarjeta(t)"
+            [disabled]="!t.activo">
+
+            <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">
+                    <i class="fas" [ngClass]="tarjetaService.obtenerClaseIcono(t.tipoTarjeta || '')"></i>
+                    {{ t.alias || t.tipoTarjeta }}
+                    <span *ngIf="t.esPrincipal" class="badge bg-primary ms-2">Principal</span>
+                </h6>
+                <small>{{ t.ultimos4Digitos | formatoUltimosDigitos }}</small>
+            </div>
+            <small class="text-muted">Exp: {{ t.fechaExpiracion }}</small>
+        </button>
+    </div>
+</div>

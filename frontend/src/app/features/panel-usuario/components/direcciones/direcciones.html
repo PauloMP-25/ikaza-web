@@ -1,0 +1,19 @@
+<div class="container-fluid px-4">
+    <h1 class="h3 fw-bold text-dark mb-4">Direcciones</h1>
+
+    <!-- Lista de direcciones -->
+    <app-lista-direcciones [direcciones]="direccionesGuardadas" [isLoading]="isLoading"
+        (onEditar)="editarDireccion($event)" (onEliminar)="eliminarDireccion($event)"
+        (onEstablecerPrincipal)="establecerPrincipal($event)">
+    </app-lista-direcciones>
+
+    <!-- Botón para agregar dirección -->
+    <button (click)="toggleFormulario()" class="btn btn-primary mb-3">
+        {{ mostrarForm ? 'Cancelar' : '+ Agregar dirección' }}
+    </button>
+
+    <!-- Formulario de dirección -->
+    <app-formulario-direccion *ngIf="mostrarForm" [direccionParaEditar]="direccionParaEditar" [editMode]="editMode"
+        [isLoading]="isLoading" (onGuardar)="guardarDireccion($event)" (onCancelar)="cancelarEdicion()">
+    </app-formulario-direccion>
+</div>

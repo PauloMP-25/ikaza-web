@@ -1,0 +1,30 @@
+<div class="offcanvas offcanvas-start custom-sidebar" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header custom-sidebar-header">
+        <h5 class="offcanvas-title">Menú</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+        <!--Barra de búsqueda SIEMPRE visible en sidebar (especialmente en móvil) -->
+        <form class="d-block mb-3 px-3" (ngSubmit)="onSearchSubmit()" #searchForm="ngForm">
+            <div class="input-group">
+                <input type="search" class="form-control" placeholder="Buscar productos..." 
+                aria-label="Buscar" name="searchTerm" [(ngModel)]="searchTerm">
+                <button class="btn btn-outline-light" type="submit" aria-label="Buscar">
+                    <i class="bi bi-search"></i> <!-- ← Icono de búsqueda -->
+                </button>
+            </div>
+        </form>
+
+        <!-- Links de navegación -->
+        <ul class="navbar-nav px-3">
+            <li>
+                <hr class="mb-3">
+            </li>
+            <li>
+                <div class="px-3 py-2">
+                    <app-navbar-auth></app-navbar-auth>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

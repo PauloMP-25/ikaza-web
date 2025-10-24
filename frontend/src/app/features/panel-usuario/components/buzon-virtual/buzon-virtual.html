@@ -1,0 +1,87 @@
+<!-- Panel Recomendaciones y reclamos -->
+<h1 class="h3 fw-bold text-dark mb-4">Recomendaciones y reclamos</h1>
+<form id="form-recomendaciones" class="row g-3" method="post" action="/api/feedback" enctype="multipart/form-data"
+    novalidate>
+    <!-- Tipo: recomendación o reclamo -->
+    <div class="col-md-4">
+        <label for="tipo-feedback" class="form-label">Tipo</label>
+        <select id="tipo-feedback" name="tipo" class="form-select" required>
+            <option value="">Selecciona...</option>
+            <option value="recomendacion">Recomendación</option>
+            <option value="reclamo">Reclamo</option>
+        </select>
+        <div class="invalid-feedback">Selecciona el tipo.</div>
+    </div>
+
+    <!-- Asunto -->
+    <div class="col-md-8">
+        <label for="asunto-feedback" class="form-label">Asunto</label>
+        <input id="asunto-feedback" name="asunto" type="text" class="form-control" placeholder="Ej. demora en entrega"
+            required />
+        <div class="invalid-feedback">Escribe un asunto.</div>
+    </div>
+
+    <!-- BLOQUE CONDICION si es RECLAMO -->
+    <div id="reclamo-opciones" class="col-12 d-none" aria-hidden="true">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="categoria-reclamo" class="form-label">Categoría del
+                    reclamo</label>
+                <select id="categoria-reclamo" name="categoria_reclamo" class="form-select">
+                    <option value="">Selecciona...</option>
+                    <option value="producto">Producto defectuoso</option>
+                    <option value="entrega">Retraso o problema en entrega</option>
+                    <option value="atencion">Atención al cliente</option>
+                    <option value="facturacion">Facturación / cobro</option>
+                    <option value="otro">Otro</option>
+                </select>
+                <div class="invalid-feedback">Selecciona una categoría si es reclamo.
+                </div>
+            </div>
+
+            <div class="col-md-6 d-none" id="reclamo-otro-contenedor">
+                <label for="reclamo-otro" class="form-label">Especifica (otro)</label>
+                <input id="reclamo-otro" name="reclamo_otro" type="text" class="form-control"
+                    placeholder="Describe el tipo..." />
+                <div class="invalid-feedback">Por favor especifica el tipo de reclamo.
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label for="urgencia-reclamo" class="form-label">Grado de
+                    urgencia</label>
+                <select id="urgencia-reclamo" name="urgencia_reclamo" class="form-select">
+                    <option value="normal">Normal</option>
+                    <option value="alta">Alta (requiere respuesta rápida)</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="adjunto-evidencia" class="form-label">Evidencia (fotos, PDF)
+                    — opcional</label>
+                <input id="adjunto-evidencia" name="adjunto_evidencia" type="file" class="form-control"
+                    accept=".png,.jpg,.jpeg,.pdf" />
+            </div>
+        </div>
+    </div>
+    <!-- /BLOQUE CONDICIONAL -->
+
+    <!-- Descripción -->
+    <div class="col-12">
+        <label for="descripcion-feedback" class="form-label">Descripción</label>
+        <textarea id="descripcion-feedback" name="descripcion" class="form-control" rows="6"
+            placeholder="Describe con detalles..." required></textarea>
+        <div class="invalid-feedback">Escribe la descripción.</div>
+    </div>
+
+    <!-- Archivo adjunto -->
+    <div class="col-md-6">
+        <label for="adjunto-feedback" class="form-label">Adjuntar archivo
+            (opcional)</label>
+        <input id="adjunto-feedback" name="adjunto" type="file" class="form-control" accept=".png,.jpg,.pdf,.docx" />
+    </div>
+
+    <div class="col-12 d-flex justify-content-end pt-3">
+        <button type="submit" class="btn btn-primary px-4 fw-bold">Enviar</button>
+    </div>
+</form>

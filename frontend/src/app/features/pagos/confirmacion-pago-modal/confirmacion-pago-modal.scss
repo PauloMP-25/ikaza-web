@@ -1,0 +1,39 @@
+/* purchase-confirmation-modal.component.css */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.modal-header .modal-title {
+    color: white;
+}
+
+.payment-methods .badge {
+    font-size: 0.75rem;
+}
+
+.bg-light {
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+    }
+
+    .payment-methods .badge {
+        font-size: 0.65rem;
+        margin: 2px;
+    }
+}

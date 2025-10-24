@@ -1,0 +1,17 @@
+<div class="offcanvas offcanvas-end text-bg-light" tabindex="-1" id="cartOffcanvas">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title">
+            <i class="bi bi-cart3"></i> Mi Carrito
+            <span class="badge bg-primary">{{ cartItems.length }}</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column">
+        <app-resumen-carrito [cartItems]="cartItems" [isAuthenticated]="isAuthenticated"
+            [userHasCompleteData]="userHasCompleteData" [total]="total" [paymentButtonText]="paymentButtonText"
+            [paymentButtonIcon]="paymentButtonIcon" [missingRequirements]="missingRequirements"
+            (checkoutClicked)="openModal()" (clearCartClicked)="clearCart()"
+            (removeItemClicked)="removeItem($event)"></app-resumen-carrito>
+    </div>
+</div>

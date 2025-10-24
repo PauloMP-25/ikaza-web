@@ -1,0 +1,63 @@
+// Variables de colores (ajusta según tu paleta)
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$warning-color: #ffc107;
+$danger-color: #dc3545;
+$success-color: #28a745;
+
+.product-images {
+    .main-image img {
+        border: none !important; // quita el borde
+        box-shadow: none !important; // quita sombra
+        background: transparent !important; // sin fondo gris
+    }
+
+    .thumbnails .thumbnail img {
+        border: none !important;
+        background: transparent !important;
+    }
+}
+
+// Sección de imágenes
+.product-images {
+
+    // Imagen principal
+    .main-image img {
+        width: 100%;
+        height: auto;
+        max-height: 500px; // mantiene proporción
+        object-fit: contain; // evita distorsión
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+
+    // Galería de miniaturas
+    .thumbnails {
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border: none !important;
+                background: transparent !important;
+                opacity: 0.6;
+                transition: opacity 0.3s ease;
+
+                &:hover {
+                    opacity: 1;
+                }
+
+                &.active {
+                    opacity: 1;
+                    border: 2px solid $primary-color;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+<div class="bg-white p-4 rounded shadow-sm">
+    <nav class="nav flex-column">
+        <a routerLink="datos-personales" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">person</span>
+            <span class="small fw-semibold">Datos Personales</span>
+        </a>
+        <a routerLink="direcciones" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">location_on</span>
+            <span class="small fw-medium">Direcciones</span>
+        </a>
+        <a routerLink="historial-compras" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">overview</span>
+            <span class="small fw-medium">Historial de Compras</span>
+        </a>
+        <a routerLink="medios-pago" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">payment</span>
+            <span class="small fw-medium">Medios de pago</span>
+        </a>
+        <a routerLink="reembolso" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="small fw-medium">Datos para reembolso</span>
+        </a>
+        <a routerLink="promociones" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">local_offer</span>
+            <span class="small fw-medium">Mis Promociones y Descuentos</span>
+        </a>
+        <a routerLink="buzon-virtual" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">feedback</span>
+            <span class="small fw-medium">Sugerencias y Reclamos</span>
+        </a>
+        <a routerLink="configuracion" routerLinkActive="active"
+            class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded text-secondary">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="small fw-medium">Configurar mi cuenta</span>
+        </a>
+        <hr />
+        <a (click)="cerrarSesion()" class="nav-link d-flex align-items-center gap-2 px-3 py-2 rounded">
+            <span class="material-symbols-outlined">logout</span>
+            <span class="small fw-medium">Cerrar Sesión</span>
+        </a>
+    </nav>
+</div>

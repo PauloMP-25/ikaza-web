@@ -1,0 +1,21 @@
+.footer-social h5 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-weight: bold;
+}
+
+.footer-social .social-icons {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-right: 15px;
+    transition: transform 0.3s ease;
+}
+
+.footer-social a {
+    transition: color 0.3s ease;
+
+    &:hover {
+        transform: scale(1.2);
+        color: #ffc107; // Amarillo Bootstrap
+    }
+}

@@ -1,0 +1,51 @@
+// Responsive
+@media (min-width: 992px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+
+    // Desktop: Grupo derecho a la extrema derecha
+    .order-lg-last {
+        margin-left: auto;
+    }
+
+    // Búsqueda full 350px
+    .form-control {
+        width: 350px;
+    }
+}
+
+@media (max-width: 991.98px) {
+
+    // Móvil: Oculta contenido central (búsqueda/links)
+    #navbarNav {
+        display: none !important;
+    }
+
+    // Grupo derecho: Empuja a la derecha
+    .d-flex.order-2 {
+        margin-left: auto; // ← CLAVE: Empuja el grupo (hamburguesa + auth + carrito) a la derecha
+    }
+
+    // Búsqueda en sidebar: 100%
+    .custom-sidebar .form-control {
+        width: 100% !important;
+        font-size: 1rem;
+    }
+
+    // Auth/Carrito: Compactos
+    app-navbar-auth,
+    app-navbar-cart {
+        font-size: 0.9rem;
+    }
+
+    // Hamburguesa visible en grupo
+    .navbar-toggler {
+        display: block !important;
+    }
+}
+
+// Transición offcanvas
+.offcanvas {
+    transition: transform 0.3s ease-in-out;
+}

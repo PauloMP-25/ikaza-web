@@ -1,0 +1,44 @@
+<div class="home-container">
+    <!-- Flayers promocionales -->
+    <app-banners-promocional></app-banners-promocional>
+    <!-- Contenido principal -->
+    <main class="flex-grow bg-light">
+        <div class="container py-5">
+
+            <!-- Sección Producto Más Vendido -->
+            <app-producto-mas-vendido></app-producto-mas-vendido>
+
+            <!-- Sección Productos por Agotarse -->
+            <app-productos-por-agotarse></app-productos-por-agotarse>
+
+            <!-- Sección Productos Nuevos -->
+            <app-productos-nuevos></app-productos-nuevos>
+
+            <!-- Sección Productos Más Baratos -->
+            <app-productos-baratos></app-productos-baratos>
+
+            <!-- Sección Comentarios -->
+            <app-seccion-comentarios></app-seccion-comentarios>
+        </div>
+    </main>
+
+    <!-- Cart Offcanvas -->
+    <app-cart-offcanvas></app-cart-offcanvas>
+
+    <!-- Modal Confirmación de Compra -->
+    <app-confirmacion-pago-modal></app-confirmacion-pago-modal>
+</div>
+
+<!-- ← TOAST DE NOTIFICACIÓN: Flotante en esquina superior derecha -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="bi bi-check-circle text-success me-2"></i>
+            <strong class="me-auto">¡Éxito!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+        <div class="toast-body">
+            <span id="toastMessage"></span> <!-- ← Mensaje dinámico -->
+        </div>
+    </div>
+</div>

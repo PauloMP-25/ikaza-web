@@ -1,0 +1,101 @@
+<div class="product-info">
+    <!-- Título -->
+    <h1 class="h3 fw-bold mb-3">{{ product.nombreProducto }}</h1>
+    <!-- Categoria -->
+    <p class="text-muted mb-2">
+        <i class="bi bi-tag"></i> {{ product.nombreCategoria }}
+    </p>
+
+    <!-- Calificación -->
+    <div class="rating mb-3 d-flex align-items-center" *ngIf="averageRating > 0">
+        <div class="stars me-2">
+            <i class="bi bi-star-fill" *ngFor="let star of [1,2,3,4,5].slice(0, averageRating)"></i>
+        </div>
+        <span class="text-muted ms-2">{{ averageRating.toFixed(1) }} / 5.0 ({{ reviewCount }} reseñas)</span>
+    </div>
+
+    <!-- Precio -->
+    <div class="price mb-4">
+        <h2 class="h2 text-c2 fw-bold mb-0">
+            {{ formatearPrecio(product.precio) }} </h2>
+    </div>
+
+    <!-- Stock -->
+    <div class="mb-3">
+        <span [class]="obtenerEstadoStock().clase">
+            {{ obtenerEstadoStock().texto }}
+        </span>
+        <span class="text-muted ms-2" *ngIf="product.stockReservado && product.stockReservado > 0"> ({{
+            product.stockReservado }} reservados) </span>
+    </div>
+
+
+    <!-- Descripción -->
+    <div class="description mb-4">
+        <h5 class="fw-bold">Descripción:</h5>
+        <p class="text-muted">{{ product.descripcionProducto }}</p>
+    </div>
+
+    <!-- Garantia -->
+    <div class="mb-3" *ngIf="product.garantia">
+        <p class="mb-0">
+            <i class="bi bi-shield-check text-success"></i> <strong>Garantía:</strong> {{ product.garantia }}
+        </p>
+    </div>
+
+    <!-- Variantes -->
+    <div class="mb-3" *ngIf="product.variantes && product.variantes.length > 0">
+        <h5 class="fw-bold">Variantes disponibles</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <button *ngFor="let variante of product.variantes" class="btn btn-outline-primary btn-sm"
+                [class.active]="varianteSeleccionada === variante" (click)="seleccionarVariante(variante)">
+                {{ variante.color || variante.talla || variante.material }} <span class="badge bg-secondary ms-1"
+                    *ngIf="variante.stockAdicional"> +{{ variante.stockAdicional }}
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Selector de cantidad y botón -->
+    <div class="mb-3" *ngIf="puedeAgregarAlCarrito()">
+        <h5 class="fw-bold">Cantidad</h5>
+        <div class="input-group"> <button class="btn btn-outline-secondary" type="button" (click)="decreaseQuantity()"
+                [disabled]="quantity <= 1" aria-label="Reducir">
+                <i class="bi bi-dash"></i> </button>
+            <input type="number" class="form-control text-center" [value]="quantity" readonly
+                aria-label="Cantidad Seleccionada" [(ngModel)]="quantity" [min]="1" [max]="product.stock" readonly>
+            <button class="btn btn-outline-secondary" type="button" (click)="increaseQuantity()"
+                [disabled]="quantity >= (product.stockDisponible || 0)" aria-label="Incrementar"> <i
+                    class="bi bi-plus"></i> </button>
+        </div>
+    </div>
+    
+    <div class="d-grid gap-2">
+        <button class="btn btn-success btn-lg" [disabled]="!puedeAgregarAlCarrito()" (click)="onAddToCart(true)">
+            <i class="bi bi-cart-check"></i> Comprar ahora </button>
+        <button class="btn btn-outline-primary btn-lg" [disabled]="!puedeAgregarAlCarrito()" (click)="onAddToCart()">
+            <i class="bi bi-cart-plus"></i> Agregar al carrito </button>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="additional-info">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="info-card p-3 border rounded">
+                    <i class="bi bi-truck fs-4 text-c2"></i>
+                    <h6 class="fw-bold mt-2">Envío gratis</h6>
+                    <p class="small text-muted mb-0">En compras mayores a S/. 50</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-card p-3 border rounded">
+                    <i class="bi bi-shield-check fs-4 text-c2"></i>
+                    <h6 class="fw-bold mt-2">Garantía</h6>
+                    <p class="small text-muted mb-0">30 días de garantía</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-toast-notification></app-toast-notification>

@@ -1,0 +1,202 @@
+<div class="container-fluid py-4">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2 class="fw-bold">Gestión de Productos</h2>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#crearProductoModal">
+                <i class="bi bi-plus-lg me-2"></i>
+                Nuevo Producto
+            </button>
+        </div>
+    </div>
+
+    <!-- Agregar indicador de carga -->
+    <div *ngIf="isLoading" class="loading-indicator text-center py-3">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando productos...</p>
+    </div>
+
+    <!-- Agregar mensaje de error -->
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+    </div>
+
+    <app-modal-agregar (productoAgregado)="onProductoAgregado($event)"></app-modal-agregar>
+    <app-modal-editar *ngIf="productoAEditar" [producto="productoAEditar"
+        (productoEditado)="onProductoEditado($event)">
+    </app-modal-editar>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-start-0"
+                    placeholder="Buscar por nombre, SKU, categoría, marca o descripción..." [(ngModel)]="filtro"
+                    (ngModelChange)="filtrarProductos()" />
+            </div>
+        </div>
+        <div class="col-lg-4 d-flex align-items-center">
+            <select class="form-select me-2" aria-label="Filtro" [(ngModel)]="categoriaSeleccionada"
+                (change)="filtrarProductos()">
+                <option value="">Todas las Categorías</option>
+                <option *ngFor="let cat of categoriasUnicas" [value]="cat">{{ cat }}</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Información de resultados -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <p class="text-muted mb-0">
+                    Mostrando <strong>{{ productosFiltrados.length }}</strong> de
+                    <strong>{{ productos.length }}</strong> productos
+                </p>
+                <div class="d-flex align-items-center">
+                    <label class="form-label me-2 mb-0">Productos por página:</label>
+                    <select class="form-paginacion form-select form-select-sm" aria-label="Paginacion"  [(ngModel)]="itemsPerPage"
+                        (change)="onItemsPerPageChange()">
+                        <option value="8">8</option>
+                        <option value="16">16</option>
+                        <option value="24">24</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de productos -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="general">#</th>
+                            <th scope="col" class="prueba">HOLA</th>
+                            <th scope="col" class="nombre">Nombre</th>
+                            <th scope="col" class="codigo">SKU</th>
+                            <th scope="col" class="precio">Precio</th>
+                            <th scope="col" class="stock">Stock</th>
+                            <th scope="col" class="categoria">Categoría</th>
+                            <th scope="col" class="estado">Estado</th>
+                            <th scope="col" class="acciones">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let prod of productosPaginados; let i = index">
+                            <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+                            <td>
+                                <p>Hola</p>
+                                <!--<img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/placeholder.png'"
+                                    alt="{{ prod.nombreProducto }}" class="img-fluid rounded"
+                                    onerror="this.src='assets/images/placeholder.png'">
+                            -->
+                            </td>
+                            <td class="text-truncate" [title]="prod.nombreProducto">
+                                {{ prod.nombreProducto }}
+                            </td>
+                            <td>{{ prod.codigo }}</td>
+                            <td>S/ {{ prod.precio | number:'1.2-2' }}</td>
+                            <td>
+                                <span class="badge" [ngClass]="prod.stock > 10 ? 'bg-success-subtle text-success' : 
+                                                prod.stock > 0 ? 'bg-warning-subtle text-warning' : 
+                                                'bg-danger-subtle text-danger'">
+                                    {{ prod.stock }}
+                                </span>
+                            </td>
+                            <td>{{ prod.nombreCategoria }}</td>
+                            <td>
+                                <span class="badge rounded-pill" [ngClass]="prod.disponible ? 'bg-success' : 'bg-danger'">
+                                    {{ prod.disponible ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-sm btn-icon me-2 text-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editarProductoModal" (click)="editarProducto(prod)"
+                                        title="Editar" [disabled]="!prod.disponible">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-icon text-danger" (click)="eliminarProducto(prod)"
+                                        title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paginación personalizada -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="text-muted">
+            Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} -
+            {{ getEndIndex() }} de {{ productosFiltrados.length }} productos
+        </div>
+
+        <nav aria-label="Paginación de productos">
+            <ul class="pagination mb-0">
+                <!-- Botón Anterior -->
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)"
+                        aria-label="Anterior">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Página 1 -->
+                <li class="page-item" [class.active]="currentPage === 1">
+                    <a class="page-link" href="javascript:void(0)" (click)="changePage(1)">1</a>
+                </li>
+
+                <!-- Puntos suspensivos si hay muchas páginas -->
+                <li class="page-item disabled" *ngIf="totalPages > 5 && currentPage > 3">
+                    <span class="page-link">...</span>
+                </li>
+
+                <!-- Páginas intermedias -->
+                <ng-container *ngFor="let page of getIntermediatePages()">
+                    <li class="page-item" [class.active]="currentPage === page">
+                        <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
+                    </li>
+                </ng-container>
+
+                <!-- Puntos suspensivos si hay muchas páginas -->
+                <li class="page-item disabled" *ngIf="totalPages > 5 && currentPage < totalPages - 2">
+                    <span class="page-link">...</span>
+                </li>
+
+                <!-- Última página (si hay más de 1 página) -->
+                <li class="page-item" *ngIf="totalPages > 1" [class.active]="currentPage === totalPages">
+                    <a class="page-link" href="javascript:void(0)" (click)="changePage(totalPages)">
+                        {{ totalPages }}
+                    </a>
+                </li>
+
+                <!-- Botón Siguiente -->
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)"
+                        aria-label="Siguiente">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Mensaje cuando no hay productos -->
+    <div *ngIf="productosFiltrados.length === 0 && !isLoading" class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h4 class="text-muted mt-3">No se encontraron productos</h4>
+        <p class="text-muted">Intenta ajustar los filtros de búsqueda.</p>
+    </div>
+</div>

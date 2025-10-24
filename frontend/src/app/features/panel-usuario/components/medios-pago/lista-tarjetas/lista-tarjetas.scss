@@ -1,0 +1,214 @@
+// ========================================
+// VARIABLES DE COLOR POR BANCO
+// ========================================
+
+// BCP (Banco de Crédito del Perú)
+$fondo-principal-bcp: #005697; // Azul
+$fondo-secundario-bcp: #f7931e; // Naranja
+
+// Interbank (Banco Internacional del Perú)
+$fondo-principal-interbank: #009955; // Verde principal
+$fondo-secundario-interbank: #00b86a; // Verde secundario
+
+// Banco de la Nación
+$fondo-principal-banco-nacion: #005a9c; // Azul Oscuro
+$fondo-secundario-banco-nacion: #00bfff; // Azul claro
+
+// Scotiabank
+$fondo-principal-scotiabank: #b01c23; // Rojo
+$fondo-secundario-scotiabank: #e0444a; // Rojo claro
+
+// BBVA
+$fondo-principal-bbva: #004481; // Azul Oscuro
+$fondo-secundario-bbva: #2980b9; // Azul medio
+
+// ========================================
+// ESTILOS BASE Y DE POSICIONAMIENTO
+// ========================================
+
+.mini-card-preview {
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: white;
+    max-width: 280px;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    position: relative; // Necesario para pseudo-elementos
+    overflow: hidden; // Ocultar curvas/efectos
+
+    // Estilo base por defecto si no se reconoce el banco/marca
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    // 🎯 ESTILOS DE POSICIONAMIENTO COMÚN (Aplicado a todas las tarjetas)
+    .card-header-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        position: relative; // Mantener sobre los fondos
+        z-index: 1;
+    }
+
+    .bank-logo {
+        font-size: 14px;
+        font-weight: bold;
+        color: white;
+        z-index: 1;
+    }
+
+    .secondary-text {
+        font-size: 9px;
+        opacity: 0.9;
+        font-weight: 300;
+        z-index: 1;
+    }
+
+    .mini-card-number,
+    .mini-card-holder {
+        position: relative;
+        z-index: 1;
+    }
+
+    // Posicionamiento del logo de la marca (VISA/Mastercard)
+    .mini-card-brand-logo {
+        position: absolute;
+        bottom: 10px;
+        right: 15px;
+        padding: 2px 4px;
+        background-color: white;
+        color: #004481; // Color oscuro base para las marcas
+        font-weight: bold;
+        border-radius: 3px;
+        font-size: 10px;
+        z-index: 1;
+    }
+
+
+    // ========================================
+    // ESTILOS DE MARCAS DE TARJETA (SOBRESCRIBEN FONDO BASE)
+    // ========================================
+
+    &.visa {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    }
+
+    &.mastercard,
+    &.master-card {
+        background: linear-gradient(135deg, #eb5757 0%, #000000 100%);
+    }
+
+    &.american-express,
+    &.amex {
+        background: linear-gradient(135deg, #2e8b57 0%, #3cb371 100%);
+    }
+
+    // ========================================
+    // ESTILOS ESPECÍFICOS POR BANCO (SOBRESCRIBEN MARCA Y BASE)
+    // ========================================
+
+    // BANCO DE CRÉDITO DEL PERÚ (BCP)
+    &.bcp {
+        background: $fondo-principal-bcp;
+
+        // Efecto curvo naranja
+        &::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -40%;
+            width: 150px;
+            height: 150px;
+            background: $fondo-secundario-bcp;
+            border-radius: 50%;
+            transform: skewX(-25deg);
+            z-index: 0;
+        }
+
+        // Estilo del logo BCP
+        .bank-logo {
+            &::before {
+                content: '>';
+                color: $fondo-secundario-bcp; // Naranja BCP
+                margin-right: 2px;
+            }
+        }
+    }
+
+    // BANCO INTERNACIONAL DEL PERÚ (INTERBANK)
+    &.interbank {
+        background: $fondo-principal-interbank;
+        background: linear-gradient(135deg, $fondo-principal-interbank 0%, $fondo-secundario-interbank 100%);
+
+        // Estilo de logo Interbank (típicamente tiene el texto naranja)
+        .bank-logo {
+            color: white;
+        }
+    }
+
+    // BANCO DE LA NACIÓN
+    &.banco-nacion {
+        background: $fondo-principal-banco-nacion;
+        background: linear-gradient(135deg, $fondo-principal-banco-nacion 0%, $fondo-secundario-banco-nacion 100%);
+    }
+
+    // SCOTIABANK
+    &.scotiabank {
+        background: $fondo-principal-scotiabank;
+        background: linear-gradient(135deg, $fondo-principal-scotiabank 0%, $fondo-secundario-scotiabank 100%);
+
+        .bank-logo {
+            color: white;
+        }
+    }
+
+    // BBVA
+    &.bbva {
+        background: $fondo-principal-bbva;
+        background: linear-gradient(135deg, $fondo-principal-bbva 0%, $fondo-secundario-bbva 100%);
+    }
+
+    .mini-card-brand {
+        font-weight: bold;
+        font-size: 10px;
+        margin-bottom: 6px;
+        opacity: 0.9;
+    }
+
+    .mini-card-number {
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+    }
+
+    .mini-card-holder {
+        font-size: 10px;
+        opacity: 0.8;
+        text-transform: uppercase;
+    }
+}
+
+.list-group-item {
+    &:hover {
+        background-color: #f8f9fa;
+    }
+}
+
+.card-actions {
+    .btn {
+        margin: 2px;
+    }
+}
+
+@media (max-width: 768px) {
+    .list-group-item {
+        flex-direction: column;
+        align-items: stretch !important;
+
+        .card-actions {
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+    }
+}

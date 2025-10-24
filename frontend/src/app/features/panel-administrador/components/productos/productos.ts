@@ -1,0 +1,242 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { Producto, ProductoDetalle, PageResponse } from '@core/models/productos/producto-backend.model';
+import { ProductoService } from '@core/services/productos/producto.service';
+import { ProductoManagementService } from '@core/services/productos/producto.admin.service';
+import { ModalAgregar } from './modal-agregar/modal-agregar';
+import { ModalEditar } from './modal-editar/modal-editar';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-productos',
+  templateUrl: './productos.html',
+  styleUrl: './productos.scss',
+  standalone: true,
+  imports: [CommonModule, ModalAgregar, FormsModule, ModalEditar]
+})
+export class Productos implements OnInit {
+
+  private managementService = inject(ProductoManagementService);
+  private productService = inject(ProductoService);
+
+  productoAEditar: Producto | null = null;
+  productos: ProductoDetalle[] = [];
+  productosFiltrados: ProductoDetalle[] = [];
+  categoriasUnicas: string[] = [];
+
+  filtro: string = '';
+  categoriaSeleccionada: string = '';
+
+  // Paginación frontend (para los productos filtrados)
+  currentPage: number = 1;
+  itemsPerPage: number = 8;
+  totalPages: number = 1;
+
+  // Estados de carga y error
+  isLoading: boolean = false;
+  errorMessage: string = '';
+  private productsSubscription?: Subscription;
+
+  constructor() { }
+
+  ngOnInit(): void {
+    this.cargarProductos();
+  }
+
+  /**
+   * Limpiar suscripciones al destruir el componente
+   */
+  ngOnDestroy(): void {
+    console.log('🧹 Productos Component: Destruyendo componente y limpiando suscripciones');
+    this.productsSubscription?.unsubscribe();
+  }
+
+  /**
+   * Cargar productos con paginación desde el servicio real
+   */
+  cargarProductos() {
+    console.log('📦 Iniciando carga de productos para administración...');
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.productsSubscription = this.productService.obtenerProductos(
+      0, // Página 0 del backend
+      1000, // Tamaño grande para obtener todos los productos
+      'nombreProducto',
+      'ASC'
+    ).subscribe({
+      next: (response: PageResponse<ProductoDetalle>) => {
+        console.log('✅ Productos recibidos del backend:', response);
+
+        this.productos = response.content;
+        this.productosFiltrados = [...this.productos];
+        this.actualizarCategoriasUnicas();
+        this.calcularTotalPages();
+        this.currentPage = 1;
+        this.isLoading = false;
+
+        console.log('📊 Productos cargados:', this.productos.length);
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar productos:', error);
+        this.errorMessage = 'Error al cargar los productos. Por favor, intenta nuevamente.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  /**
+   * Actualizar lista de categorías únicas para el filtro
+   */
+  private actualizarCategoriasUnicas(): void {
+    const categorias = this.productos
+      .map(p => p.nombreCategoria)
+      .filter((cat, index, array) => cat && array.indexOf(cat) === index)
+      .sort();
+
+    this.categoriasUnicas = categorias;
+    console.log('📂 Categorías únicas encontradas:', this.categoriasUnicas);
+  }
+
+  /**
+   * Obtener productos paginados para la vista actual
+   */
+  get productosPaginados(): ProductoDetalle[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.productosFiltrados.slice(startIndex, endIndex);
+  }
+
+  /**
+   * Calcular total de páginas
+   */
+  private calcularTotalPages(): void {
+    this.totalPages = Math.ceil(this.productosFiltrados.length / this.itemsPerPage);
+    if (this.totalPages === 0) this.totalPages = 1;
+  }
+
+  /**
+   * Obtener índice final para mostrar en la paginación
+   */
+  getEndIndex(): number {
+    const endIndex = this.currentPage * this.itemsPerPage;
+    return endIndex > this.productosFiltrados.length ? this.productosFiltrados.length : endIndex;
+  }
+
+  /**
+   * Obtener páginas intermedias para la paginación
+   */
+  getIntermediatePages(): number[] {
+    const pages = [];
+    const start = Math.max(2, this.currentPage - 1);
+    const end = Math.min(this.totalPages - 1, this.currentPage + 1);
+
+    for (let i = start; i <= end; i++) {
+      if (i > 1 && i < this.totalPages) {
+        pages.push(i);
+      }
+    }
+    return pages;
+  }
+
+  /**
+   * Cambiar página
+   */
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      console.log(`📄 Cambiando a página: ${page}`);
+    }
+  }
+
+  /**
+   * Manejar cambio de items por página
+   */
+  onItemsPerPageChange(): void {
+    this.calcularTotalPages();
+    this.currentPage = 1; // Volver a la primera página
+  }
+
+  /**
+     * Evento emitido desde el modal para agregar un nuevo producto.
+     */
+  onProductoAgregado(nuevoProducto: ProductoDetalle) {
+    console.log('Producto agregado:', nuevoProducto);
+    this.productos.unshift(nuevoProducto); // Agregar al inicio
+    this.filtrarProductos();
+  }
+
+  /**
+  * Filtrado por texto (nombre, SKU o categoría) y por categoría seleccionada.
+  */
+  filtrarProductos() {
+    const texto = (this.filtro || '').toLowerCase().trim();
+    const categoria = (this.categoriaSeleccionada || '').toLowerCase();
+
+    this.productosFiltrados = this.productos.filter(prod => {
+      const nombre = String(prod.nombreProducto || '').toLowerCase();
+      const sku = String(prod.codigo || '').toLowerCase();
+      const cat = String(prod.nombreCategoria || '').toLowerCase();
+      const descripcion = String(prod.nombreProducto || '').toLowerCase();
+      const marca = String(prod.marca || '').toLowerCase();
+
+      const coincideTexto =
+        nombre.includes(texto) ||
+        sku.includes(texto) ||
+        cat.includes(texto) ||
+        descripcion.includes(texto) ||
+        marca.includes(texto);
+
+      const coincideCategoria =
+        categoria === '' || cat === categoria;
+
+      return coincideTexto && coincideCategoria;
+    });
+
+    this.calcularTotalPages();
+    this.currentPage = 1;
+    console.log(`🔍 Filtro aplicado: "${texto}" | Categoría: "${categoria}"`);
+    console.log(`📊 Resultados: ${this.productosFiltrados.length} de ${this.productos.length} productos`);
+  }
+
+  /**
+   * Elimina un producto usando el servicio de administración.
+   */
+  eliminarProducto(prod: ProductoDetalle) {
+    if (confirm(`¿Estás seguro de que quieres eliminar el producto "${prod.nombreProducto}"?`)) {
+      console.log('🗑️ Eliminando producto:', prod.nombreProducto);
+
+      this.productService.eliminarProducto(prod.idProducto).subscribe({
+        next: () => {
+          console.log('✅ Producto eliminado exitosamente');
+          this.productos = this.productos.filter(p => p.idProducto !== prod.idProducto);
+          this.filtrarProductos();
+        },
+        error: (err) => {
+          console.error('❌ Error al eliminar producto:', err);
+          alert('Error al eliminar el producto. Inténtalo de nuevo.');
+        }
+      });
+    }
+  }
+
+  // Selecciona un producto para edición y abre el modal correspondiente.
+  editarProducto(prod: ProductoDetalle) {
+    this.productoAEditar = prod;
+  }
+
+  /**
+   * Actualiza el producto editado dentro de la lista.
+   */
+  onProductoEditado(productoEditado: ProductoDetalle) {
+    console.log('✅ Producto editado:', productoEditado);
+    const index = this.productos.findIndex(p => p.idProducto === productoEditado.idProducto);
+    if (index !== -1) {
+      this.productos[index] = productoEditado;
+      this.filtrarProductos();
+    }
+  }
+
+}

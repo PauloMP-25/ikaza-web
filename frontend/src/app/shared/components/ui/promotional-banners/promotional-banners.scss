@@ -1,0 +1,243 @@
+// Sección de Banners Promocionales
+.promotional-banners {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+// Wrapper del Banner (contenedor principal)
+.banner-wrapper {
+    position: relative;
+    width: 100%;
+    height: 450px;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+// Container de la Imagen (ocupa casi todo el ancho)
+.banner-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 75%; // Imagen ocupa 75% del ancho
+    height: 100%;
+    overflow: hidden;
+
+    .banner-main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+}
+
+// Overlay de Contenido (sidebar derecho)
+.banner-content-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 25%; // Contenido ocupa 25% del ancho
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
+    backdrop-filter: 8px;
+    -webkit-backdrop-filter:blur(8px);
+}
+
+// Wrapper del Texto
+.banner-text-wrapper {
+    text-align: center;
+    width: 100%;
+}
+
+// Título del Banner
+.banner-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+// Descripción del Banner
+.banner-description {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    opacity: 0.95;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+// Botón del Banner
+.banner-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid white;
+    background-color: white;
+    color: #212529;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    i {
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        background-color: rgba(255, 255, 255, 0.95);
+
+        i {
+            transform: translateX(3px);
+        }
+    }
+
+    &:active {
+        transform: translateY(-1px);
+    }
+}
+
+// Efecto Hover en la Imagen
+.carousel-item:hover {
+    .banner-main-image {
+        transform: scale(1.05);
+    }
+}
+
+// Controles del Carousel
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+// Indicadores del Carousel
+.carousel-indicators {
+    button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid white;
+        opacity: 0.6;
+        transition: all 0.3s ease;
+
+        &.active {
+            opacity: 1;
+            width: 30px;
+            border-radius: 6px;
+        }
+    }
+}
+
+// RESPONSIVE: Tablet
+@media (max-width: 992px) {
+    .banner-wrapper {
+        height: 350px;
+    }
+
+    .banner-image-container {
+        width: 70%; // Imagen ocupa 70%
+    }
+
+    .banner-content-overlay {
+        width: 30%; // Contenido ocupa 30%
+        padding: 1.5rem 1rem;
+    }
+
+    .banner-title {
+        font-size: 1.5rem;
+    }
+
+    .banner-description {
+        font-size: 0.9rem;
+    }
+}
+
+// RESPONSIVE: Móvil
+@media (max-width: 768px) {
+    .banner-wrapper {
+        height: 450px; // Mayor altura para layout vertical
+    }
+
+    .banner-image-container {
+        width: 100%; // Imagen ocupa todo el ancho
+        height: 60%; // Solo 60% de la altura
+    }
+
+    .banner-content-overlay {
+        width: 100%; // Contenido ocupa todo el ancho
+        height: 40%; // 40% de la altura (abajo)
+        top: auto;
+        bottom: 0;
+        right: auto;
+        left: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.4));
+        padding: 1.5rem;
+    }
+
+    .banner-text-wrapper {
+        text-align: center;
+    }
+
+    .banner-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .banner-description {
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .banner-btn {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+// RESPONSIVE: Móvil Pequeño
+@media (max-width: 576px) {
+    .banner-wrapper {
+        height: 400px;
+    }
+
+    .banner-title {
+        font-size: 1.1rem;
+    }
+
+    .banner-description {
+        font-size: 0.8rem;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 8%;
+    }
+}
+
+// Utilidad para ocultar visualmente
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}

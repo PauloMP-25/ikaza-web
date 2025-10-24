@@ -1,0 +1,68 @@
+<div class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📍 Selecciona tu ubicación</h5>
+                <button type="button" class="btn-close" (click)="cerrar()" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Búsqueda -->
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Busca tu dirección..."
+                            [(ngModel)]="searchQuery" (input)="onSearchInput()" (focus)="onSearchFocus()" #searchInput>
+                        <button class="btn btn-outline-secondary" type="button" aria-label="Buscar">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+
+                    <!-- Resultados de búsqueda -->
+                    <div *ngIf="showSearchResults" class="search-results dropdown-menu show w-100 mt-1">
+                        <div *ngFor="let place of placePredictions" class="dropdown-item cursor-pointer"
+                            (click)="selectPlace(place)">
+                            <i class="bi bi-geo-alt-fill me-2"></i>
+                            <small>{{ place.description }}</small>
+                        </div>
+                        <div *ngIf="placePredictions.length === 0" class="dropdown-item text-muted">
+                            No se encontraron resultados
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mapa -->
+                <div #mapContainer class="map-container"></div>
+
+                <!-- Información de dirección seleccionada -->
+                <div *ngIf="selectedAddress" class="alert alert-info mt-3">
+                    <h6 class="fw-bold mb-2">📍 Dirección seleccionada:</h6>
+                    <p class="mb-1"><strong>Dirección:</strong> {{ selectedAddress.direccionCompleta }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small><strong>Distrito:</strong> {{ selectedAddress.distrito || 'N/A' }}</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small><strong>Provincia:</strong> {{ selectedAddress.provincia || 'N/A' }}</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small><strong>Región:</strong> {{ selectedAddress.region || 'N/A' }}</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small><strong>País:</strong> {{ selectedAddress.pais || 'N/A' }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrar()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" [disabled]="!selectedAddress"
+                    (click)="confirmarDireccion()">
+                    ✓ Confirmar Dirección
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

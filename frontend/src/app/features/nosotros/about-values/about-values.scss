@@ -1,0 +1,22 @@
+.about-values {
+    background-color: #f9f9f9;
+
+    h2 {
+        font-size: 2rem;
+        color: #28a745;
+    }
+
+    .value-card {
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        i {
+            color: #28a745;
+        }
+    }
+}

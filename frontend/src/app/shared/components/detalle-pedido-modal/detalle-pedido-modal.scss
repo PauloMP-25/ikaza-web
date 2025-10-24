@@ -1,0 +1,105 @@
+/* ====================================
+    1. ESTILOS BASE DEL MODAL (Overlay)
+   ==================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Fondo oscuro semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    max-width: 900px;
+    /* Tamaño máximo para centrar en pantalla grande */
+    width: 90%;
+    /* Permitir que la boleta interna maneje su ancho para centrarse */
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+    /* Asegurar que esté sobre el contenido */
+}
+
+.message-error {
+    color: red;
+}
+
+/* ====================================
+   2. ESTILOS DEL CONTENIDO (Invoice Box)
+   ==================================== */
+
+.invoice-box {
+    /* Estilos del antiguo container de la boleta */
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    /* El modal-content ya limita el ancho */
+    margin: 0;
+    /* No necesita centrado horizontal dentro del modal-content */
+    position: relative;
+}
+
+.logo-empresa {
+    height: 30px;
+    margin-right: 8px;
+}
+
+.logo-text {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #38761d;
+}
+
+.header-box {
+    background-color: #e6ffe6;
+    /* Fondo verde claro para el bloque RUC */
+    border: 1px solid #cceeff;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.info-clientes {
+    font-size: 0.85rem;
+}
+
+/* Tablas */
+.table-sm {
+    font-size: 0.85rem;
+}
+
+/* Estilos para la tabla de totales interna */
+.total-table {
+    width: auto;
+    float: right;
+    font-size: 0.75rem;
+}
+
+.total-table td {
+    padding: 0.2rem 0.3rem;
+}
+
+.info-totales {
+    font-size: 0.85rem;
+}

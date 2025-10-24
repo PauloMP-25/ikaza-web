@@ -1,0 +1,72 @@
+<div class="card h-100 shadow-sm producto-card">
+    <!-- Imagen del producto - Click abre MODAL (vista rápida) -->
+    <div class="position-relative">
+        <img [src]="product.imagenPrincipal || 'assets/images/no-image.png'" [alt]="product.nombreProducto"
+            class="card-img-top producto-imagen" loading="lazy" (click)="onQuickView()" title="Click para vista rápida">
+
+        <!-- Badge de stock -->
+        <span [class]="obtenerEstadoStock(product.stock).clase" class="position-absolute top-0 end-0 m-2">
+            {{ obtenerEstadoStock(product.stock).texto }}
+        </span>
+    </div>
+
+    <div class="card-body d-flex flex-column">
+        <!-- Categoría -->
+        <p class="text-muted small mb-1">
+            <i class="bi bi-tag"></i> {{ product.nombreCategoria }}
+        </p>
+
+        <!-- Nombre del producto -->
+        <h5 class="card-title mb-2">
+            {{ product.nombreProducto }}
+        </h5>
+
+        <!-- Descripción -->
+        <p class="card-text text-muted small mb-2">
+            {{ product.descripcionProducto.substring(0, 60) }}
+            {{ product.descripcionProducto && product.descripcionProducto.length > 60 ? '...' : '' }}
+        </p>
+
+        <!-- Marca (si existe) -->
+        <p class="text-muted small mb-2" *ngIf="product.marca">
+            <i class="bi bi-shield-check"></i> {{ product.marca }}
+        </p>
+
+        <!-- Rating de Estrellas -->
+        <div class="rating-container mb-2" *ngIf="product.calificacionPromedio > 0">
+            <div class="stars">
+                <i class="bi" [ngClass]="getStarClass(1)"></i>
+                <i class="bi" [ngClass]="getStarClass(2)"></i>
+                <i class="bi" [ngClass]="getStarClass(3)"></i>
+                <i class="bi" [ngClass]="getStarClass(4)"></i>
+                <i class="bi" [ngClass]="getStarClass(5)"></i>
+            </div>
+            <span class="rating-value">({{ product.calificacionPromedio.toFixed(1) }})</span>
+        </div>
+
+        <!-- Precio y acciones -->
+        <div class="mt-auto">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="h5 mb-0 text-primary fw-bold">
+                    {{ formatearPrecio(product.precio) }}
+                </span>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex gap-2">
+                <!-- Botón Carrito -->
+                <button class="btn btn-cart bg-c2 border-0" type="button" (click)="onAddToCart()"
+                    [disabled]="!product.disponible || product.stock === 0" title="Agregar al carrito">
+                    <i class="bi bi-cart-plus"></i>
+                </button>
+
+                <!-- Botón Ver Detalles - Navega a PÁGINA completa -->
+                <button type="button" class="btn btn-details flex-grow-1" (click)="onViewDetails()"
+                    title="Ver detalles completos">
+                    <i class="bi bi-eye me-1"></i>
+                    Ver Detalles
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

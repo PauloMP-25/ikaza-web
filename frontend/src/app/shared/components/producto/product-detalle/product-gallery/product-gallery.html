@@ -1,0 +1,13 @@
+<div class="product-images">
+    <!-- Imagen principal -->
+    <div class="main-image mb-3">
+        <img [src]="selectedImage || images[0]" [alt]="productName" class="img-fluid" aria-label="{{productName}}">
+    </div>
+    <!-- Galería de miniaturas -->
+    <div class="thumbnails d-flex gap-2" *ngIf="images.length > 1">
+        <div class="thumbnail" *ngFor="let img of images">
+            <img [src]="img" [alt]="productName" class=" cursor-pointer" aria-label="{{productName}}"
+                [class.active]="selectedImage === img" (click)="selectImage(img)">
+        </div>
+    </div>
+</div>

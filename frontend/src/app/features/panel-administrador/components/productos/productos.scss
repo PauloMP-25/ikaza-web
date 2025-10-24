@@ -1,0 +1,57 @@
+.form-paginacion {
+    width: auto;
+}
+
+thead {
+    th {
+        .general {
+            width: 5%;
+        }
+
+        .prueba {
+            width: 8%;
+        }
+
+        .nombre {
+            width: 25%;
+        }
+
+        .codigo {
+            width: 10%;
+        }
+
+        .precio {
+            width: 10%;
+        }
+
+        .stock {
+            width: 8%;
+        }
+
+        .categoria {
+            width: 12%;
+        }
+
+        .estado {
+            width: 10%;
+        }
+
+        .acciones {
+            width: 8%;
+        }
+    }
+}
+
+tbody {
+    td {
+        .text-truncate {
+            max-width: 200px;
+        }
+    }
+
+    img {
+        width: 35px;
+        height: 35px;
+        object-fit: cover;
+    }
+}

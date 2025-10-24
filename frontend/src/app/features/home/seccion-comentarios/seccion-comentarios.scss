@@ -1,0 +1,42 @@
+/* comments-section.component.css */
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+}
+
+.rating-summary {
+    text-align: right;
+}
+
+.border-success-subtle {
+    border-color: rgba(40, 167, 69, 0.3) !important;
+}
+
+.btn-link:hover {
+    text-decoration: none !important;
+}
+
+.btn-link.text-primary:hover {
+    color: #0d6efd !important;
+}
+
+.btn-link.text-danger:hover {
+    color: #dc3545 !important;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 1;
+}
+
+@media (max-width: 768px) {
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .rating-summary {
+        text-align: left;
+        margin-top: 10px;
+    }
+}

@@ -1,0 +1,65 @@
+<section class="promotional-banners mb-5" *ngIf="activeBanners.length > 0">
+    <div class="container">
+        <div id="promotionalCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+
+            <!-- Indicadores del Carousel -->
+            <div class="carousel-indicators">
+                <button *ngFor="let banner of activeBanners; let i = index" type="button"
+                    data-bs-target="#promotionalCarousel" [attr.data-bs-slide-to]="i" [class.active]="i === 0"
+                    [attr.aria-current]="i === 0 ? 'true' : null"
+                    [attr.aria-label]="'Banner ' + (i + 1) + ' de ' + activeBanners.length"
+                    aria-label="Boton-Promocional"
+                    >
+                </button>
+            </div>
+
+            <!-- Contenido del Carousel -->
+            <div class="carousel-inner">
+                <div *ngFor="let banner of activeBanners; let i = index" class="carousel-item" [class.active]="i === 0">
+
+                    <!-- Banner Container con Imagen de Fondo -->
+                    <div class="banner-wrapper" [style.background-color]="banner.backgroundColor">
+
+                        <!-- Imagen que ocupa casi todo el ancho -->
+                        <div class="banner-image-container">
+                            <img [src]="banner.imageUrl" [alt]="banner.title" class="banner-main-image" loading="lazy"
+                            aria-label="{{banner.title}}">
+                        </div>
+
+                        <!-- Contenido de texto (sidebar) -->
+                        <div class="banner-content-overlay" [style.color]="banner.textColor">
+                            <div class="banner-text-wrapper">
+                                <h3 class="banner-title">{{ banner.title }}</h3>
+                                <p class="banner-description">{{ banner.description }}</p>
+
+                                <!-- Botón con texto dinámico -->
+                                <button class="btn banner-btn" (click)="onBannerClick(banner)"
+                                    [attr.aria-label]="banner.buttonText + ' - ' + banner.title">
+                                    {{ banner.buttonText }}
+                                    <i class="bi" [ngClass]="{
+                                         'bi-arrow-up-right': banner.linkType === 'external',
+                                         'bi-arrow-right': banner.linkType === 'internal',
+                                         'bi-chevron-down': banner.linkType === 'section'
+                                       }"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controles del Carousel -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#promotionalCarousel"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+
+            <button class="carousel-control-next" type="button" data-bs-target="#promotionalCarousel"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </div>
+</section>

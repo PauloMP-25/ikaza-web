@@ -1,0 +1,21 @@
+.cart-item-image {
+    border: 1px solid #dee2e6;
+}
+
+.offcanvas-body {
+    max-height: 100%;
+}
+
+.list-group-item {
+    transition: background-color 0.2s ease;
+
+    img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+    }
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}

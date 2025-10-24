@@ -1,0 +1,41 @@
+/* cheapest-products.component.css */
+.product-image {
+    height: 250px;
+    object-fit: cover;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+    span{
+        z-index: 1;
+    }
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-precio {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+
+.formulario-filtro {
+    width: 280px;
+}
+
+@media (max-width: 768px) {
+    .product-image {
+        height: 200px;
+    }
+}

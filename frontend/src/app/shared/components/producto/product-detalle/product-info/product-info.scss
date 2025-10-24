@@ -1,0 +1,57 @@
+// Información del producto
+.product-info {
+    .rating {
+        .stars {
+            font-size: 1.2rem;
+        }
+    }
+
+    .price {
+        border-top: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        padding: 1rem 0;
+    }
+
+    .description {
+        p {
+            line-height: 1.8;
+        }
+    }
+
+    .stock {
+        .badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+    }
+
+    .actions {
+        input[type="number"] {
+
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            appearance: textfield;
+        }
+    }
+
+    .info-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        i {
+            display: block;
+        }
+
+        h6 {
+            margin-bottom: 0.5rem;
+        }
+    }
+}

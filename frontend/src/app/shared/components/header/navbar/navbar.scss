@@ -1,0 +1,52 @@
+// Navbar General
+nav {
+    background-color: #112288 !important;
+    padding: 0.5rem 1rem;
+
+    .navbar-brand {
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    // Búsqueda en desktop
+    .form-control {
+        width: 250px;
+        border-radius: 0.375rem 0 0 0.375rem;
+    }
+
+    .btn-outline-light {
+        border-radius: 0 0.375rem 0.375rem 0;
+    }
+
+    // Hamburguesa en grupo derecho (móvil)
+    .navbar-toggler {
+        border: none;  // Sin borde por default
+        padding: 0.25rem 0.5rem;  // Compacta
+
+        &:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);  // Focus visible
+        }
+    }
+
+    // Grupo derecho (ms-auto: auth/carrito/hamburguesa)
+    .d-flex.ms-auto {
+        gap: 0.5rem;  // Espacio entre elementos del grupo
+
+        // En móvil: Asegura que se pegue a la derecha
+        @media (max-width: 991.98px) {
+            margin-left: auto !important;  // Refuerza ms-auto
+        }
+    }
+
+    // Centro (mx-auto: búsqueda + links)
+    .mx-auto {
+        // Si necesitas ajustar ancho máximo del centro
+        max-width: 60%;  // Opcional: Limita si links son muy anchos
+        gap: 1rem;  // Espacio entre búsqueda y links
+
+        // Oculta en móvil (ya por HTML, pero refuerza)
+        @media (max-width: 991.98px) {
+            display: none !important;
+        }
+    }
+}

@@ -1,0 +1,112 @@
+<!-- Selector de tipo de tarjeta visual -->
+<div class="mb-4">
+    <label class="form-label fw-bold">Tipo de tarjeta</label>
+    <div class="card-type-selector">
+        <div class="card-type-option" [class.active]="selectedCardType === 'visa'" (click)="selectCardType('visa')">
+            <div class="card-type-preview visa">
+                <span>VISA</span>
+            </div>
+        </div>
+        <div class="card-type-option" [class.active]="selectedCardType === 'mastercard'"
+            (click)="selectCardType('mastercard')">
+            <div class="card-type-preview mastercard">
+                <span>MasterCard</span>
+            </div>
+        </div>
+        <div class="card-type-option" [class.active]="selectedCardType === 'amex'" (click)="selectCardType('amex')">
+            <div class="card-type-preview amex">
+                <span>AMEX</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview de la tarjeta interactiva -->
+<div class="card-preview-container mb-4">
+    <div class="credit-card" [ngClass]="'card-' + selectedCardType" [class.flipped]="isCardFlipped">
+
+        <!-- Frente de la tarjeta -->
+        <div class="card-front">
+            <div class="card-brand-logo">
+                <span class="brand-text">{{ getBrandName(selectedCardType) }}</span>
+            </div>
+
+            <div class="card-chip"></div>
+
+            <div class="card-number">
+                {{ formatCardNumber(cardForm.get('numero')?.value || '') }}
+            </div>
+
+            <div class="card-info-row">
+                <div class="card-holder">
+                    <label>TITULAR</label>
+                    <div class="value">{{ (cardForm.get('titular')?.value || 'NOMBRE APELLIDO').toUpperCase() }}
+                    </div>
+                </div>
+                <div class="card-expiry">
+                    <label>VÁLIDA HASTA</label>
+                    <div class="value">{{ formatExpiry(cardForm.get('expiracion')?.value || '') }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reverso de la tarjeta -->
+        <div class="card-back">
+            <div class="card-stripe"></div>
+            <div class="card-cvv-section">
+                <label>CVV</label>
+                <div class="cvv-box">{{ cardForm.get('cvv')?.value || '***' }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario de datos -->
+<form [formGroup]="cardForm" (ngSubmit)="validarYGuardarTarjeta()">
+    <div class="row">
+        <div class="col-6 mb-3">
+            <label for="alias" class="form-label fw-bold">Alias</label>
+            <input type="text" class="form-control" id="alias" formControlName="alias" placeholder="Tarjeta Banco">
+        </div>
+        <div class="col-6 mb-3">
+            <label for="cardNumber" class="form-label fw-bold">Número de tarjeta</label>
+            <input type="text" class="form-control" id="cardNumber" formControlName="numero"
+                placeholder="1234 5678 9012 3456" maxlength="19" (input)="formatCardNumberInput($event)"
+                (focus)="isCardFlipped = false">
+            <div class="form-text">Ingresa el número completo de tu tarjeta</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <label for="cardHolder" class="form-label fw-bold">Titular de la tarjeta</label>
+            <input type="text" class="form-control" id="cardHolder" formControlName="titular"
+                placeholder="Nombre como aparece en la tarjeta" (focus)="isCardFlipped = false">
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="cardExpiry" class="form-label fw-bold">Fecha de expiración</label>
+            <input type="text" class="form-control" id="cardExpiry" formControlName="expiracion" placeholder="MM/YY"
+                maxlength="5" (input)="formatExpiryInput($event)" (focus)="isCardFlipped = false">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="cardCVV" class="form-label fw-bold">CVV</label>
+            <input type="text" class="form-control" id="cardCVV" formControlName="cvv" placeholder="123" maxlength="4"
+                (focus)="isCardFlipped = true" (blur)="isCardFlipped = false">
+            <div class="form-text">3 dígitos en el reverso (4 para AMEX)</div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" [disabled]="isLoading || cardForm.invalid" class="btn btn-primary">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isLoading ? 'Validando...' : 'Validar y agregar tarjeta' }}
+        </button>
+
+        <button type="button" (click)="cancelar()" class="btn btn-secondary">
+            Cancelar
+        </button>
+    </div>
+</form>

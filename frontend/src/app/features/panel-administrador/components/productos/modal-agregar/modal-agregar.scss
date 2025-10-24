@@ -1,0 +1,81 @@
+.modal-body {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+
+
+.imagen-dropzone {
+  width: 100%;
+  height: 220px; // tamaño fijo
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border: 2px dashed #ccc;
+  border-radius: 0.75rem;
+  background-color: #f8f9fa;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #008C8C;
+    background-color: #f1fdfd;
+  }
+
+  &.dragover {
+    background-color: #e9f5ff;
+    border-color: #0d6efd;
+  }
+
+  .preview-imagen {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .contenido-dropzone {
+    z-index: 2;
+    text-align: center;
+    color: #6c757d;
+
+    i {
+      font-size: 2rem;
+      color: #6c757d;
+    }
+
+    strong {
+      color: #008C8C;
+    }
+  }
+
+  // Botón de eliminar imagen
+  .btn-danger {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #dc3545;
+      transform: scale(1.05);
+    }
+
+    i {
+      font-size: 0.9rem;
+    }
+  }
+}
