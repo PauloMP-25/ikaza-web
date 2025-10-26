@@ -8,11 +8,11 @@ import { PedidoDetalleResponse } from '@core/models/pedido/pedido.model';
 import { FormatoUltimosDigitos } from '@shared/pipes/formatoUltimosDigitos.pipe';
 import { TarjetaService } from '@core/services/tarjetas/tarjeta.service';
 import { PedidoService } from '@core/services/pedidos/pedido.service';
-import { UsuarioBackendService } from '@core/services/usuarios/usuario-backend.service';
+import { ClienteService } from '@core/services/clientes/cliente.service';
 import { of } from 'rxjs'; // Necesario para of()
 // Servicios y Modelos que debes importar (verifica tus paths)
 import { AuthService } from '@core/services/auth/auth';
-import { UsuarioBackendResponse } from '@core/models/usuarios/usuario-model'; // Asegúrate que esta ruta es correcta
+import { ClienteResponse } from '@core/models/usuarios/usuario-model'; // Asegúrate que esta ruta es correcta
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -29,14 +29,14 @@ export class DetallePedidoModal implements OnChanges {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/api/usuarios`;
   private pedidoService = inject(PedidoService); // Necesario para obtener el detalle del pedido
-  private usuarioBackendService = inject(UsuarioBackendService);
+  private clienteService = inject(ClienteService);
 
   @Input() detalle: PedidoDetalleResponse | null = null;
   @Input() showModal: boolean = false;
   @Output() closeModal = new EventEmitter<void>();
 
   //Estados
-  datosCliente: UsuarioBackendResponse | null = null;
+  datosCliente: ClienteResponse | null = null;
   isLoadingClientData: boolean = false;
   pedidoId: number | string | null = null;
 
@@ -75,7 +75,7 @@ export class DetallePedidoModal implements OnChanges {
     const firebaseUid = currentUser.uid;
 
     // Llamada estándar. Si falla con 403, el token no es el problema, sino el backend.
-    this.usuarioBackendService.obtenerPerfil(firebaseUid).pipe(
+    this.clienteService.obtenerPerfil(firebaseUid).pipe(
       tap(perfil => {
         this.datosCliente = perfil;
       }),

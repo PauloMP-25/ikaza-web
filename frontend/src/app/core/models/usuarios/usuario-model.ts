@@ -1,4 +1,4 @@
-export interface ActualizarUsuarioRequest {
+export interface ActualizarClienteRequest {
     nombres?: string;
     apellidos?: string;
     tipoDocumento?: string;
@@ -7,9 +7,10 @@ export interface ActualizarUsuarioRequest {
     prefijoTelefono?: string;
     telefono?: string;
     telefonoVerificado?: boolean;
+    genero: String
 }
 
-export interface UsuarioBackendResponse {
+export interface ClienteResponse {
     idUsuario: number;
     firebaseUid: string;
     email: string;
@@ -30,6 +31,7 @@ export interface UsuarioBackendResponse {
     ultimoAcceso?: string;
     fechaActualizacion?: string;
     datosCompletos: boolean;
+    genero: String;
 }
 
 export interface MessageResponse {

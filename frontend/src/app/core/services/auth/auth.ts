@@ -2,22 +2,21 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { from, Observable } from 'rxjs';
-import { switchMap, tap, finalize, catchError, map, filter, take } from 'rxjs/operators';
-import { User } from 'firebase/auth';
-import { Auth, user } from '@angular/fire/auth';
+import { from, Observable, throwError } from 'rxjs';
+import { switchMap, tap, finalize, catchError, map } from 'rxjs/operators';
+import { Auth, signInWithCustomToken, updateProfile, sendEmailVerification, User } from '@angular/fire/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 import { environment } from 'src/environments/environment';
-
 // Servicios existentes
-import { UserDataService } from '../firebase/user-data.service';
 import { AuthStateService } from './auth.state';
 import { FirebaseAuthService } from '../firebase/firebase-auth.service';
-import { ProfileService } from '../usuarios/servicio-perfil.service';
-import { PasswordService } from './service-password';
+
+// Importar ClienteService para el paso 2 (Creación de perfil)
+import { ClienteService } from '../clientes/cliente.service';
+import { MessageResponse } from '@core/models/usuarios/usuario-model';
 
 // Modelos
 import { UserData } from '@core/models/auth-firebase/user-data';
-import { ProfileUpdateData } from '@core/models/auth-firebase/profile-update-data';
 import { LoginCredentials } from '@core/models/auth-firebase/login-credentials';
 import { RegisterData } from '@core/models/auth-firebase/register-data';
 import { AuthResponse, RegistroBackendRequest } from '@core/models/auth-firebase/auth-request-backend';
@@ -29,16 +28,14 @@ export class AuthService {
 
   private http = inject(HttpClient);
   private firebaseAuth = inject(FirebaseAuthService);
-  private userDataService = inject(UserDataService);
   private authState = inject(AuthStateService);
   private router = inject(Router);
   private auth = inject(Auth);
-  private profileService = inject(ProfileService);
-  private passwordService = inject(PasswordService);
-
+  private cliente = inject(ClienteService);
   private apiUrl = `${environment.apiUrl}/api/auth`;
   private redirectUrl: string | null = null;
-
+  // 🆕 Propiedad para almacenar el resultado de la confirmación SMS
+  private confirmationResult: ConfirmationResult | null = null;
   // Exponer propiedades del estado
   currentUser = this.authState.currentUser;
   isLoading = this.authState.isLoading;
@@ -62,50 +59,51 @@ export class AuthService {
   }
 
   /**
-  * REGISTRO con backend usa POST /api/auth/registro
-  */
+    * REGISTRO con backend (Flujo de dos pasos)
+    * 1. Backend crea usuario en Firebase y devuelve Custom Token.
+    * 2. Frontend usa Custom Token para loguear en Firebase.
+    * 3. Frontend llama al ClienteService para crear la entidad Cliente (perfil inicial).
+    */
   register(registerData: RegisterData): Observable<string> {
     this.authState.isLoading.set(true);
     this.authState.clearAuthError();
 
-    // Preparar datos para el backend
-    const displayName = registerData.username || registerData.email.split('@')[0];
-    const nameParts = displayName.split(' ');
-
     const backendRequest: RegistroBackendRequest = {
       email: registerData.email,
       password: registerData.password,
-      nombres: nameParts[0] || displayName,
-      apellidos: nameParts.slice(1).join(' ') || ''
     };
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/registro`, backendRequest).pipe(
-      tap((response) => {
-        console.log('Usuario registrado en backend:', response);
+      switchMap((authResponse: AuthResponse) => {
+        console.log('✅ Registro Backend exitoso. Custom Token recibido.');
 
-        // Guardar token en localStorage
-        localStorage.setItem('authToken', response.token);
+        // 1. Usar Custom Token para iniciar sesión en Firebase Auth
+        return from(signInWithCustomToken(this.auth, authResponse.token)).pipe(
+          switchMap((userCredential) => {
+            const user = userCredential.user; // Obtener el objeto User
+            const uid = user.uid;
 
-        // Crear UserData desde la respuesta del backend
-        const userData: UserData = {
-          uid: response.firebaseUid,
-          email: response.email,
-          username: response.nombreCompleto,
-          displayName: response.nombreCompleto,
-          isAdmin: response.isAdmin,
-          emailVerified: false, // El usuario debe verificar su email
-          createdAt: new Date(response.fechaCreacion)
-        };
-
-        // Actualizar estado
-        this.authState.currentUser.set(userData);
+            // 🚨 CORRECCIÓN: Llamar a la función updateProfile(user, { displayName: ... })
+            return from(updateProfile(user, { // <-- AQUÍ ESTÁ EL CAMBIO
+              displayName: registerData.username
+            })).pipe(
+              switchMap(() => {
+                // 2. Crear el registro Cliente de forma desacoplada
+                return this.crearPerfilInicial(uid).pipe(
+                  map(() => authResponse.mensaje)
+                );
+              })
+            );
+          })
+        );
       }),
-      map((response) => response.mensaje),
+      // Manejo de errores simplificado
       catchError((error) => {
-        console.error('❌ Error en registro:', error);
         const errorMessage = error.error?.mensaje || error.message || 'Error al registrar usuario';
         this.authState.authError.set(errorMessage);
-        throw new Error(errorMessage);
+        // Asegurar logout de Firebase si el registro falló en la BD (aunque el CustomToken debería fallar)
+        this.firebaseAuth.logout().subscribe();
+        return throwError(() => new Error(errorMessage));
       }),
       finalize(() => {
         this.authState.isLoading.set(false);
@@ -114,57 +112,29 @@ export class AuthService {
   }
 
   /**
-  * 🆕 LOGIN mejorado con mejor manejo de errores
-  */
+    * LOGIN con email/password (Flujo de verificación)
+    */
   login(credentials: LoginCredentials): Observable<UserData> {
     this.authState.isLoading.set(true);
     this.authState.clearAuthError();
 
-    console.log('🔐 Iniciando proceso de login...');
-
     return this.firebaseAuth.loginWithEmail(credentials).pipe(
       switchMap((result) => {
-        console.log('✅ Login Firebase exitoso:', result.user.uid);
-
-        if (!result.user.emailVerified) {
-          console.warn('⚠️ Email no verificado');
-          throw new Error('Por favor verifica tu correo electrónico antes de continuar');
-        }
-
-        // Obtener token de Firebase
+        // Obtener ID Token de Firebase
         return from(result.user.getIdToken()).pipe(
-          switchMap((idToken) => {
-            console.log('🔑 Token Firebase obtenido');
-            // Verificar token en backend
-            return this.verificarTokenEnBackend(idToken);
-          })
+          // 🚨 CAMBIO CRÍTICO 4: Llamar al nuevo endpoint /login-token
+          switchMap((idToken) => this.verificarLoginEnBackend(idToken))
         );
       }),
-      switchMap((authResponse) => {
-        console.log('✅ Backend verification exitosa. Esperando sincronización de Firebase...');
-
-        // CORRECCIÓN CLAVE: Usar la función 'user(this.auth)' para obtener el Observable del estado
-        return user(this.auth).pipe(
-          filter((user): user is User => user !== null), // Filtra hasta que user NO sea null
-          take(1), // Toma el primer valor válido y completa
-          switchMap((firebaseUser) => {
-            console.log('✅ Firebase sincronizado. Obteniendo datos de Firestore...');
-            // Ahora firebaseUser es definitivamente del tipo User
-            return this.userDataService.getUserData(firebaseUser).pipe(
-              map((firebaseUserData) => {
-                const userData: UserData = {
-                  ...firebaseUserData,
-                  isAdmin: authResponse.isAdmin,
-                };
-                console.log('👤 Datos de usuario combinados:', userData);
-                return userData;
-              })
-            );
-          })
-        );
+      // 🚨 CAMBIO CRÍTICO 5: Eliminar el flujo de sincronización de Firestore (ya no se usa)
+      // Mantener solo la redirección
+      map(() => {
+        // Forzar la recarga de los datos de AuthStateService para que cargue el estado de seguridad
+        this.authState.refreshCurrentUser().subscribe();
+        // Asumimos que AuthStateService eventualmente obtiene la información de rol/isAdmin
+        return this.authState.getCurrentUser() as UserData;
       }),
       tap((userData) => {
-        console.log('🎯 Redirigiendo usuario por rol...');
         this.redirectUserByRole(userData);
       }),
       catchError((error) => {
@@ -172,9 +142,7 @@ export class AuthService {
         const errorMessage = error.message || 'Error al iniciar sesión';
         this.authState.authError.set(errorMessage);
 
-        // Hacer logout de Firebase si falla el login
         this.firebaseAuth.logout().subscribe();
-
         throw error;
       }),
       finalize(() => {
@@ -186,40 +154,22 @@ export class AuthService {
 
 
   /**
-   * 🆕 LOGIN con Google refactorizado
-   */
+     * 🆕 LOGIN con Google (Flujo de verificación)
+     */
   loginWithGoogle(): Observable<UserData> {
     this.authState.isLoading.set(true);
     this.authState.clearAuthError();
 
     return this.firebaseAuth.loginWithGoogle().pipe(
       switchMap((result) => {
-        // Obtener token de Firebase
         return from(result.user.getIdToken()).pipe(
-          switchMap((idToken) => {
-            // Verificar/sincronizar con backend
-            return this.verificarTokenEnBackend(idToken);
-          }),
-          switchMap((authResponse) => {
-            // CORRECCIÓN 3: Replicar el mismo patrón seguro para Google login
-            return user(this.auth).pipe( // <--- CORRECCIÓN CLAVE
-              filter((user): user is User => user !== null),
-              take(1),
-              switchMap((firebaseUser) => {
-                // Obtener datos completos de Firestore
-                return this.userDataService.getUserData(firebaseUser).pipe(
-                  map((firebaseUserData) => {
-                    const userData: UserData = {
-                      ...firebaseUserData,
-                      isAdmin: authResponse.isAdmin
-                    };
-                    return userData;
-                  })
-                );
-              })
-            );
-          })
+          switchMap((idToken) => this.verificarLoginEnBackend(idToken))
         );
+      }),
+      // 🚨 CAMBIO CRÍTICO 6: Usar el mismo patrón que Login Email/Pass
+      map(() => {
+        this.authState.refreshCurrentUser().subscribe();
+        return this.authState.getCurrentUser() as UserData;
       }),
       tap((userData) => {
         this.redirectUserByRole(userData);
@@ -237,33 +187,42 @@ export class AuthService {
   }
 
   /**
-   * 🆕 Verificar token en backend
-   * POST /api/auth/verificar-token
-   */
-  private verificarTokenEnBackend(idToken: string): Observable<AuthResponse> {
-    console.log('🔐 Verificando token en backend...');
+     * 🆕 Llamada al nuevo endpoint de Login/Sincronización
+     * POST /api/auth/login-token
+     */
+  private verificarLoginEnBackend(idToken: string): Observable<AuthResponse> {
+    console.log('🔐 Verificando y sincronizando token en backend...');
+    const requestBody = { idToken: idToken }; // Usamos el DTO LoginTokenRequest
 
-    const headers = {
-      'Authorization': `Bearer ${idToken}`,
-      'Content-Type': 'application/json'
-    };
-
-    return this.http.post<AuthResponse>(`${this.apiUrl}/verificar-token`, {}, { headers }).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login-token`, requestBody).pipe(
       tap((response) => {
-        console.log('✅ Token verificado en backend:', response);
-        // Guardar token
+        console.log('✅ Login Token exitoso:', response);
         localStorage.setItem('authToken', idToken);
-        console.log('💾 Token guardado en localStorage');
+        // NOTA: La entidad Cliente (perfil) debe ser creada en el backend para Social Login
+        // o el frontend debe verificar si existe y crearla si es necesario.
       }),
       catchError((error) => {
         console.error('❌ Error verificando token en backend:', error);
-        console.log('📊 Detalles del error:', {
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          error: error.error
-        });
         throw error;
+      })
+    );
+  }
+
+  /**
+   * 🆕 PASO 2 DEL REGISTRO: Crea la entidad Cliente inicial.
+   * POST /api/clientes/crear-perfil/{firebaseUid}
+   */
+  private crearPerfilInicial(uid: string): Observable<MessageResponse> {
+    console.log('📝 Creando registro Cliente inicial (Perfil).');
+    // El body puede ser vacío o contener datos mínimos iniciales
+    return this.http.post<MessageResponse>(`${environment.apiUrl}/api/clientes/crear-perfil/${uid}`, {}).pipe(
+      tap(() => {
+        console.log('✅ Entidad Cliente creada exitosamente.');
+      }),
+      catchError((error) => {
+        console.error('❌ Error creando perfil Cliente:', error);
+        // Este error no debería detener el flujo si el Auth ya fue exitoso, pero lo registramos.
+        return throwError(() => new Error('Error al crear el perfil de cliente inicial.'));
       })
     );
   }
@@ -299,6 +258,32 @@ export class AuthService {
   }
 
   /**
+     * 🆕 Envía el correo de verificación de Firebase al usuario actualmente autenticado.
+     */
+  sendVerificationEmail(): Observable<void> {
+    const firebaseUser = this.auth.currentUser;
+
+    if (!firebaseUser) {
+      return throwError(() => new Error('No hay usuario de Firebase logueado.'));
+    }
+
+    // Llamar a la función de Firebase para enviar el correo
+    return from(sendEmailVerification(firebaseUser)).pipe(
+      tap(() => {
+        console.log('✅ Correo de verificación enviado a:', firebaseUser.email);
+      }),
+      catchError((error) => {
+        console.error('❌ Error al enviar correo de verificación:', error);
+        // Manejar errores de límite de envío, etc.
+        if (error.code === 'auth/too-many-requests') {
+          return throwError(() => new Error('Has solicitado muchos correos. Intenta más tarde.'));
+        }
+        return throwError(() => new Error('Error al enviar el correo de verificación.'));
+      })
+    );
+  }
+
+  /**
    * Verificar si el usuario está autenticado
    */
   isAuthenticated(): boolean {
@@ -326,63 +311,6 @@ export class AuthService {
     return this.auth.currentUser;
   }
 
-  /**
-   * Actualizar datos del usuario en Firestore
-   */
-  updateUserData(updates: Partial<UserData>): Observable<void> {
-    const currentUser = this.getCurrentUser();
-    if (!currentUser) {
-      throw new Error('No hay usuario autenticado');
-    }
-
-    return this.userDataService.updateUserData(currentUser.uid, updates).pipe(
-      tap(() => {
-        this.authState.refreshCurrentUser().subscribe();
-      })
-    );
-  }
-
-  // Métodos delegados
-  updateProfile(profileData: ProfileUpdateData): Observable<void> {
-    return this.profileService.updateProfile(profileData).pipe(
-      tap(() => {
-        this.authState.refreshCurrentUser().subscribe();
-      })
-    );
-  }
-
-  uploadProfileImage(base64Image: string): Observable<string> {
-    return this.profileService.uploadProfileImage(base64Image);
-  }
-
-  removeProfileImage(): Observable<void> {
-    return this.profileService.removeProfileImage().pipe(
-      tap(() => {
-        this.authState.refreshCurrentUser().subscribe();
-      })
-    );
-  }
-
-  changePassword(currentPassword: string, newPassword: string): Observable<void> {
-    return this.passwordService.changePassword(currentPassword, newPassword);
-  }
-
-  validatePasswordStrength(password: string): {
-    isValid: boolean;
-    errors: string[];
-    strength: 'weak' | 'medium' | 'strong';
-  } {
-    return this.passwordService.validatePasswordStrength(password);
-  }
-
-  getUserExtendedData(userId: string): Observable<any> {
-    return this.profileService.getUserExtendedData(userId);
-  }
-
-  checkUserAdminStatus(uid: string): Observable<boolean> {
-    return this.userDataService.checkIfUserIsAdmin(uid);
-  }
-
   refreshUser(): Observable<UserData | null> {
     return this.authState.refreshCurrentUser();
   }
@@ -398,8 +326,6 @@ export class AuthService {
       this.router.navigate(['/panel-usuario']);
     }
   }
-
-  // En tu AuthService, agrega este método:
 
   /**
    * 🆕 Obtener el token ID de Firebase para el usuario actual
@@ -445,5 +371,42 @@ export class AuthService {
         observer.complete();
       });
     });
+  }
+
+
+  /**
+  * 🆕 PASO 1: Envía el código SMS al número de teléfono.
+  */
+  sendSmsCode(phoneNumber: string, appVerifier: RecaptchaVerifier): Observable<void> {
+    return from(signInWithPhoneNumber(this.auth, phoneNumber, appVerifier)).pipe(
+      tap(result => {
+        this.confirmationResult = result;
+        console.log('✅ Código SMS enviado. Esperando verificación.');
+      }),
+      map(() => void 0) // Retorna void
+    );
+  }
+
+  /**
+   * 🆕 PASO 2: Verifica el código SMS.
+   */
+  verifySmsCode(code: string): Observable<void> {
+    if (!this.confirmationResult) {
+      return throwError(() => new Error('No se ha solicitado ningún código de verificación.'));
+    }
+
+    return from(this.confirmationResult.confirm(code)).pipe(
+      tap(() => {
+        this.confirmationResult = null; // Limpiar después de éxito
+        console.log('✅ Verificación de código SMS exitosa.');
+      }),
+      map(() => void 0), // Retorna void
+      catchError(error => {
+        if (error.code === 'auth/invalid-verification-code') {
+          return throwError(() => new Error('Código de verificación incorrecto.'));
+        }
+        return throwError(() => error);
+      })
+    );
   }
 }

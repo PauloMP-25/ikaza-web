@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio para Usuario con integración Firebase
+ * Repositorio para Usuario (Núcleo de Autenticación)
  */
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
@@ -19,18 +19,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      */
     Optional<Usuario> findByFirebaseUid(String firebaseUid);
 
-    // Retorna boolean - true si existe, false si no
+    // Retorna true si existe, false si no
     Optional<Usuario> findByEmailAndFirebaseUidIsNull(String email);
 
     /**
      * Buscar usuario por email
      */
     Optional<Usuario> findByEmail(String email);
-
-    /**
-     * Buscar usuario por número de documento
-     */
-    Optional<Usuario> findByNumeroDocumento(String numeroDocumento);
 
     /**
      * Verificar si existe usuario por Firebase UID
@@ -43,11 +38,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     boolean existsByEmail(String email);
 
     /**
-     * Verificar si existe usuario por número de documento
-     */
-    boolean existsByNumeroDocumento(String numeroDocumento);
-
-    /**
      * Buscar usuarios activos
      */
     List<Usuario> findByActivoTrue();
@@ -57,18 +47,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      */
     @Query("SELECT u FROM Usuario u WHERE u.rol.nombreRol = :nombreRol")
     List<Usuario> findByRolNombre(@Param("nombreRol") String nombreRol);
-
-    /**
-     * Buscar usuarios con datos incompletos
-     */
-    @Query("SELECT u FROM Usuario u WHERE " +
-            "u.numeroDocumento IS NULL OR " +
-            "u.telefono IS NULL OR " +
-            "u.fechaNacimiento IS NULL")
-    List<Usuario> findUsuariosConDatosIncompletos();
-
-    /**
-     * Buscar usuarios con teléfono no verificado
-     */
-    List<Usuario> findByTelefonoVerificadoFalse();
 }
