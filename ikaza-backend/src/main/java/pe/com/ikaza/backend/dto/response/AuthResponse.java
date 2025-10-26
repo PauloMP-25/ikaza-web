@@ -21,9 +21,6 @@ public class AuthResponse {
     private Integer idUsuario;
     private String firebaseUid;
     private String email;
-    private String nombres;
-    private String apellidos;
-    private String nombreCompleto;
     
     // Rol y permisos
     private String rol;
@@ -31,7 +28,6 @@ public class AuthResponse {
 
     // Información adicional
     private Boolean activo;
-    private Boolean datosCompletos;
     private LocalDateTime fechaCreacion;
     private LocalDateTime ultimoAcceso;
 

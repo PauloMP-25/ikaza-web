@@ -35,6 +35,10 @@ export class ModalAgregar {
   errorMessage: string = '';
 
   private categoriesSubscription?: Subscription;
+  ngOnInit() {
+    console.log('🚀 CatalogoComponent: ngOnInit ejecutado');
+    this.loadCategories();
+  }
 
   guardarProducto() {
     this.mapearVariaciones();

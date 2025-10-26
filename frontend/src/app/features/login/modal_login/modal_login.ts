@@ -43,11 +43,12 @@ export class ModalLoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
 
+    // 🚨 CAMBIO CRÍTICO: Formulario de registro simplificado
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
-      username: ['', [Validators.minLength(3)]] // Campo opcional para username
+      username: ['', [Validators.required, Validators.minLength(3)]]
     }, {
       validators: this.passwordMatchValidator
     });
@@ -118,8 +119,8 @@ export class ModalLoginComponent {
   }
 
   /**
-   * Manejar registro con email/password
-   */
+     * Manejar registro con email/password
+     */
   onRegister(): void {
     if (this.registerForm.invalid) {
       this.showError('Por favor completa todos los campos correctamente');
@@ -128,11 +129,12 @@ export class ModalLoginComponent {
     }
 
     this.clearMessages();
+    // NOTA: RegisterData ya no contendrá nombres/apellidos en el modelo.
     const registerData: RegisterData = this.registerForm.value;
 
     this.authService.register(registerData).subscribe({
       next: (message) => {
-        this.showSuccess(message);
+        this.showSuccess('✅ Registro exitoso. ¡Inicia sesión con tu nueva cuenta!'); // Cambiamos el mensaje
         this.registerForm.reset();
 
         // Cambiar a login después de un tiempo
@@ -147,6 +149,8 @@ export class ModalLoginComponent {
       }
     });
   }
+
+
 
   /**
    * Manejar login con Google

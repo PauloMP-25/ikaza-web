@@ -15,15 +15,16 @@ export const PANEL_ADMIN_ROUTES: Routes = [
         component: PanelAdministrador,  // Carga el componente padre con side-nav y outlet
         children: [
             // Redirect por default:
-            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+            { path: '', redirectTo: 'reportes', pathMatch: 'full' },
             // Rutas hijas (coinciden con routerLink en side-nav)
             { path: 'lista-productos', component: Productos },
+            {path: 'reportes', component: Reportes},
             { path: 'inventario', component: Inventario },
             { path: 'lista-clientes', component: Clientes }, 
             { path: 'buzon-virtual', component: BuzonVirtual },
             { path: 'configuracion', component: ConfiguracionAdmin},
             // Opcional: Ruta 404 para sub-rutas inválidas
-            { path: '**', redirectTo: 'dashboard' }
+            { path: '**', redirectTo: 'reportes' }
         ]
     }
 ];

@@ -33,4 +33,7 @@ public class ActualizarUsuarioRequest {
     private String telefono;
 
     private Boolean telefonoVerificado;
+
+    @Pattern(regexp = "^(HOMBRE|MUJER|OTRO)$", message = "Género inválido. Debe ser HOMBRE, MUJER u OTRO.")
+    private String genero;
 }

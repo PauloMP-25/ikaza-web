@@ -3,8 +3,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '@core/services/auth/auth';
-import { UsuarioBackendService } from '@core/services/usuarios/usuario-backend.service';
-import { ActualizarUsuarioRequest } from '@core/models/usuarios/usuario-model';
+import { ClienteService } from '@core/services/clientes/cliente.service';
+import { ActualizarClienteRequest } from '@core/models/usuarios/usuario-model';
 import { finalize, catchError, of } from 'rxjs';
 
 @Component({
@@ -17,13 +17,16 @@ import { finalize, catchError, of } from 'rxjs';
 export class DatosPersonalesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-  private usuarioBackendService = inject(UsuarioBackendService);
+  private clienteService = inject(ClienteService);
 
   datosForm!: FormGroup;
   isPhoneVerified: boolean = false;
-  isSendingVerification: boolean = false;
+  isSendingVerification: boolean = false; // Mantenemos por ahora, pero no se usa aquí
   isLoading: boolean = false;
   firebaseUid: string = '';
+
+  // Lista de géneros (para el template)
+  generos = ['HOMBRE', 'MUJER', 'OTRO'];
 
   ngOnInit(): void {
     this.datosForm = this.fb.group({
@@ -32,9 +35,10 @@ export class DatosPersonalesComponent implements OnInit {
       apellido: ['', Validators.required],
       nacimiento: ['', [Validators.required, this.mayorDeEdadValidator]],
       dni: ['', [Validators.required, Validators.pattern(/^[0-9]{8}$/)]],
-      prefijo: ['+51', [Validators.required, Validators.pattern(/^\+\d{1,3}$/)]],
-      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
-      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]]
+      prefijo: ['+51', [Validators.pattern(/^\+\d{1,3}$/)]],
+      telefono: ['', [Validators.pattern(/^[0-9]{9}$/)]],
+      email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
+      genero: ['', Validators.required]
     });
 
     this.loadUserData();
@@ -71,24 +75,25 @@ export class DatosPersonalesComponent implements OnInit {
   * Usa GET /api/usuarios/perfil/{firebaseUid}
   */
   private cargarDatosDelBackend(firebaseDisplayName: string) {
-    this.usuarioBackendService.obtenerPerfil(this.firebaseUid).subscribe({
-      next: (usuarioBackend) => {
-        console.log('✅ Datos del backend cargados:', usuarioBackend);
+    this.clienteService.obtenerPerfil(this.firebaseUid).subscribe({
+      next: (clienteBackend) => {
+        console.log('✅ Datos del backend cargados:', clienteBackend);
 
         const nameParts = firebaseDisplayName.split(' ');
-        const fallbackNombre = usuarioBackend.nombres || nameParts[0] || '';
-        const fallbackApellido = usuarioBackend.apellidos || nameParts.slice(1).join(' ') || '';
+        const fallbackNombre = clienteBackend.nombres || nameParts[0] || '';
+        const fallbackApellido = clienteBackend.apellidos || nameParts.slice(1).join(' ') || '';
 
         this.datosForm.patchValue({
-          nombre: usuarioBackend.nombres || fallbackNombre,
-          apellido: usuarioBackend.apellidos || fallbackApellido,
-          nacimiento: usuarioBackend.fechaNacimiento || '',
-          dni: usuarioBackend.numeroDocumento || '',
-          prefijo: usuarioBackend.prefijoTelefono || '+51',
-          telefono: usuarioBackend.telefono || ''
+          nombre: clienteBackend.nombres || fallbackNombre,
+          apellido: clienteBackend.apellidos || fallbackApellido,
+          nacimiento: clienteBackend.fechaNacimiento?.split('T')[0] || '',
+          dni: clienteBackend.numeroDocumento || '',
+          prefijo: clienteBackend.prefijoTelefono || '+51',
+          telefono: clienteBackend.telefono || '',
+          genero: clienteBackend.genero || ''
         });
 
-        this.isPhoneVerified = usuarioBackend.telefonoVerificado;
+        this.isPhoneVerified = clienteBackend.telefonoVerificado;
       },
       error: (error) => {
         console.error('❌ Error cargando datos del backend:', error);
@@ -118,39 +123,6 @@ export class DatosPersonalesComponent implements OnInit {
     return age >= 18 ? null : { menorDeEdad: true };
   }
 
-  /**
-   * 🆕 REFACTORIZADO: Enviar código de verificación
-   */
-  enviarCodigoVerificacion(): void {
-    const telefono = this.datosForm.get('telefono')?.value;
-    const prefijo = this.datosForm.get('prefijo')?.value;
-
-    if (!telefono || !prefijo) {
-      alert('Por favor ingresa un número de teléfono válido');
-      return;
-    }
-
-    this.isSendingVerification = true;
-    const phoneNumber = `${prefijo}${telefono}`;
-
-    // TODO: Implementar verificación real con Firebase Phone Auth o servicio SMS
-    setTimeout(() => {
-      this.isSendingVerification = false;
-      alert(`Código enviado a ${phoneNumber}. (Funcionalidad simulada)`);
-
-      // 🆕 Marcar como verificado usando el nuevo endpoint
-      this.usuarioBackendService.verificarTelefono(this.firebaseUid).subscribe({
-        next: (usuario) => {
-          this.isPhoneVerified = true;
-          console.log('✅ Teléfono verificado en backend:', usuario);
-        },
-        error: (error) => {
-          console.error('❌ Error verificando teléfono:', error);
-          alert('Error al verificar el teléfono. Por favor intenta nuevamente.');
-        }
-      });
-    }, 2000);
-  }
 
   /**
    * 🆕 REFACTORIZADO: Guardar cambios
@@ -163,30 +135,31 @@ export class DatosPersonalesComponent implements OnInit {
       return;
     }
 
-    if (!this.isPhoneVerified) {
-      alert('Por favor, verifica tu número de teléfono antes de guardar.');
-      return;
-    }
-
     this.isLoading = true;
 
     // Obtener valores del formulario (incluyendo los deshabilitados)
     const formData = this.datosForm.getRawValue();
 
+    // Determinar el estado de verificación a enviar al backend
+    // Si el teléfono está vacío, resetear la verificación a false
+    const currentTelefono = formData.telefono;
+    const telefonoVerificadoStatus = currentTelefono ? this.isPhoneVerified : false;
+
     // 🆕 Preparar request usando la nueva interfaz
-    const request: ActualizarUsuarioRequest = {
+    const request: ActualizarClienteRequest = {
       nombres: formData.nombre,
       apellidos: formData.apellido,
       tipoDocumento: 'DNI',
       numeroDocumento: formData.dni,
       fechaNacimiento: formData.nacimiento,
-      prefijoTelefono: formData.prefijo,
-      telefono: formData.telefono,
-      telefonoVerificado: this.isPhoneVerified
+      prefijoTelefono: currentTelefono ? formData.prefijo : null,
+      telefono: currentTelefono ? currentTelefono : null,
+      telefonoVerificado: this.isPhoneVerified,
+      genero: formData.genero
     };
 
     // 🆕 Guardar usando el nuevo endpoint PUT /api/usuarios/perfil/{uid}
-    this.usuarioBackendService.actualizarPerfil(this.firebaseUid, request)
+    this.clienteService.actualizarPerfil(this.firebaseUid, request)
       .pipe(
         finalize(() => this.isLoading = false)
       )
@@ -194,6 +167,8 @@ export class DatosPersonalesComponent implements OnInit {
         next: (usuario) => {
           console.log('✅ Datos guardados en backend:', usuario);
           alert('Datos personales guardados correctamente');
+          // Si se eliminó el teléfono, el estado de verificación debe ser false
+          this.isPhoneVerified = telefonoVerificadoStatus;
         },
         error: (error) => {
           console.error('❌ Error guardando datos:', error);

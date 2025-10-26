@@ -21,11 +21,4 @@ export interface AuthResponse {
 export interface RegistroBackendRequest {
     email: string;
     password: string;
-    nombres: string;
-    apellidos: string;
-    tipoDocumento?: string;
-    numeroDocumento?: string;
-    fechaNacimiento?: string;
-    prefijoTelefono?: string;
-    telefono?: string;
 }

@@ -11,7 +11,13 @@ import pe.com.ikaza.backend.dto.request.PedidoRequest;
 import pe.com.ikaza.backend.dto.response.ItemDetalleResponse;
 import pe.com.ikaza.backend.dto.response.PedidoDetalleResponse;
 import pe.com.ikaza.backend.dto.response.PedidoResponse;
-import pe.com.ikaza.backend.entity.*;
+import pe.com.ikaza.backend.entity.Pedido;
+import pe.com.ikaza.backend.entity.Producto;
+import pe.com.ikaza.backend.entity.Usuario;
+import pe.com.ikaza.backend.entity.Pago;
+import pe.com.ikaza.backend.entity.Cliente;
+import pe.com.ikaza.backend.entity.DetallePedido;
+import pe.com.ikaza.backend.entity.HistorialEstadoPedido;
 import pe.com.ikaza.backend.enums.EstadoPago;
 import pe.com.ikaza.backend.enums.EstadoPedido;
 import pe.com.ikaza.backend.enums.MetodoPago;
@@ -41,6 +47,7 @@ public class PedidoService {
     // Repositorios
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ClienteRepository clienteRepository;
     private final DetallePedidoRepository detallePedidoRepository;
     private final PagoRepository pagoRepository;
     private final ProductoRepository productoRepository;
@@ -226,12 +233,12 @@ public class PedidoService {
 
     public PedidoDetalleResponse getPedidoDetalleByIdAndUser(Long idPedido, Integer idUsuario) {
         Pedido pedido = validarPedidoUsuario(idPedido, idUsuario);
-        
+
         List<DetallePedido> detalles = detallePedidoRepository.findByPedidoIdWithProducto(idPedido);
         Pago pago = pagoRepository.findByPedido_IdPedido(idPedido).orElse(null);
-        
-        String telefonoContacto = usuarioRepository.findById(idUsuario)
-                .map(Usuario::getTelefono)
+
+        String telefonoContacto = clienteRepository.findByUsuarioIdUsuario(idUsuario)
+                .map(Cliente::getTelefono)
                 .orElse("N/A");
 
         List<ItemDetalleResponse> detallesResponse = detalles.stream()
@@ -384,7 +391,7 @@ public class PedidoService {
                 // Liberar stock reservado y confirmar venta
                 inventarioService.liberarStockReservado(items, pedido.getIdPedido(), usuario);
                 inventarioService.confirmarVenta(items, pedido.getIdPedido(), usuario);
-                
+
                 pedido.setEstado(EstadoPedido.CONFIRMADO);
                 pedido.setEstadoPago(EstadoPago.APROBADO);
                 pedido.setFechaPago(LocalDateTime.now());
@@ -400,7 +407,7 @@ public class PedidoService {
             case "cancelled":
                 // Liberar stock reservado
                 inventarioService.liberarStockReservado(items, pedido.getIdPedido(), usuario);
-                
+
                 pedido.setEstado(EstadoPedido.CANCELADO);
                 pedido.setEstadoPago(EstadoPago.RECHAZADO);
                 break;
@@ -408,7 +415,7 @@ public class PedidoService {
             case "refunded":
                 // Devolver stock
                 inventarioService.devolverStock(items, pedido.getIdPedido(), usuario);
-                
+
                 pedido.setEstado(EstadoPedido.DEVUELTO);
                 pedido.setEstadoPago(EstadoPago.REEMBOLSADO);
                 break;
@@ -439,7 +446,7 @@ public class PedidoService {
      */
     private void actualizarRegistroPago(Pedido pedido, String paymentId, JsonNode paymentInfo) {
         Pago pago = pagoRepository.findByPedido_IdPedido(pedido.getIdPedido()).orElse(null);
-        
+
         if (pago == null) {
             pago = new Pago();
             pago.setPedido(pedido);
@@ -475,7 +482,7 @@ public class PedidoService {
      */
     private List<ItemPedidoRequest> convertirDetallesAItems(Pedido pedido) {
         List<DetallePedido> detalles = detallePedidoRepository.findByPedido_IdPedido(pedido.getIdPedido());
-        
+
         return detalles.stream()
                 .map(d -> {
                     ItemPedidoRequest item = new ItemPedidoRequest();
