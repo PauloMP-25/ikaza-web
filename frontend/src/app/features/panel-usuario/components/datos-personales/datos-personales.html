@@ -4,7 +4,8 @@
     <!-- Nombres (Deshabilitado - viene de Firebase Auth) -->
     <div class="col-12">
         <label for="nombreUsuario" class="form-label">Usuario</label>
-        <input type="text" class="form-control" id="nombreUsuario" formControlName="nombreUsuario" placeholder="USUARIO" />
+        <input type="text" class="form-control" id="nombreUsuario" formControlName="nombreUsuario"
+            placeholder="USUARIO" />
         <small class="text-muted">Este campo se obtiene de tu cuenta</small>
     </div>
 
@@ -46,32 +47,35 @@
     <div class="col-12">
         <label class="form-label">Número de teléfono</label>
         <div class="row g-2">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <input type="tel" class="form-control" id="digitT" formControlName="prefijo" placeholder="+51"
                     [class.is-invalid]="isFieldInvalid('prefijo')" />
             </div>
-            <div class="col-md-6">
-                <input type="tel" class="form-control" id="telefono" formControlName="telefono" placeholder="Numero de celular"
-                    maxlength="9" [class.is-invalid]="isFieldInvalid('telefono')" />
+            <div class="col-md-4">
+                <input type="tel" class="form-control" id="telefono" formControlName="telefono"
+                    placeholder="Numero de celular" maxlength="9" [class.is-invalid]="isFieldInvalid('telefono')" />
                 <div class="invalid-feedback" *ngIf="isFieldInvalid('telefono')">
                     {{ getFieldError('telefono') }}
                 </div>
             </div>
-            <div class="col-md-3">
-                <button type="button" class="btn w-100" [class.btn-success]="isPhoneVerified"
-                    [class.btn-outline-primary]="!isPhoneVerified"
-                    [disabled]="datosForm.get('telefono')?.invalid || isSendingVerification || isPhoneVerified"
-                    (click)="enviarCodigoVerificacion()">
-                    <span *ngIf="isSendingVerification" class="spinner-border spinner-border-sm me-1"></span>
-                    <i *ngIf="isPhoneVerified && !isSendingVerification" class="bi bi-check-circle me-1"></i>
-                    {{ isPhoneVerified ? 'Verificado' : (isSendingVerification ? 'Enviando...' : 'Verificar') }}
-                </button>
+        </div>
+        <small class="text-muted mt-1 d-block">
+            <i class="bi bi-info-circle"></i> La verificación del teléfono se realiza en la sección **Configuración**.
+        </small>
+
+        <div class="col-md-4">
+            <label for="genero" class="form-label">Género</label>
+            <select class="form-select" id="genero" formControlName="genero"
+                [class.is-invalid]="isFieldInvalid('genero')">
+                <option value="" disabled>Selecciona una opción</option>
+                <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('genero')">
+                {{ getFieldError('genero') }}
             </div>
         </div>
-        <small class="text-muted" *ngIf="!isPhoneVerified">
-            <i class="bi bi-info-circle"></i> Debes verificar tu teléfono antes de guardar
-        </small>
     </div>
+
 
     <!-- Email (Deshabilitado - viene de Firebase Auth) -->
     <div class="col-12">

@@ -9,16 +9,19 @@ import java.time.LocalDateTime;
 
 /**
  * DTO de respuesta con datos completos del usuario
- * Combina datos de Firebase + PostgreSQL
+ * Combina datos de Usuario (Auth) + Cliente (Perfil)
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioResponse {
 
+    // Datos de Usuario (Auth Core)
     private Integer idUsuario;
     private String firebaseUid;
     private String email;
+    
+    // Datos de Cliente (Perfil)
     private String nombres;
     private String apellidos;
     private String nombreCompleto;
@@ -35,13 +38,14 @@ public class UsuarioResponse {
     private String prefijoTelefono;
     private String telefono;
     private Boolean telefonoVerificado;
-
+    private String genero;
+    
     // Metadatos
     private Boolean activo;
     private LocalDateTime fechaCreacion;
     private LocalDateTime ultimoAcceso;
     private LocalDateTime fechaActualizacion;
-
+    
     // Flag para indicar si tiene datos completos
     private Boolean datosCompletos;
 }

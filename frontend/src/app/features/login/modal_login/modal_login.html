@@ -36,8 +36,8 @@
             {{ getFieldError(registerForm, 'confirmPassword') }}
           </small>
 
-          <input type="text" placeholder="Nombre de usuario (opcional)" formControlName="username"
-            [class.error]="hasFieldError(registerForm, 'username')" />
+          <input type="text" placeholder="Nombre de usuario" formControlName="username" 
+            [class.error]="hasFieldError(registerForm, 'username')" required />
           <small class="error-text" *ngIf="getFieldError(registerForm, 'username')">
             {{ getFieldError(registerForm, 'username') }}
           </small>

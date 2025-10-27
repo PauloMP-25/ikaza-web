@@ -40,6 +40,10 @@ export class ModalAgregar {
   nuevaCategoria: string = '';
 
   private categoriesSubscription?: Subscription;
+  ngOnInit() {
+    console.log('🚀 CatalogoComponent: ngOnInit ejecutado');
+    this.loadCategories();
+  }
 
   ngOnInit(): void {
     this.loadCategories();

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.com.ikaza.backend.dto.request.TarjetaRequest;
 import pe.com.ikaza.backend.dto.response.TarjetaResponse;
 import pe.com.ikaza.backend.service.TarjetaService;
-import pe.com.ikaza.backend.service.UsuarioService;
+import pe.com.ikaza.backend.service.ClienteService;
 import pe.com.ikaza.backend.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ public class TarjetaController {
     private TarjetaService metodoPagoService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private ClienteService clienteService;
 
     @Autowired
     private SecurityUtils securityUtils;
@@ -41,7 +41,7 @@ public class TarjetaController {
         
         // 2. Usar el email para buscar el id_usuario en la BD
         // ** NOTA: Reemplazar el 6 por una llamada a usuarioService.obtenerIdPorEmail(email)
-        return usuarioService.obtenerIdPorEmail(email);
+        return clienteService.obtenerIdPorEmail(email);
     }
 
     /**
