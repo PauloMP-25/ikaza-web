@@ -17,10 +17,5 @@ import { ConfirmacionPagoModalComponent } from '@features/pagos/confirmacion-pag
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class HomeComponent implements OnInit {
-
-  constructor(private cartService: CartService) { }
-
-  ngOnInit(): void {
-  }
+export class HomeComponent{
 }

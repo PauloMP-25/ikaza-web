@@ -1,6 +1,6 @@
 <section class="mb-5">
     <h2 class="h2 fw-bold text-success mb-4"> Producto Más Vendido </h2>
-    <div class="row g-0 align-items-center bg-white px-2 py-3 rounded shadow border border-success">
+    <div class="row g-0 align-items-center bg-white px-2 py-3 rounded shadow border border-success" *ngIf="product">
         <!-- Detalles del producto -->
         <div class="col-12 col-lg-6 order-1 order-lg-2 ps-1 ps-lg-1">
             <!-- Nombre clicable para navegar -->
@@ -36,7 +36,7 @@
 
             <!-- Precio y botón de compra -->
             <div class="mb-3">
-                <h4 class="text-success fw-bold">S/.{{ (product.precio || product.precio).toFixed(2) }}</h4> 
+                <h4 class="text-success fw-bold">S/.{{ (product.precio || product.precio).toFixed(2) }}</h4>
             </div>
             <button class="btn btn-success px-4 py-2 fw-bold" (click)="agregarCarrito()">Comprar ahora</button>
         </div>
@@ -45,5 +45,9 @@
             <img [src]="currentImage" alt="{{ product.nombreProducto }}" [attr.title]="product.nombreProducto"
                 class="img-fluid rounded product-image" loading="lazy" />
         </div>
+    </div>
+
+    <div *ngIf="!product">
+        <p class="alert alert-warning">No se pudo cargar el producto más vendido en este momento.</p>
     </div>
 </section>

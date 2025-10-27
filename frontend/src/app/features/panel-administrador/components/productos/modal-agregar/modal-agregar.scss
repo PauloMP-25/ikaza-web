@@ -1,9 +1,21 @@
+$fondo-principal: #008C8C;
+
+.modal-header {
+  background-color: $fondo-principal
+}
+
 .modal-body {
   max-height: 75vh;
   overflow-y: auto;
 }
 
+.input-file {
+  display: none;
+}
 
+.crear-producto {
+  background-color: $fondo-principal;
+}
 
 .imagen-dropzone {
   width: 100%;

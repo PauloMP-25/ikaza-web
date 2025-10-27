@@ -81,7 +81,7 @@ export class ModalLoginComponent {
      * Cerrar modal y resetear estado
      */
   onClose(): void {
-    this.close.emit();
+    this.close.emit(); // <--- Esto le dice al NavbarAuthComponent que se cierre.
     this.resetModalState();
   }
 

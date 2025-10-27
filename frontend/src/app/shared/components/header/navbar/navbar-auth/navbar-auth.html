@@ -124,4 +124,6 @@
     </ng-template>
 </div>
 
-<app-modal-login [isOpen]="isModalOpen" (close)="isModalOpen = false"></app-modal-login>
+<app-modal-login [isOpen]="isModalOpen" [returnUrl]="returnUrl" [infoMessage]="infoMessage"
+    (close)="onModalClose(false)" (loginSuccess)="onModalClose(true)">
+</app-modal-login>

@@ -25,7 +25,7 @@ interface ProductoMasVendido extends ProductoDetalle {
 })
 export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
 
-  product!: ProductoMasVendido;
+  product: ProductoMasVendido | null = null;
 
   // Usamos strings para almacenar la selección del usuario para el filtro de variante
   selectedColorValue: string | null = null;
@@ -54,7 +54,7 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
     this.productSubscription = this.productService.obtenerProductoMasVendido().subscribe({
       next: (prod: ProductoDetalle | null) => {
         if (!prod) {
-          this.product = null as any;
+          this.product = null;
           return;
         }
 
@@ -86,7 +86,9 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
    * Obtiene la lista de colores únicos para el template (solo si hay variantes)
    */
   get uniqueColors(): string[] {
-    if (!this.product?.variantes || this.product.variantes.length === 0) return [];
+    // 🔑 Si this.product es null, retornamos un array vacío.
+    if (!this.product) return [];
+    if (!this.product.variantes || this.product.variantes.length === 0) return [];
     return [...new Set(this.product.variantes.map(v => v.color).filter(c => c && c.trim()))];
   }
 
@@ -94,7 +96,9 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
    * Obtiene la lista de tallas únicas para el template (solo si hay variantes)
    */
   get uniqueSizes(): string[] {
-    if (!this.product?.variantes || this.product.variantes.length === 0) return [];
+    // 🔑 Si this.product es null, retornamos un array vacío.
+    if (!this.product) return [];
+    if (!this.product.variantes || this.product.variantes.length === 0) return [];
     return [...new Set(this.product.variantes.map(v => v.talla).filter(s => s && s.trim()))];
   }
 
@@ -103,6 +107,7 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
    * Inicializa color y size seleccionados por defecto
    */
   private initializeSelections(): void {
+    if (!this.product) return;
     // Si hay variantes, selecciona la primera opción disponible
     if (this.product.variantes && this.product.variantes.length > 0) {
       this.selectedColorValue = this.uniqueColors[0] || null;
@@ -144,6 +149,8 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
    * Actualiza la variante seleccionada y la imagen al cambiar color o talla.
    */
   private updateVariantSelection(): void {
+    if (!this.product) return;
+
     const variant = this.findVariant(this.selectedColorValue, this.selectedSizeValue);
 
     this.product.currentVariant = variant;
@@ -173,6 +180,10 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
   }
 
   agregarCarrito(): void {
+    if (!this.product) { // 🔑 Comprobación de nulidad
+      console.warn('Intento de agregar al carrito sin producto cargado.');
+      return;
+    }
     // 1. Determinar si se usa la variante actual o el producto base
     const variant = this.product.currentVariant;
 
@@ -198,6 +209,8 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
 
   // Método para navegar al detalle del producto
   onImageClick(): void {
+    if (!this.product) return; // 🔑 Comprobación de nulidad
+
     this.router.navigate(['/producto', this.product.idProducto]);
   }
 }
