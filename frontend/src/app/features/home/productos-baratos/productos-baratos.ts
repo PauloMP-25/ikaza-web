@@ -8,7 +8,7 @@ import { Producto, PageResponse } from '@core/models/productos/producto-backend.
 import { ProductUtilsService } from '@core/services/productos/product-utils.service';
 import { CustomCarouselComponent } from '@shared/components/ui/carrusel/custom-carrousel';
 import { ProductoService } from '@core/services/productos/producto.service';
-import { Subscription } from 'rxjs';
+import { tap, finalize, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-productos-baratos',
@@ -29,6 +29,11 @@ export class ProductosBaratosComponent implements OnInit {
   buscarPalabra: string = '';
   private productsSubscription?: Subscription;
 
+  // 🔑 Añadir estados de carga y error
+  isLoading: boolean = false;
+  hasError: boolean = false;
+  errorMessage: string = 'No pudimos cargar los productos nuevos. Inténtalo más tarde.'; // Mensaje de error
+
   constructor(
     private cartService: CartService,
     private productUtils: ProductUtilsService,
@@ -41,13 +46,25 @@ export class ProductosBaratosComponent implements OnInit {
   }
 
   loadProducts() {
+    this.isLoading = true; // 🔑 Iniciar carga
+    this.hasError = false; // Resetear error
+
     // Suscríbete al Observable para cargar los productos asíncronamente
-    this.productsSubscription = this.productService.obtenerProductosMasBaratos(12).subscribe({
-      next: (productos: Producto[]) => {
+    this.productsSubscription = this.productService.obtenerProductosMasBaratos(12).pipe(
+      // 🔑 Usar tap para forzar a que la data tenga un valor antes de la lógica
+      tap((productos: Producto[]) => {
         this.allProducts = productos;
 
         // Inicializa el array filtrado con los productos baratos
         this.filtrarProductos = [...this.allProducts];
+      }),
+      // 🔑 Usar finalize para detener el estado de carga (siempre se ejecuta al completar o error)
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: () => {
+        // La lógica de asignación ya está en tap()
       },
       error: (error) => {
         console.error('Error cargando productos baratos:', error);

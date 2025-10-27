@@ -1,10 +1,13 @@
+// src/app/features/panel-administrador/productos/modal-editar/modal-editar.component.ts
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Product } from '@core/services/productos/producto-adapter.service';
 import { ProductoManagementService } from '@core/services/productos/producto.admin.service';
-import { ProductoDetalle } from '@core/models/productos/producto-backend.model';
+import { Producto, ProductoDetalle, ProductoUpdateRequest } from '@core/models/productos/producto-backend.model';
+import { ProductoFormData, productoDetalleToFormData } from '@core/models/productos/producto-form.model';
 import { Categoria } from '@core/models/categoria/categoria.model';
+import { Subscription } from 'rxjs';
+import { CategoriaService } from '@core/services/categorias/categoria.service';
 
 declare var bootstrap: any;
 
@@ -18,112 +21,122 @@ declare var bootstrap: any;
 export class ModalEditar implements OnChanges {
 
   private managementService = inject(ProductoManagementService);
+  private categoriaService = inject(CategoriaService);
 
-  @Input() producto!: Product;
-  @Output() productoEditado = new EventEmitter<ProductoDetalle>();
+  @Input() producto!: ProductoDetalle;
+  @Output() productoEditado = new EventEmitter<Producto>();
 
-  productoEditadoLocal: Product = {} as Product;
+  formData: ProductoFormData = {} as ProductoFormData;
   categorias: Categoria[] = [];
-  nuevaCategoria: string = '';
-  
+  errorMessage: string = '';
+
   tallasInput: string = '';
   coloresInput: string = '';
-  fileInput: any;
+  isLoading: boolean = false;
 
-  constructor() {}
+  private categoriesSubscription?: Subscription;
+  constructor() { }
 
-  ngOnChanges(changes: SimpleChanges) {
+
+  ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['producto'] && this.producto) {
-      this.productoEditadoLocal = { ...this.producto };
-      this.productoEditadoLocal.sizes = this.producto.sizes ? [...this.producto.sizes] : [];
-      this.productoEditadoLocal.colors = this.producto.colors ? [...this.producto.colors] : [];
+      // Convertir ProductoDetalle a FormData
+      this.formData = productoDetalleToFormData(this.producto);
       this.cargarVariacionesAlInput();
     }
   }
 
-  cargarVariacionesAlInput() {
-    if (this.productoEditadoLocal.hasSizes && this.productoEditadoLocal.sizes) {
-      this.tallasInput = this.productoEditadoLocal.sizes.map(t => t.value_size).join(', ');
-    } else {
-      this.tallasInput = '';
-    }
-
-    if (this.productoEditadoLocal.hasColors && this.productoEditadoLocal.colors) {
-      this.coloresInput = this.productoEditadoLocal.colors.map(c => c.value_color).join(', ');
-    } else {
-      this.coloresInput = '';
-    }
-  }
-
-  guardarCambios() {
-    this.mapearVariaciones();
-
-    if (
-      !(this.productoEditadoLocal.name || '').trim() ||
-      !(this.productoEditadoLocal.sku || '').trim() ||
-      !(this.productoEditadoLocal.category || '').trim()
-    ) {
-      alert('Por favor completa los campos obligatorios: Nombre, SKU y Categoría.');
-      return;
-    }
-
-    if (this.productoEditadoLocal.hasSizes && (!this.productoEditadoLocal.sizes || this.productoEditadoLocal.sizes.length === 0)) {
-      alert('Has activado tallas, pero la lista es inválida o está vacía. Usa comas.');
-      return;
-    }
-
-    if (this.productoEditadoLocal.hasColors && (!this.productoEditadoLocal.colors || this.productoEditadoLocal.colors.length === 0)) {
-      alert('Has activado colores, pero la lista es inválida o está vacía. Usa comas.');
-      return;
-    }
-
-    this.managementService.updateProduct(this.productoEditadoLocal).subscribe({
-      next: (res: ProductoDetalle) => {
-        alert('Producto editado correctamente');
-        this.productoEditado.emit(res);
-        this.cerrarModal();
+  /*
+  Cargar todas las categorias
+*/
+  loadCategories(): void {
+    this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
+      next: (categorias: Categoria[]) => {
+        this.categorias = categorias;
+        console.log('Categorías cargadas:', this.categorias.length);
       },
-      error: (err) => {
-        console.error('Error al editar producto', err);
-        alert('Error al editar el producto. Inténtalo de nuevo.');
+      error: (error) => {
+        console.error('❌ Error al cargar categorías:', error);
+        this.errorMessage = 'Error al cargar las categorías';
       }
     });
   }
 
-  mapearVariaciones() {
-    if (this.productoEditadoLocal.hasSizes && this.tallasInput.trim()) {
-      this.productoEditadoLocal.sizes = this.tallasInput
-        .split(',')
-        .map(s => s.trim())
-        .filter(s => s.length > 0)
-        .map(value => ({ name_size: '', value_size: value }));
-    } else {
-      this.productoEditadoLocal.sizes = [];
-    }
+  cargarVariacionesAlInput(): void {
+    if (this.formData.variantes && this.formData.variantes.length > 0) {
+      // Extraer tallas únicas
+      const tallas = [...new Set(
+        this.formData.variantes
+          .map(v => v.talla)
+          .filter(t => t)
+      )];
+      this.tallasInput = tallas.join(', ');
 
-    if (this.productoEditadoLocal.hasColors && this.coloresInput.trim()) {
-      this.productoEditadoLocal.colors = this.coloresInput
-        .split(',')
-        .map(s => s.trim())
-        .filter(s => s.length > 0)
-        .map(value => ({ name_color: '', value_color: value }));
+      // Extraer colores únicos
+      const colores = [...new Set(
+        this.formData.variantes
+          .map(v => v.color)
+          .filter(c => c)
+      )];
+      this.coloresInput = colores.join(', ');
     } else {
-      this.productoEditadoLocal.colors = [];
+      this.tallasInput = '';
+      this.coloresInput = '';
     }
   }
+
+  guardarCambios(): void {
+    // Validación
+    if (!this.formData.nombreProducto?.trim()) {
+      alert('El nombre del producto es obligatorio.');
+      return;
+    }
+
+    // Construir ProductoUpdateRequest (solo campos de PostgreSQL)
+    const updateRequest: ProductoUpdateRequest = {
+      idCategoria: this.formData.idCategoria,
+      nombreProducto: this.formData.nombreProducto,
+      descripcionProducto: this.formData.descripcionProducto,
+      precio: this.formData.precio,
+      stock: this.formData.stock,
+      stockMinimo: this.formData.stockMinimo
+    };
+
+    this.isLoading = true;
+
+    // Actualizar producto (enviar archivo de imagen si existe)
+    this.managementService.updateProduct(
+      this.producto.idProducto,
+      updateRequest,
+      this.formData.imagenFile
+    ).subscribe({
+      next: (productoActualizado: Producto) => {
+        alert('Producto actualizado correctamente');
+        this.productoEditado.emit(productoActualizado);
+        this.cerrarModal();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error al actualizar producto:', err);
+        alert('Error al actualizar el producto. Inténtalo de nuevo.');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // --- MANEJO DE IMÁGENES (igual que ModalAgregar) ---
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     this.processFile(file);
   }
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-  }
-
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-  }
+  onDragOver(event: DragEvent): void { event.preventDefault(); }
+  onDragLeave(event: DragEvent): void { event.preventDefault(); }
 
   onDrop(event: DragEvent): void {
     event.preventDefault();
@@ -133,46 +146,35 @@ export class ModalEditar implements OnChanges {
 
   processFile(file: File): void {
     if (file) {
-      this.productoEditadoLocal.imagenFile = file;
-      this.productoEditadoLocal.imagenFileName = file.name;
+      this.formData.imagenFile = file;
+      this.formData.imagenFileName = file.name;
 
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.productoEditadoLocal.imagenPreview = e.target.result;
+        this.formData.imagenPreview = e.target.result;
       };
       reader.readAsDataURL(file);
     }
   }
 
-  eliminarImagen(event: Event) {
+  eliminarImagen(event: Event): void {
     event.stopPropagation();
-    this.productoEditadoLocal.imagenPreview = undefined;
-    this.productoEditadoLocal.imagenFileName = undefined;
-    this.productoEditadoLocal.imagenFile = undefined;
-    this.productoEditadoLocal.image = '';
+    this.formData.imagenPreview = undefined;
+    this.formData.imagenFileName = undefined;
+    this.formData.imagenFile = undefined;
   }
 
-  onTieneTallasChange() {
-    if (!this.productoEditadoLocal.hasSizes) {
+  onTieneVariantesChange(): void {
+    if (!this.formData.tieneVariantes) {
       this.tallasInput = '';
-      this.productoEditadoLocal.sizes = [];
-    }
-  }
-
-  onTieneColoresChange() {
-    if (!this.productoEditadoLocal.hasColors) {
       this.coloresInput = '';
-      this.productoEditadoLocal.colors = [];
+      this.formData.variantes = [];
     }
   }
 
-  cerrarModal() {
+  cerrarModal(): void {
     const modalElement = document.getElementById('editarProductoModal');
-    if (modalElement) {
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
-      }
-    }
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    modal?.hide();
   }
 }

@@ -1,196 +1,380 @@
 <div class="modal fade" id="editarProductoModal" tabindex="-1" aria-labelledby="editarProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-3">
-            <div class="modal-header text-white" style="background-color: #28a745;">
+
+            <!-- Header dinámico -->
+            <div class="modal-header text-white">
                 <h5 class="modal-title fw-bold" id="editarProductoLabel">
                     <i class="bi bi-pencil-square me-2"></i>
                     Editar Producto
+                    <span *ngIf="formData.nombreProducto" class="ms-2 opacity-75">
+                        - {{ formData.nombreProducto }}
+                    </span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Cerrar"></button>
             </div>
 
-            <form (ngSubmit)="guardarCambios()">
+            <form #editForm="ngForm" (ngSubmit)="guardarCambios()">
+
+                <!-- Tabs de Navegación -->
+                <ul class="nav nav-tabs nav-justified bg-light pt-2" id="editProductTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold text-success" id="detalles-tab" data-bs-toggle="tab"
+                            data-bs-target="#detalles-generales" type="button" role="tab"
+                            aria-controls="detalles-generales" aria-selected="true">
+                            <i class="bi bi-info-circle me-1"></i>Detalles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-success" id="variaciones-tab" data-bs-toggle="tab"
+                            data-bs-target="#variaciones-stock" type="button" role="tab"
+                            aria-controls="variaciones-stock" aria-selected="false">
+                            <i class="bi bi-tags me-1"></i>Variaciones
+                        </button>
+                    </li>
+                </ul>
+
                 <div class="modal-body p-0">
-                    <ul class="nav nav-tabs nav-justified bg-light pt-2" id="editProductTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active fw-bold text-success" id="detalles-tab" data-bs-toggle="tab"
-                                data-bs-target="#detalles-generales" type="button" role="tab"
-                                aria-controls="detalles-generales" aria-selected="true">Detalles</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold text-success" id="variaciones-tab" data-bs-toggle="tab"
-                                data-bs-target="#variaciones-stock" type="button" role="tab"
-                                aria-controls="variaciones-stock" aria-selected="false">Variaciones y Stock</button>
-                        </li>
-                    </ul>
 
-                    <div class="tab-content p-4" style="max-height: 70vh; overflow-y: auto;">
+                    <!-- Indicador de carga -->
+                    <div *ngIf="isLoading"
+                        class="position-absolute w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75">
+                        <div class="text-center">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">Actualizando...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Guardando cambios...</p>
+                        </div>
+                    </div>
 
+                    <!-- Mensaje de error -->
+                    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {{ errorMessage }}
+                        <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+                    </div>
+
+                    <div class="tab-content p-4">
+
+                        <!-- TAB 1: Detalles Generales -->
                         <div class="tab-pane fade show active" id="detalles-generales" role="tabpanel"
                             aria-labelledby="detalles-tab">
+
                             <div class="row g-4">
+
+                                <!-- SECCIÓN: Detalles Primarios -->
                                 <div class="col-lg-4 col-md-6">
-                                    <h6 class="fw-bold text-secondary mb-3">Detalles Primarios</h6>
+                                    <h6 class="fw-bold text-secondary mb-3">
+                                        <i class="bi bi-info-circle me-2"></i>Detalles Primarios
+                                    </h6>
                                     <div class="row g-3">
+
+                                        <!-- Nombre -->
                                         <div class="col-12">
-                                            <label class="form-label fw-semibold">Nombre del Producto <span
-                                                    class="text-danger">*</span></label>
+                                            <label class="form-label fw-semibold">
+                                                Nombre del Producto <span class="text-danger">*</span>
+                                            </label>
                                             <input type="text" class="form-control"
-                                                [(ngModel)]="productoEditadoLocal.name" name="editName"
-                                                placeholder="Nombre del Producto" required />
+                                                [(ngModel)]="formData.nombreProducto" name="editNombre"
+                                                placeholder="Nombre del Producto" required #editNombre="ngModel"
+                                                [class.is-invalid]="editNombre.invalid && editNombre.touched" />
+                                            <div *ngIf="editNombre.invalid && editNombre.touched"
+                                                class="invalid-feedback">
+                                                El nombre es obligatorio
+                                            </div>
                                         </div>
+
+                                        <!-- Código -->
                                         <div class="col-12">
-                                            <label class="form-label fw-semibold">Código / SKU <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" class="form-control"
-                                                [(ngModel)]="productoEditadoLocal.sku" name="editSku"
-                                                placeholder="Código / SKU" required />
+                                            <label class="form-label fw-semibold">Código / SKU</label>
+                                            <input type="text" class="form-control" [(ngModel)]="formData.codigo"
+                                                name="editCodigo" placeholder="Código / SKU" />
+                                            <div class="form-text">Identificador único</div>
                                         </div>
+
+                                        <!-- Categoría -->
                                         <div class="col-12">
-                                            <label class="form-label fw-semibold">Categoría <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select" [(ngModel)]="productoEditadoLocal.category"
-                                                name="editCategory" required>
-                                                <option value="" disabled>Selecciona una categoría</option>
-                                                <option *ngFor="let cat of categorias" [value]="cat">
-                                                    {{ cat }}
+                                            <label class="form-label fw-semibold">
+                                                Categoría <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-select" [(ngModel)]="formData.idCategoria"
+                                                name="editCategoria" required #editCategoria="ngModel"
+                                                [class.is-invalid]="editCategoria.invalid && editCategoria.touched">
+                                                <option [value]="0" disabled>Selecciona una categoría</option>
+                                                <option *ngFor="let cat of categorias" [value]="cat.idCategoria">
+                                                    {{ cat.nombreCategoria }}
                                                 </option>
                                             </select>
+                                            <div *ngIf="editCategoria.invalid && editCategoria.touched"
+                                                class="invalid-feedback">
+                                                Debes seleccionar una categoría
+                                            </div>
+                                        </div>
+
+                                        <!-- Marca -->
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Marca</label>
+                                            <input type="text" class="form-control" [(ngModel)]="formData.marca"
+                                                name="editMarca" placeholder="Marca del producto" />
                                         </div>
                                     </div>
                                 </div>
 
+                                <!-- SECCIÓN: Precios e Inventario -->
                                 <div class="col-lg-4 col-md-6">
-                                    <h6 class="fw-bold text-secondary mb-3">Precios e Inventario</h6>
+                                    <h6 class="fw-bold text-secondary mb-3">
+                                        <i class="bi bi-currency-dollar me-2"></i>Precios e Inventario
+                                    </h6>
                                     <div class="row g-3">
+
+                                        <!-- Precio -->
                                         <div class="col-12">
-                                            <label class="form-label fw-semibold">Precio Unitario (S/. ) <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="number" class="form-control"
-                                                [(ngModel)]="productoEditadoLocal.price" name="editPrice" step="0.01"
-                                                min="0" required />
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Stock Total <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="number" class="form-control"
-                                                [(ngModel)]="productoEditadoLocal.stock" name="editStock" min="0"
-                                                required />
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-check form-switch mt-2">
-                                                <input class="form-check-input" type="checkbox"
-                                                    id="editActivarPrecioPorPaquete"
-                                                    [(ngModel)]="productoEditadoLocal.activarPrecioPorPaquete"
-                                                    name="editActivarPrecioPorPaquete" />
-                                                <label class="form-check-label fw-medium"
-                                                    for="editActivarPrecioPorPaquete">
-                                                    Activar Precio por Docena/Paquete
-                                                </label>
+                                            <label class="form-label fw-semibold">
+                                                Precio Unitario (S/.) <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="number" class="form-control" [(ngModel)]="formData.precio"
+                                                name="editPrecio" step="0.01" min="0.01" required #editPrecio="ngModel"
+                                                [class.is-invalid]="editPrecio.invalid && editPrecio.touched" />
+                                            <div *ngIf="editPrecio.invalid && editPrecio.touched"
+                                                class="invalid-feedback">
+                                                El precio debe ser mayor a 0
                                             </div>
-                                            <div *ngIf="productoEditadoLocal.activarPrecioPorPaquete" class="mt-2">
-                                                <label class="form-label fw-semibold">Precio por Docena/Paquete (S/.
-                                                    )</label>
-                                                <input type="number" class="form-control"
-                                                    [(ngModel)]="productoEditadoLocal.precioPorPaquete"
-                                                    name="editPrecioPorPaquete" step="0.01" min="0" required />
+                                        </div>
+
+                                        <!-- Stock -->
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">
+                                                Stock Total <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="number" class="form-control" [(ngModel)]="formData.stock"
+                                                name="editStock" min="0" required #editStock="ngModel"
+                                                [class.is-invalid]="editStock.invalid && editStock.touched" />
+                                            <div *ngIf="editStock.invalid && editStock.touched"
+                                                class="invalid-feedback">
+                                                El stock no puede ser negativo
                                             </div>
+                                            <div *ngIf="formData.stock !== undefined && formData.stock < 10"
+                                                class="form-text text-warning">
+                                                <i class="bi bi-exclamation-triangle me-1"></i>Stock bajo
+                                            </div>
+                                        </div>
+
+                                        <!-- Stock Mínimo -->
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Stock Mínimo</label>
+                                            <input type="number" class="form-control" [(ngModel)]="formData.stockMinimo"
+                                                name="editStockMinimo" min="1" />
+                                            <div class="form-text">Alerta cuando el stock sea ≤ este valor</div>
                                         </div>
                                     </div>
                                 </div>
 
+                                <!-- SECCIÓN: Imagen Principal -->
                                 <div class="col-lg-4 col-12">
-                                    <h6 class="fw-bold text-secondary mb-3">Imagen Principal</h6>
-                                    <div class="imagen-dropzone"
-                                        (click)="!productoEditadoLocal.imagenPreview && fileInput.click()"
+                                    <h6 class="fw-bold text-secondary mb-3">
+                                        <i class="bi bi-image me-2"></i>Imagen Principal
+                                    </h6>
+                                    <div class="imagen-dropzone" (click)="!formData.imagenPreview && fileInput.click()"
                                         (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
-                                        (drop)="onDrop($event)">
-                                        <input type="file" #fileInput style="display: none;"
+                                        (drop)="onDrop($event)" [class.border-success]="formData.imagenPreview">
+
+                                        <input type="file" #fileInput class="input-file"
                                             (change)="onFileSelected($event)" accept="image/*" />
 
-                                        <img *ngIf="productoEditadoLocal.imagenPreview || productoEditadoLocal.image"
-                                            [src]="productoEditadoLocal.imagenPreview || productoEditadoLocal.image"
+                                        <!-- Preview existente o nueva -->
+                                        <img *ngIf="formData.imagenPreview" [src]="formData.imagenPreview"
                                             alt="Previsualización" class="preview-imagen" />
 
-                                        <button *ngIf="productoEditadoLocal.imagenPreview || productoEditadoLocal.image"
-                                            type="button" class="btn btn-sm btn-danger"
+                                        <!-- Botón eliminar -->
+                                        <button *ngIf="formData.imagenPreview" type="button"
+                                            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
                                             (click)="eliminarImagen($event)">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
-                                        <div *ngIf="!productoEditadoLocal.imagenPreview && !productoEditadoLocal.image"
-                                            class="contenido-dropzone">
-                                            <i class="bi bi-cloud-arrow-up-fill"></i>
-                                            <p>Arrastra o <strong>selecciona</strong></p>
+
+                                        <!-- Zona vacía -->
+                                        <div *ngIf="!formData.imagenPreview" class="contenido-dropzone">
+                                            <i class="bi bi-cloud-arrow-up-fill display-4 text-muted"></i>
+                                            <p class="mt-2">Arrastra o <strong>haz clic</strong> para cambiar</p>
+                                            <small class="text-muted">JPG, PNG (Máx. 5MB)</small>
                                         </div>
                                     </div>
-                                    <p *ngIf="productoEditadoLocal.imagenFileName"
-                                        class="mt-2 mb-0 text-dark small text-center">
-                                        {{ productoEditadoLocal.imagenFileName }}
+
+                                    <!-- Nombre archivo -->
+                                    <p *ngIf="formData.imagenFileName" class="mt-2 mb-0 text-dark small text-center">
+                                        <i class="bi bi-file-earmark-image me-1"></i>{{ formData.imagenFileName }}
                                     </p>
                                 </div>
 
-                                <div class="col-md-9">
-                                    <label class="form-label fw-semibold">Descripción Detallada</label>
-                                    <textarea class="form-control" [(ngModel)]="productoEditadoLocal.description"
-                                        name="editDescription" rows="3"></textarea>
-                                </div>
-
-                                <div class="col-md-3 d-flex align-items-end">
-                                    <div class="form-check form-switch w-100 mb-1">
-                                        <input class="form-check-input" type="checkbox" id="editEstado"
-                                            [(ngModel)]="productoEditadoLocal.estado" name="editEstado" />
-                                        <label class="form-check-label fw-semibold" for="editEstado">
-                                            Producto Activo
-                                        </label>
+                                <!-- Descripción -->
+                                <div class="col-12">
+                                    <h6 class="fw-bold text-secondary mb-3">
+                                        <i class="bi bi-card-text me-2"></i>Descripción
+                                    </h6>
+                                    <textarea class="form-control" [(ngModel)]="formData.descripcionProducto"
+                                        name="editDescripcion" rows="4" placeholder="Describe el producto..."
+                                        maxlength="500"></textarea>
+                                    <div class="form-text text-end">
+                                        {{ formData.descripcionProducto?.length || 0 }} / 500 caracteres
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- TAB 2: Variaciones y Stock -->
                         <div class="tab-pane fade" id="variaciones-stock" role="tabpanel"
                             aria-labelledby="variaciones-tab">
-                            <h6 class="fw-bold text-secondary mb-3">Gestión de Variaciones</h6>
 
-                            <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" id="editHasSizes"
-                                    [(ngModel)]="productoEditadoLocal.hasSizes" name="editHasSizes"
-                                    (change)="onTieneTallasChange()" />
-                                <label class="form-check-label" for="editHasSizes">Tiene Tallas</label>
+                            <h6 class="fw-bold text-secondary mb-3">
+                                <i class="bi bi-tags me-2"></i>Gestión de Variaciones
+                            </h6>
+
+                            <!-- Toggle Variantes -->
+                            <div class="form-check form-switch mb-3 p-3 bg-light rounded">
+                                <input class="form-check-input" type="checkbox" id="editTieneVariantes"
+                                    [(ngModel)]="formData.tieneVariantes" name="editTieneVariantes"
+                                    (change)="onTieneVariantesChange()" />
+                                <label class="form-check-label fw-semibold" for="editTieneVariantes">
+                                    Este producto tiene variantes (tallas, colores, etc.)
+                                </label>
                             </div>
 
-                            <div *ngIf="productoEditadoLocal.hasSizes" class="mb-4 p-3 border rounded bg-light">
-                                <label class="fw-semibold mb-2">Tallas disponibles (Separadas por comas):</label>
-                                <input type="text" class="form-control" placeholder="Ej: S, M, L, XL"
-                                    [(ngModel)]="tallasInput" name="editTallasInput" required />
-                                <div class="form-text mt-1">Edita las tallas separadas por comas (ej: S, M, L).</div>
-                            </div>
+                            <!-- Contenido de Variantes -->
+                            <div *ngIf="formData.tieneVariantes">
+                                <div class="row g-3">
 
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="editHasColors"
-                                    [(ngModel)]="productoEditadoLocal.hasColors" name="editHasColors"
-                                    (change)="onTieneColoresChange()" />
-                                <label class="form-check-label" for="editHasColors">Tiene Colores</label>
-                            </div>
+                                    <!-- Tallas -->
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded bg-light">
+                                            <label class="fw-semibold mb-2">
+                                                <i class="bi bi-rulers me-1"></i>Tallas (separadas por comas)
+                                            </label>
+                                            <input type="text" class="form-control" placeholder="Ej: S, M, L, XL"
+                                                [(ngModel)]="tallasInput" name="editTallasInput" />
+                                            <div class="form-text mt-1">
+                                                Edita las tallas separadas por comas
+                                            </div>
+                                            <!-- Preview de tallas actuales -->
+                                            <div *ngIf="tallasInput" class="mt-2">
+                                                <small class="text-muted d-block mb-1">Vista previa:</small>
+                                                <span *ngFor="let talla of tallasInput.split(','); let i = index"
+                                                    class="badge bg-secondary me-1 mb-1">
+                                                    {{ talla.trim() }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            <div *ngIf="productoEditadoLocal.hasColors" class="mb-4 p-3 border rounded bg-light">
-                                <label class="fw-semibold mb-2">Colores disponibles (Separados por comas):</label>
-                                <input type="text" class="form-control" placeholder="Ej: Rojo, Azul, Negro"
-                                    [(ngModel)]="coloresInput" name="editColoresInput" required />
-                                <div class="form-text mt-1">Edita los colores separados por comas (ej: Rojo, Azul).
+                                    <!-- Colores -->
+                                    <div class="col-md-6">
+                                        <div class="p-3 border rounded bg-light">
+                                            <label class="fw-semibold mb-2">
+                                                <i class="bi bi-palette me-1"></i>Colores (separados por comas)
+                                            </label>
+                                            <input type="text" class="form-control" placeholder="Ej: Rojo, Azul, Negro"
+                                                [(ngModel)]="coloresInput" name="editColoresInput" />
+                                            <div class="form-text mt-1">
+                                                Edita los colores separados por comas
+                                            </div>
+                                            <!-- Preview de colores actuales -->
+                                            <div *ngIf="coloresInput" class="mt-2">
+                                                <small class="text-muted d-block mb-1">Vista previa:</small>
+                                                <span *ngFor="let color of coloresInput.split(','); let i = index"
+                                                    class="badge bg-primary me-1 mb-1">
+                                                    {{ color.trim() }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Advertencia si no hay variantes -->
+                                    <div class="col-12" *ngIf="!tallasInput && !coloresInput">
+                                        <div class="alert alert-warning" role="alert">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            Debes ingresar al menos tallas o colores para las variantes
+                                        </div>
+                                    </div>
+
+                                    <!-- Info sobre combinaciones -->
+                                    <div class="col-12" *ngIf="tallasInput && coloresInput">
+                                        <div class="alert alert-info" role="alert">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            Se crearán <strong>{{ tallasInput.split(',').length *
+                                                coloresInput.split(',').length }}</strong>
+                                            combinaciones de variantes
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lista de variantes existentes (si hay) -->
+                                <div *ngIf="formData.variantes && formData.variantes.length > 0" class="mt-4">
+                                    <h6 class="fw-bold text-secondary mb-3">
+                                        <i class="bi bi-list-check me-2"></i>Variantes Actuales
+                                    </h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>SKU</th>
+                                                    <th>Talla</th>
+                                                    <th>Color</th>
+                                                    <th>Stock Adicional</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let variante of formData.variantes">
+                                                    <td><code class="small">{{ variante.sku || '-' }}</code></td>
+                                                    <td>{{ variante.talla || '-' }}</td>
+                                                    <td>{{ variante.color || '-' }}</td>
+                                                    <td>
+                                                        <span class="badge"
+                                                            [class.bg-success]="(variante.stockAdicional || 0) > 10"
+                                                            [class.bg-warning]="(variante.stockAdicional || 0) > 0 && (variante.stockAdicional || 0) <= 10"
+                                                            [class.bg-danger]="(variante.stockAdicional || 0) === 0">
+                                                            {{ variante.stockAdicional || 0 }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="alert alert-light border" role="alert">
+                                        <small class="text-muted">
+                                            <i class="bi bi-lightbulb me-1"></i>
+                                            <strong>Nota:</strong> Las variantes se actualizarán cuando guardes los
+                                            cambios.
+                                            El stock adicional se mantendrá si las variantes ya existen.
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Mensaje cuando no hay variantes -->
+                            <div *ngIf="!formData.tieneVariantes" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox display-4"></i>
+                                <p class="mt-3">Este producto no tiene variantes configuradas</p>
+                                <p class="small">Activa el switch arriba para agregar tallas o colores</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Footer del Modal -->
                 <div class="modal-footer d-flex justify-content-between p-3 border-top">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-lg me-2"></i> Cancelar
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                        [disabled]="isLoading">
+                        <i class="bi bi-x-lg me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn text-white shadow-sm" style="background-color: #28a745;">
-                        <i class="bi bi-check-lg me-2"></i> Guardar Cambios
+                    <button type="submit" class="btn text-white shadow-sm btn-guardar" 
+                        [disabled]="!editForm.valid || isLoading">
+                        <span *ngIf="!isLoading">
+                            <i class="bi bi-check-lg me-2"></i>Guardar Cambios
+                        </span>
+                        <span *ngIf="isLoading">
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            Guardando...
+                        </span>
                     </button>
                 </div>
             </form>

@@ -1,9 +1,9 @@
+// src/app/core/services/productos/producto-management.service.ts
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, switchMap } from 'rxjs';
 import { ProductoService } from './producto.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { Producto, ProductoDetalle } from '@core/models/productos/producto-backend.model';
-import { Product, ProductAdapterService } from './producto-adapter.service';
+import { Producto, ProductoDetalle, ProductoRequest, ProductoUpdateRequest } from '@core/models/productos/producto-backend.model';
 
 
 @Injectable({
@@ -12,84 +12,65 @@ import { Product, ProductAdapterService } from './producto-adapter.service';
 export class ProductoManagementService {
     private productoService = inject(ProductoService);
     private cloudinaryService = inject(CloudinaryService);
-    private adapterService = inject(ProductAdapterService);
 
-
-
-    // MÉTODO PRINCIPAL: AGREGAR PRODUCTO
-
-    // Recibe un objeto Product con toda la información del producto.
-    // 1. Prepara los datos para el backend (limpia y estructura).
-    // 2. Si existe una imagen local, la sube a Cloudinary.
-    // 3. Una vez subida, guarda el producto final en la API.
-    public addProduct(producto: Product): Observable<Producto> {
-        const productoAEnviar = this.prepareProductForApi(producto);
-
-        const upload$ = productoAEnviar.imagenFile instanceof File
-            ? this.cloudinaryService.subirImagen(productoAEnviar.imagenFile, productoAEnviar.category.toLowerCase())
+    /**
+    * Agregar producto con imagen opcional
+    * @param request - Datos del producto a crear
+    * @param imagenFile - Archivo de imagen opcional
+    */
+    public addProduct(request: ProductoRequest, imagenFile?: File): Observable<Producto> {
+        // Si hay imagen, subirla primero
+        const upload$ = imagenFile instanceof File
+            ? this.cloudinaryService.subirImagen(imagenFile, 'productos')
             : of(null);
 
         return upload$.pipe(
             switchMap(uploadResult => {
-                if (uploadResult && uploadResult.secure_url) {
-                    productoAEnviar.image = uploadResult.secure_url;
-                } else if (!productoAEnviar.image) {
-                    productoAEnviar.image = '';
+                // Si se subió imagen, agregar URL al request
+                if (uploadResult?.secure_url) {
+                    if (!request.imagenesUrls) {
+                        request.imagenesUrls = [];
+                    }
+                    request.imagenesUrls.unshift(uploadResult.secure_url); // Agregar como primera imagen
                 }
 
-                delete productoAEnviar.imagenFile;
-                delete productoAEnviar.imagenPreview;
-                delete productoAEnviar.imagenFileName;
-
-                // Convertir a ProductoRequest usando el adapter
-                const productoRequest = this.adapterService.productToProductoRequest(productoAEnviar);
-                return this.productoService.crearProducto(productoRequest);
+                // Crear producto en el backend
+                return this.productoService.crearProducto(request);
             })
         );
     }
 
 
-    // MÉTODO PRINCIPAL: EDITAR PRODUCTO
-    // Recibe un producto con modificaciones. 
-    // 1. Si el usuario cambió la imagen, la sube primero.
-    // 2. Luego, envía la información actualizada a la API.
-    public updateProduct(producto: Product): Observable<Producto> {
-        const productoAEnviar = this.prepareProductForApi(producto);
-
-        const upload$ = productoAEnviar.imagenFile instanceof File
-            ? this.cloudinaryService.subirImagen(productoAEnviar.imagenFile, productoAEnviar.category.toLowerCase())
+    /**
+    * Actualizar producto con imagen opcional
+    * @param id - ID del producto a actualizar
+    * @param updateRequest - Datos a actualizar
+    * @param imagenFile - Archivo de imagen opcional (reemplazará la principal)
+    */
+    public updateProduct(
+        id: number,
+        updateRequest: ProductoUpdateRequest,
+        imagenFile?: File
+    ): Observable<Producto> {
+        const upload$ = imagenFile instanceof File
+            ? this.cloudinaryService.subirImagen(imagenFile, 'productos')
             : of(null);
 
         return upload$.pipe(
             switchMap(uploadResult => {
-                if (uploadResult && uploadResult.secure_url) {
-                    productoAEnviar.image = uploadResult.secure_url;
-                }
+                // Nota: La lógica de actualización de imagen principal 
+                // debería manejarse en el backend (MongoDB)
+                // Aquí solo enviamos los datos básicos de PostgreSQL
 
-                delete productoAEnviar.imagenFile;
-                delete productoAEnviar.imagenPreview;
-                delete productoAEnviar.imagenFileName;
-
-                // Convertir a ProductoUpdateRequest usando el adapter
-                const productoUpdateRequest = this.adapterService.productToProductoUpdateRequest(productoAEnviar);
-                return this.productoService.actualizarProducto(productoAEnviar.id, productoUpdateRequest);
+                return this.productoService.actualizarProducto(id, updateRequest);
             })
         );
     }
 
-    // Obtener producto como modelo v2
-    public getProductAsV2(productoDetalle: ProductoDetalle): Product {
-        return this.adapterService.productoDetalleToProduct(productoDetalle);
-    }
-
-
-    // FUNCIÓN INTERNA DE PREPARACIÓN DE DATOS
-    private prepareProductForApi(producto: Product): Product {
-        const productoAEnviar = { ...producto };
-
-        productoAEnviar.hasSizes = (productoAEnviar.sizes && productoAEnviar.sizes.length > 0) || false;
-        productoAEnviar.hasColors = (productoAEnviar.colors && productoAEnviar.colors.length > 0) || false;
-
-        return productoAEnviar;
+    /**
+     * Eliminar producto
+     */
+    public deleteProduct(id: number): Observable<any> {
+        return this.productoService.eliminarProducto(id);
     }
 }

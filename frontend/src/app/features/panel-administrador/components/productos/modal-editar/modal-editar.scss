@@ -1,20 +1,43 @@
+$fondo-principal: #28a745;
+
+.modal-header {
+    background-color: $fondo-principal;
+}
+
+.position-absolute {
+    z-index: 1000;
+}
+
+.tab-content {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.input-file {
+    display: none;
+}
+
+.btn-guardar{
+    background-color: $fondo-principal;
+}
+
 .imagen-dropzone {
-  
-    height: 200px; 
+
+    height: 200px;
     border: 2px dashed #ced4da;
     border-radius: 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    position: relative; 
-    overflow: hidden; 
+    position: relative;
+    overflow: hidden;
 
     .preview-imagen {
-      
+
         max-width: 100%;
         max-height: 100%;
-        object-fit: contain; 
+        object-fit: contain;
         border-radius: 0.25rem;
     }
 

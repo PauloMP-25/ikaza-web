@@ -15,7 +15,7 @@ import { ProductosListaComponent } from '@shared/components/productoSpringBoot/p
 
 export const routes: Routes = [
     // Rutas públicas
-    { path: '', component: HomeComponent },
+    { path: 'home', component: HomeComponent },
     {
         path: 'home',
         loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
