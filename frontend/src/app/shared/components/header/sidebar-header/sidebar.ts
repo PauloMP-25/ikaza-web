@@ -4,13 +4,13 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { SearchService } from '@core/services/busqueda/search.service';
-import { NavbarAuthComponent } from "../navbar/navbar-auth/navbar-auth";
+import { NavbarLinksComponent } from "../navbar/navbar-links/navbar-links";
 
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NavbarAuthComponent],
+  imports: [CommonModule, RouterModule, FormsModule, NavbarLinksComponent],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.scss']
 })
