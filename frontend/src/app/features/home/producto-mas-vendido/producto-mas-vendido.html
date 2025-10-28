@@ -46,6 +46,72 @@
                 class="img-fluid rounded product-image" loading="lazy" />
         </div>
     </div>
+    <!-- === Comentarios de clientes === -->
+<section class="mt-5 comentarios" *ngIf="product">
+  <h4 class="fw-bold text-success">Comentarios de Clientes</h4>
+
+  <!-- Resumen de valoraciones -->
+  <div *ngIf="reviews.length > 0; else sinComentarios" class="mb-4">
+    <p class="mb-1">
+      Valoración promedio:
+      <span class="fw-bold">{{ averageRating }}</span> ⭐ ({{ reviews.length }} comentarios)
+    </p>
+  </div>
+
+  <!-- Estado vacío -->
+  <ng-template #sinComentarios>
+    <p class="text-muted">Sé el primero en comentar.</p>
+  </ng-template>
+
+  <!-- Listado de comentarios -->
+  <div *ngFor="let r of reviews" class="comentario border rounded p-3 mb-2">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <span class="fw-semibold">{{ r.name }}</span>
+      <span class="text-warning">
+        <!-- estrellas llenas / vacías -->
+        <ng-container *ngFor="let s of [1,2,3,4,5]">
+          <span [class.fw-bold]="s <= r.rating">
+            {{ s <= r.rating ? '★' : '☆' }}
+          </span>
+        </ng-container>
+      </span>
+    </div>
+    <p class="mb-1">{{ r.comment }}</p>
+    <small class="text-muted">{{ r.createdAt | date:'short' }}</small>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Formulario para agregar comentario -->
+  <form [formGroup]="reviewForm" (ngSubmit)="addReview()" class="p-3 border rounded bg-light">
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Nombre</label>
+      <input formControlName="name" type="text" class="form-control" placeholder="Tu nombre" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Valoración</label>
+      <div class="rating">
+        <ng-container *ngFor="let star of [1,2,3,4,5]">
+          <span class="star"
+                (click)="reviewForm.patchValue({ rating: star })"
+                [class.selected]="reviewForm.value.rating >= star">★</span>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Comentario</label>
+      <textarea formControlName="comment" class="form-control" rows="3"
+                placeholder="Escribe tu opinión..."></textarea>
+    </div>
+
+    <button class="btn btn-success" type="submit" [disabled]="reviewForm.invalid">
+      Publicar comentario
+    </button>
+  </form>
+</section>
+
 
     <div *ngIf="!product">
         <p class="alert alert-warning">No se pudo cargar el producto más vendido en este momento.</p>
