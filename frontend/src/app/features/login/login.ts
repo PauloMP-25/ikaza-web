@@ -1,14 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-// ⚠️ Ya NO necesitamos importar ModalLoginComponent
-// import { ModalLoginComponent } from './modal_login/modal_login'; 
 import { ModalService } from '@core/services/auth/modal.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  // ⚠️ Ya NO necesitamos ModalLoginComponent aquí
   imports: [CommonModule],
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
@@ -17,12 +14,7 @@ import { ModalService } from '@core/services/auth/modal.service';
 export class LoginComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private modalService = inject(ModalService); // 🔑 Inyectar el servicio
-
-  // ⚠️ Las propiedades de estado para el modal ya NO son necesarias
-  // showModal = false;
-  // returnUrl = '';
-  // infoMessage = '';
+  private modalService = inject(ModalService);
 
   ngOnInit(): void {
     // Suscribirse a los query parameters para obtener datos del Guard
@@ -52,7 +44,4 @@ export class LoginComponent implements OnInit {
       }
     });
   }
-
-  // ⚠️ La función onModalClose ya NO es necesaria
-  // onModalClose(wasLoginSuccess: boolean): void { /* ... */ }
 }

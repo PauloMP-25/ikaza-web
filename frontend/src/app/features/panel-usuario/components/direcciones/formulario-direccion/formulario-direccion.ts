@@ -1,10 +1,12 @@
 // formulario-direccion.component.ts
-import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Direccion, AddressInfo } from '@core/models/direcciones/direccion.model';
-import { GoogleMapsService, PlacePrediction } from '@core/services/mapas/google-maps';
+import { PlacePrediction } from '@core/models/direcciones/dtos-google-maps';
+import { GoogleMapsService } from '@core/services/mapas/google-maps';
 import { MapaModal } from '../mapa-modal/mapa-modal';
+
 
 @Component({
   selector: 'app-formulario-direccion',
@@ -60,11 +62,31 @@ export class FormularioDireccion implements OnInit {
     }
   }
 
+  /**
+   * NUEVO: Detecta cambios en @Input() direccionParaEditar
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['direccionParaEditar'] && changes['direccionParaEditar'].currentValue) {
+      this.cargarDireccionParaEditar();
+    }
+
+    //Resetear cuando se cancela la edición
+    if (changes['editMode'] && !changes['editMode'].currentValue && changes['editMode'].previousValue) {
+      this.resetForm();
+    }
+  }
+
+  /**
+   * ✅ MEJORADO: Carga la dirección en el formulario y prepara coordenadas
+  */
   private cargarDireccionParaEditar(): void {
     if (!this.direccionParaEditar) return;
 
     const direccion = this.direccionParaEditar;
 
+    console.log('📝 Cargando dirección para editar:', direccion);
+
+    // ✅ Cargar valores en el formulario
     this.direccionForm.patchValue({
       alias: direccion.alias || '',
       direccion: direccion.direccion || '',
@@ -79,17 +101,37 @@ export class FormularioDireccion implements OnInit {
       esPrincipal: direccion.esPrincipal || false
     });
 
-    // Guardar coordenadas actuales si existen
+    // ✅ Configurar coordenadas actuales si existen
     if (direccion.latitud && direccion.longitud) {
       this.coordenadasActuales = {
         lat: direccion.latitud,
         lng: direccion.longitud
       };
+
+      console.log('🗺️ Coordenadas cargadas:', this.coordenadasActuales);
+
+      //Opcional: Precargar barra de búsqueda con dirección completa
+      this.searchQuery = this.construirDireccionCompleta(direccion);
     }
   }
-  
+
+  /**
+   * NUEVO: Construye una representación legible de la dirección
+   */
+  private construirDireccionCompleta(direccion: Direccion): string {
+    const partes = [
+      direccion.direccion,
+      direccion.distrito,
+      direccion.provincia,
+      direccion.region,
+      direccion.pais
+    ].filter(Boolean);
+
+    return partes.join(', ');
+  }
+
   // ========== MÉTODO 1: BÚSQUEDA EN BARRA DEL FORMULARIO ==========
-  
+
   /**
    * Búsqueda en Google Maps (barra del formulario)
    */
@@ -104,7 +146,7 @@ export class FormularioDireccion implements OnInit {
           this.showSearchResults = predictions.length > 0;
         },
         error: (error) => {
-          console.error('Error en búsqueda:', error);
+          console.error('❌ Error en búsqueda:', error);
           this.placePredictions = [];
           this.showSearchResults = false;
         }
@@ -116,99 +158,151 @@ export class FormularioDireccion implements OnInit {
   }
 
   /**
-   * Seleccionar un lugar de Google Maps (desde barra)
+   * CORREGIDO: Seleccionar un lugar y autocompletar TODOS los campos
    */
   selectPlace(place: PlacePrediction): void {
+    console.log('📍 Lugar seleccionado:', place.description);
+
     this.googleMapsService.getPlaceDetailsByPlaceId(place.placeId).subscribe({
       next: (addressInfo) => {
         if (addressInfo) {
+          console.log('Detalles obtenidos:', addressInfo);
           this.selectedPlace = addressInfo;
           this.autoCompletarDesdeGoogle(addressInfo);
+        } else {
+          console.warn('No se obtuvieron detalles del lugar');
         }
         this.showSearchResults = false;
         this.searchQuery = place.description;
       },
       error: (error) => {
-        console.error('Error al obtener detalles:', error);
+        console.error('❌ Error al obtener detalles:', error);
+        this.showSearchResults = false;
       }
     });
   }
 
   /**
-   * Autocompletar formulario con datos de Google Maps (barra de búsqueda)
+   * MEJORADO: Autocompletar formulario INMEDIATAMENTE con TODOS los datos
    */
   private autoCompletarDesdeGoogle(addressInfo: AddressInfo): void {
-    setTimeout(() => {
-      this.direccionForm.patchValue({
-        direccion: `${addressInfo.calle || ''} ${addressInfo.numero || ''}`.trim() || addressInfo.direccionCompleta,
-        referencia: addressInfo.referencia || this.direccionForm.get('referencia')?.value,
-        codigoPostal: addressInfo.codigoPostal || '',
-        pais: addressInfo.pais || 'Perú',
-        region: addressInfo.region || '',
-        provincia: addressInfo.provincia || '',
-        distrito: addressInfo.distrito || '',
-      });
-      
-      if (addressInfo.coords) {
-        this.direccionForm.patchValue({
-          latitud: addressInfo.coords.lat,
-          longitud: addressInfo.coords.lng
-        });
-        this.coordenadasActuales = addressInfo.coords;
-        
-        // Geocodificación para mejorar datos
-        this.googleMapsService.geocodeByCoords(
-          addressInfo.coords.lat,
-          addressInfo.coords.lng
-        ).subscribe(enhancedInfo => {
-          if (enhancedInfo) {
-            this.mejorarDatosUbicacion(enhancedInfo);
-          }
-        });
-      } else {
-        this.selectedPlace = addressInfo;
-      }
-    }, 100);
-  }
+    console.log('🔄 Iniciando autocompletado con:', addressInfo);
 
-  /**
-   * Mejorar datos de ubicación con geocodificación inversa
-   */
-  private mejorarDatosUbicacion(addressInfo: AddressInfo): void {
-    console.log('🔍 Mejorando datos de ubicación:', addressInfo);
+    // Construir dirección específica
+    let direccionEspecifica = '';
+    if (addressInfo.calle && addressInfo.numero) {
+      direccionEspecifica = `${addressInfo.calle} ${addressInfo.numero}`.trim();
+    } else if (addressInfo.calle) {
+      direccionEspecifica = addressInfo.calle;
+    } else {
+      direccionEspecifica = addressInfo.direccionCompleta || '';
+    }
 
-    const calleCompleta = addressInfo.calle || '';
-    const direccionRefinada = calleCompleta.includes(addressInfo.numero || '')
-      ? calleCompleta
-      : `${calleCompleta} ${addressInfo.numero || ''}`.trim();
+    console.log('📝 Dirección específica construida:', direccionEspecifica);
 
-    this.selectedPlace = {
-      direccionCompleta: addressInfo.direccionCompleta || direccionRefinada || '',
-      calle: direccionRefinada,
-      numero: addressInfo.numero || null,
+    // Preparar datos para actualizar
+    const datosActualizados = {
+      direccion: direccionEspecifica,
       distrito: addressInfo.distrito || '',
       provincia: addressInfo.provincia || '',
       region: addressInfo.region || '',
       pais: addressInfo.pais || 'Perú',
       codigoPostal: addressInfo.codigoPostal || '',
-      coords: addressInfo.coords,
-      referencia: addressInfo.referencia || ''
+      referencia: this.direccionForm.get('referencia')?.value || addressInfo.referencia || ''
     };
 
-    this.direccionForm.patchValue({
-      region: this.selectedPlace.region,
-      provincia: this.selectedPlace.provincia,
-      distrito: this.selectedPlace.distrito,
-      pais: this.selectedPlace.pais,
-      codigoPostal: this.selectedPlace.codigoPostal
-    });
+    console.log('📋 Datos a actualizar en formulario:', datosActualizados);
 
-    console.log('✅ Datos mejorados y seteados en form:', this.selectedPlace);
+    // Actualizar formulario INMEDIATAMENTE
+    this.direccionForm.patchValue(datosActualizados);
+
+    // Actualizar coordenadas si existen
+    if (addressInfo.coords) {
+      this.direccionForm.patchValue({
+        latitud: addressInfo.coords.lat,
+        longitud: addressInfo.coords.lng
+      });
+      this.coordenadasActuales = addressInfo.coords;
+
+      console.log('📍 Coordenadas actualizadas:', this.coordenadasActuales);
+
+      // Geocodificación inversa para mejorar datos (opcional)
+      this.googleMapsService.geocodeByCoords(
+        addressInfo.coords.lat,
+        addressInfo.coords.lng
+      ).subscribe({
+        next: (enhancedInfo) => {
+          if (enhancedInfo) {
+            console.log('🔍 Datos mejorados con geocodificación:', enhancedInfo);
+            this.mejorarDatosUbicacion(enhancedInfo);
+          }
+        },
+        error: (err) => {
+          console.warn('⚠️ No se pudo mejorar con geocodificación:', err);
+        }
+      });
+    }
+
+    // LOG FINAL para verificar
+    console.log('Formulario actualizado. Valores actuales:', {
+      direccion: this.direccionForm.get('direccion')?.value,
+      distrito: this.direccionForm.get('distrito')?.value,
+      provincia: this.direccionForm.get('provincia')?.value,
+      region: this.direccionForm.get('region')?.value,
+      pais: this.direccionForm.get('pais')?.value,
+      codigoPostal: this.direccionForm.get('codigoPostal')?.value
+    });
   }
 
   /**
-   * Cierra el dropdown al hacer clic fuera
+   * MEJORADO: Mejorar datos sin sobrescribir lo que ya está bien
    */
+  private mejorarDatosUbicacion(addressInfo: AddressInfo): void {
+    console.log('🔍 Mejorando datos de ubicación:', addressInfo);
+
+    const formValues = this.direccionForm.value;
+
+    // Solo actualizar campos vacíos o mejorar datos existentes
+    const updates: any = {};
+
+    if (!formValues.distrito || formValues.distrito.trim() === '') {
+      updates.distrito = addressInfo.distrito || '';
+    }
+
+    if (!formValues.provincia || formValues.provincia.trim() === '') {
+      updates.provincia = addressInfo.provincia || '';
+    }
+
+    if (!formValues.region || formValues.region.trim() === '') {
+      updates.region = addressInfo.region || '';
+    }
+
+    if (!formValues.codigoPostal || formValues.codigoPostal.trim() === '') {
+      updates.codigoPostal = addressInfo.codigoPostal || '';
+    }
+
+    // Actualizar solo si hay cambios
+    if (Object.keys(updates).length > 0) {
+      console.log('🔄 Actualizando campos vacíos:', updates);
+      this.direccionForm.patchValue(updates);
+    }
+
+    this.selectedPlace = {
+      direccionCompleta: addressInfo.direccionCompleta || '',
+      calle: addressInfo.calle,
+      numero: addressInfo.numero,
+      distrito: addressInfo.distrito || formValues.distrito || '',
+      provincia: addressInfo.provincia || formValues.provincia || '',
+      region: addressInfo.region || formValues.region || '',
+      pais: addressInfo.pais || 'Perú',
+      codigoPostal: addressInfo.codigoPostal || formValues.codigoPostal || '',
+      coords: addressInfo.coords,
+      referencia: addressInfo.referencia || formValues.referencia || ''
+    };
+
+    console.log('Datos finales mejorados:', this.selectedPlace);
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const clickedInside = this.searchResults?.nativeElement.contains(event.target) ||
@@ -231,12 +325,15 @@ export class FormularioDireccion implements OnInit {
   // ========== MÉTODO 2: MODAL DEL MAPA ==========
 
   abrirModalMapa(): void {
-    // Si hay coordenadas en el formulario, usarlas
+    //Si hay coordenadas en el formulario, usarlas
     const lat = this.direccionForm.get('latitud')?.value;
     const lng = this.direccionForm.get('longitud')?.value;
 
     if (lat && lng) {
       this.coordenadasActuales = { lat, lng };
+      console.log('🗺️ Abriendo mapa con coordenadas:', this.coordenadasActuales);
+    } else {
+      console.log('📍 Abriendo mapa sin coordenadas previas');
     }
 
     this.mostrarModalMapa = true;
@@ -246,31 +343,48 @@ export class FormularioDireccion implements OnInit {
     this.mostrarModalMapa = false;
   }
 
+  /**
+    * CORREGIDO: Actualizar formulario completamente al confirmar desde mapa
+    */
   onDireccionConfirmada(addressInfo: AddressInfo): void {
     console.log('✅ Dirección confirmada desde mapa:', addressInfo);
 
-    // Autocompletar formulario con datos del mapa
+    // Construir dirección específica
+    let direccionEspecifica = '';
+    if (addressInfo.calle && addressInfo.numero) {
+      direccionEspecifica = `${addressInfo.calle} ${addressInfo.numero}`.trim();
+    } else if (addressInfo.calle) {
+      direccionEspecifica = addressInfo.calle;
+    } else {
+      direccionEspecifica = addressInfo.direccionCompleta || '';
+    }
+
+    //Autocompletar TODO el formulario
     this.direccionForm.patchValue({
-      direccion: `${addressInfo.calle || ''} ${addressInfo.numero || ''}`.trim() || addressInfo.direccionCompleta,
-      pais: addressInfo.pais || 'Perú',
-      region: addressInfo.region || '',
-      provincia: addressInfo.provincia || '',
+      direccion: direccionEspecifica,
       distrito: addressInfo.distrito || '',
+      provincia: addressInfo.provincia || '',
+      region: addressInfo.region || '',
+      pais: addressInfo.pais || 'Perú',
       codigoPostal: addressInfo.codigoPostal || '',
-      referencia: addressInfo.referencia || this.direccionForm.get('referencia')?.value,
+      referencia: this.direccionForm.get('referencia')?.value || addressInfo.referencia || '',
       latitud: addressInfo.coords?.lat || null,
       longitud: addressInfo.coords?.lng || null
     });
 
-    // Actualizar coordenadas actuales
     if (addressInfo.coords) {
       this.coordenadasActuales = addressInfo.coords;
     }
 
+    this.searchQuery = addressInfo.direccionCompleta;
+    this.selectedPlace = addressInfo;
+
+    console.log('Formulario actualizado desde mapa:', this.direccionForm.value);
+
     this.cerrarModalMapa();
   }
 
-    // ========== MÉTODO 3: MANUAL (Ya funciona por defecto en el formulario) =========
+  // ========== MÉTODO 3: MANUAL (Ya funciona por defecto en el formulario) =========
 
   onSubmit(): void {
     if (this.direccionForm.invalid) {

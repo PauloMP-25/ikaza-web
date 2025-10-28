@@ -1,16 +1,16 @@
 // components/purchase-confirmation-modal/purchase-confirmation-modal.component.ts
 import { Component, OnInit, Input, SimpleChanges, OnDestroy, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil, switchMap, tap, finalize } from 'rxjs/operators';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
 import { CartService } from '@core/services/carrito/cart';
 import { CartItem } from '@core/models/carrito/cart-item';
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
 import { MercadoPagoService } from '@core/services/metodos/mercado-pago';
 import { CulqiService, CulqiChargeResponse } from '@core/services/metodos/culqui';
 import { AuthService } from '@core/services/auth/auth';
-import { Router } from '@angular/router';
 import { ItemPedido } from '@core/models/pedido/pedido.model';
-
 declare global {
   interface Window {
     Culqi: any;
@@ -18,7 +18,6 @@ declare global {
   }
 }
 declare var bootstrap: any;
-
 @Component({
   selector: 'app-confirmacion-pago-modal',
   standalone: true,
@@ -27,49 +26,90 @@ declare var bootstrap: any;
   styleUrls: ['./confirmacion-pago-modal.scss']
 })
 export class ConfirmacionPagoModalComponent implements OnInit, OnDestroy {
+  // ============================================================================
+  // INYECCIÓN DE DEPENDENCIAS
+  // ============================================================================
   private cartService = inject(CartService);
   private mercadoPagoService = inject(MercadoPagoService);
   private culqiService = inject(CulqiService);
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  // ============================================================================
+  // INPUT PROPERTIES
+  // ============================================================================
   @Input() showModal: boolean = false;
-  cartTotal$: Observable<number> = this.cartService.cartTotal$;
-  cartItems: CartItem[] = [];
-  private preferenceId: string | null = null;
-  private modalElement: HTMLElement | null = null;
 
-  // Variables de estado para feedback visual
+  // ============================================================================
+  // PROPIEDADES REACTIVAS
+  // ============================================================================
+  cartTotal$: Observable<number> = this.cartService.cartTotal$;
+  isAuthenticated$: Observable<boolean> = this.authService.isAuthenticated$();
+
+  // ============================================================================
+  // PROPIEDADES DE ESTADO
+  // ============================================================================
+  cartItems: CartItem[] = [];
   isProcessing: boolean = false;
   errorMessage: string = '';
 
-  // Nueva propiedad para verificar autenticación
-  get isAuthenticated(): boolean {
-    return this.authService.isAuthenticated();
-  }
+  // ============================================================================
+  // PROPIEDADES PRIVADAS
+  // ============================================================================
+  private preferenceId: string | null = null;
+  private modalElement: HTMLElement | null = null;
+
+  // ============================================================================
+  // SUBJECT PARA LIMPIAR SUBSCRIPTIONS
+  // ============================================================================
+  private destroy$ = new Subject<void>();
+
+  // ============================================================================
+  // LIFECYCLE HOOKS
+  // ============================================================================
 
   ngOnInit(): void {
-    window.culqi = this.culqiCallback.bind(this);
-    this.cartTotal$ = this.cartService.cartTotal$;
-    // Carga los items del carrito al inicializar el componente
-    this.cartItems = this.cartService.getCartItems();
+    this.inicializarComponente();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  /**
+   * Manejar cambios en las propiedades de entrada
+   */
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['showModal'] && this.showModal) {
       this.openModal();
     }
   }
 
+  /**
+   * Limpiar subscriptions y callback global al destruir el componente
+   */
   ngOnDestroy(): void {
-    // Limpiar callback de Culqi
-    if (window.culqi) {
-      delete window.culqi;
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
+    delete window.culqi;
   }
 
-  // Método para abrir el modal (llamado desde el padre o automáticamente)
-  openModal() {
+  // ============================================================================
+  // INICIALIZACIÓN
+  // ============================================================================
+
+  /**
+   * Inicializar componente y configurar callback de Culqi
+   */
+  private inicializarComponente(): void {
+    window.culqi = this.culqiCallback.bind(this);
+    this.cartItems = this.cartService.getCartItems();
+  }
+
+  // ============================================================================
+  // MANEJO DEL MODAL
+  // ============================================================================
+
+  /**
+   * Abrir modal de confirmación
+   */
+  openModal(): void {
     if (!this.modalElement) {
       this.modalElement = document.getElementById('confirmModal');
     }
@@ -82,251 +122,15 @@ export class ConfirmacionPagoModalComponent implements OnInit, OnDestroy {
   }
 
   /**
-    * Verifica que el usuario esté autenticado ANTES de llamar a la pasarela.
-    * Si no lo está, redirige al login y devuelve false.
-    */
-  private checkAuthenticationBeforePayment(): boolean {
-    if (!this.isAuthenticated) {
-      // 1. Cerrar el modal actual
-      this.closeModalInstance();
-
-      // 2. Redirigir al login (AuthService ya guarda la URL de retorno)
-      this.authService.setRedirectUrl('carrito/pago');
-      this.router.navigate(['/login'], {
-        queryParams: {
-          returnUrl: '/carrito/pago',
-          message: 'Debes iniciar sesión para completar tu compra',
-          display: 'modal'
-        }
-      });
-
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * ========== MERCADO PAGO ==========
-   * Procesa el pago con Mercado Pago (flujo asíncrono con redirección).
-   */
-  async proceedToMercadoPago(): Promise<void> {
-    if (!this.checkAuthenticationBeforePayment()) {
-      return;
-    }
-
-    if (this.cartItems.length === 0) {
-      this.showError('El carrito está vacío. Agrega productos antes de pagar.');
-      return;
-    }
-
-    this.isProcessing = true;
-    this.errorMessage = '';
-
-    try {
-      // Mapear items del carrito al formato de Mercado Pago
-      const itemsMP: ItemPedido[] = this.cartItems.map(cartItem => ({
-        idProducto: cartItem.idProducto,  // Asume que CartItem tiene idProducto (Long en backend)
-        cantidad: cartItem.qty,           // qty -> cantidad
-        precioUnitario: cartItem.precio,  // precio -> precioUnitario
-        nombreProducto: cartItem.nombreProducto,
-        color: cartItem.color,            // Asume que CartItem tiene color
-        talla: cartItem.size,            // Asume que CartItem tiene talla
-        sku: cartItem.sku,                // Opcional
-        imagenUrl: cartItem.image    // Opcional
-      })).filter(item => item.cantidad > 0);
-
-
-      console.log('📦 Items enviados a Mercado Pago:', itemsMP);
-
-      // Llamar al backend para crear la preferencia Y el pedido preliminar
-      const response = await firstValueFrom(
-        this.mercadoPagoService.crearPreferencia(itemsMP)
-      );
-
-      if (!response || !response.preference_id || !response.preference_url) {
-        throw new Error('No se pudo obtener la preferencia de pago.');
-      }
-
-      console.log('✅ Preferencia creada:', response.preference_id);
-      console.log('🆔 Pedido ID:', response.pedidoId);
-      console.log('🔗 URL de checkout:', response.preference_url);
-
-      // Cerrar modal antes de redireccionar
-      this.closeModal();
-
-      // Redireccionar a Mercado Pago
-      window.location.href = response.preference_url;
-
-      // NO limpiar el carrito aquí - se limpiará cuando se confirme el pago
-
-    } catch (error: any) {
-      console.error('❌ Error en Mercado Pago:', error);
-      this.showError('Error al procesar el pago: ' + (error.message || 'Intenta de nuevo'));
-    } finally {
-      this.isProcessing = false;
-    }
-  }
-
-
-  /**
- * ========== CULQI ==========
- * Procesa el pago con Culqi (flujo síncrono con modal).
- */
-  async proceedToCulqui(): Promise<void> {
-    if (!this.checkAuthenticationBeforePayment()) {
-      return;
-    }
-
-    if (this.cartItems.length === 0) {
-      this.showError('El carrito está vacío. Agrega productos antes de pagar.');
-      return;
-    }
-
-    try {
-      const total = await firstValueFrom(this.cartTotal$);
-
-      if (isNaN(total) || total <= 0) {
-        this.showError('Error: El total del carrito no es válido.');
-        return;
-      }
-
-      // Convertir a centavos para Culqi
-      const montoCulqi = Math.round(total * 100);
-
-      // Configurar y abrir Culqi
-      if (window.Culqi) {
-        window.Culqi.publicKey = 'pk_test_eb16955d4d3abdf7';
-
-        window.Culqi.settings({
-          title: 'TIENDA ONLINE IKAZA IMPORT',
-          currency: 'PEN',
-          amount: montoCulqi
-        });
-
-        window.Culqi.options({
-          lang: "auto",
-          installments: false,
-          paymentMethods: {
-            yapeQR: true,
-            yape: true,
-            tarjeta: true,
-            bancaMovil: true,
-            pagoEfectivo: true,
-            transferencia: true,
-            pagoFacil: true,
-            mercadoPagoQR: true,
-            pagoQR: true,
-            pagoLink: true,
-          },
-          style: {
-            logo: "https://tse2.mm.bing.net/th/id/OIP.E9TIFcPkumP9HbJxTPpTJQHaHa?pid=Api&P=0&h=180",
-            maincolor: "#28a745",
-            buttontextcolor: "#ffffff",
-            desccolor: "#28a745",
-            maintextcolor: "#000000",
-            subtitletextcolor: "#000000",
-            overlaycolor: "#000000",
-            overlayopacity: "0.6"
-          }
-        });
-
-        // Cerrar el modal de confirmación antes de abrir Culqi
-        this.closeModal();
-
-        window.Culqi.open();
-      } else {
-        this.showError('Error: Culqi no está disponible. Por favor, intenta más tarde.');
-      }
-    } catch (error: any) {
-      console.error('❌ Error al abrir Culqi:', error);
-      this.showError('Error al iniciar el pago: ' + (error.message || 'Intenta de nuevo'));
-    }
-  }
-
-
-  /**
-   * Callback de Culqi - se ejecuta cuando el usuario completa el pago.
-   */
-  private async culqiCallback(): Promise<void> {
-    if (window.Culqi.token) {
-      const token = window.Culqi.token.id;
-      console.log('🎟️ Token generado:', token);
-
-      this.isProcessing = true;
-
-      try {
-        const total = await firstValueFrom(this.cartTotal$);
-        const montoCulqi = Math.round(total * 100);
-
-        console.log('💳 Procesando cargo en backend...');
-
-        // Enviar el token al backend para procesar el cargo
-        const response: CulqiChargeResponse = await firstValueFrom(
-          this.culqiService.charge(token, montoCulqi)
-        );
-
-        if (response.success) {
-          console.log('✅ Pago exitoso:', response.transactionId);
-
-          // Limpiar carrito
-          this.cartService.clearCart();
-
-          // Redirigir a página de éxito
-          this.router.navigate(['/pago-exito'], {
-            queryParams: {
-              transactionId: response.transactionId,
-              method: 'culqi'
-            }
-          });
-        } else {
-          throw new Error(response.error || 'Error desconocido');
-        }
-      } catch (error: any) {
-        console.error('❌ Error en Culqi:', error);
-
-        // Redirigir a página de error
-        this.router.navigate(['/pago-error'], {
-          queryParams: {
-            motivo: error.message || 'Error al procesar el pago',
-            method: 'culqi'
-          }
-        });
-      } finally {
-        this.isProcessing = false;
-      }
-    } else if (window.Culqi.error) {
-      // Error en Culqi (tarjeta rechazada, cancelación, etc.)
-      const errorMessage = window.Culqi.error.merchant_message ||
-        window.Culqi.error.user_message ||
-        'Error desconocido';
-
-      console.error('❌ Error de Culqi:', errorMessage);
-
-      this.router.navigate(['/pago-error'], {
-        queryParams: {
-          motivo: errorMessage,
-          method: 'culqi'
-        }
-      });
-    }
-  }
-
-  /**
-   * Muestra un mensaje de error en el modal.
-   */
-  private showError(message: string): void {
-    this.errorMessage = message;
-
-    // Auto-ocultar después de 5 segundos
-    setTimeout(() => {
-      this.errorMessage = '';
-    }, 5000);
-  }
-
+  * Cerrar modal de confirmación
+  */
   closeModal(): void {
     this.closeModalInstance();
   }
 
+  /**
+   * Cerrar instancia del modal usando Bootstrap
+   */
   private closeModalInstance(): void {
     const confirmModal = document.getElementById('confirmModal');
     if (confirmModal) {
@@ -337,11 +141,315 @@ export class ConfirmacionPagoModalComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+  * Manejar cierre del modal
+  */
   onModalClose(): void {
     this.closeModal();
   }
 
-  // Opcional: Método para éxito de pago
+  // ============================================================================
+  // VERIFICACIÓN DE AUTENTICACIÓN
+  // ============================================================================
+
+  /**
+   * Verificar autenticación antes del pago usando flujo reactivo
+   * @returns Observable<boolean> - true si está autenticado
+   */
+  private verificarAutenticacion$(): Observable<boolean> {
+    return this.authService.isAuthenticated$().pipe(
+      takeUntil(this.destroy$),
+      tap(isAuthenticated => {
+        if (!isAuthenticated) {
+          this.manejarRedireccionNoAutenticado();
+        }
+      })
+    );
+  }
+  /**
+   * Manejar redirección cuando el usuario no está autenticado
+   */
+  private manejarRedireccionNoAutenticado(): void {
+    this.closeModalInstance();
+    this.authService.setRedirectUrl('carrito/pago');
+    this.router.navigate(['/login'], {
+      queryParams: {
+        returnUrl: '/carrito/pago',
+        message: 'Debes iniciar sesión para completar tu compra',
+        display: 'modal'
+      }
+    });
+  }
+
+  // ============================================================================
+  // MERCADO PAGO (FLUJO REACTIVO)
+  // ============================================================================
+
+  /**
+   * Procesar pago con Mercado Pago usando flujo reactivo
+   */
+  proceedToMercadoPago(): void {
+    this.isProcessing = true;
+    this.errorMessage = '';
+
+    this.verificarAutenticacion$().pipe(
+      takeUntil(this.destroy$),
+      switchMap(isAuthenticated => {
+        if (!isAuthenticated) {
+          throw new Error('Usuario no autenticado');
+        }
+        if (this.cartItems.length === 0) {
+          throw new Error('El carrito está vacío');
+        }
+
+        const itemsMP: ItemPedido[] = this.mapearItemsAMercadoPago();
+        console.log('Items enviados a Mercado Pago:', itemsMP);
+
+        return this.mercadoPagoService.crearPreferencia(itemsMP);
+      }),
+      finalize(() => this.isProcessing = false)
+    ).subscribe({
+      next: (response) => this.manejarRespuestaMercadoPago(response),
+      error: (error) => this.manejarErrorMercadoPago(error)
+    });
+  }
+
+  /**
+   * Mapear items del carrito al formato de Mercado Pago
+   */
+  private mapearItemsAMercadoPago(): ItemPedido[] {
+    return this.cartItems.map(cartItem => ({
+      idProducto: cartItem.idProducto,
+      cantidad: cartItem.qty,
+      precioUnitario: cartItem.precio,
+      nombreProducto: cartItem.nombreProducto,
+      color: cartItem.color,
+      talla: cartItem.size,
+      sku: cartItem.sku,
+      imagenUrl: cartItem.image
+    })).filter(item => item.cantidad > 0);
+  }
+
+  /**
+   * Manejar respuesta exitosa de Mercado Pago
+   */
+  private manejarRespuestaMercadoPago(response: any): void {
+    if (!response?.preference_id || !response.preference_url) {
+      throw new Error('No se pudo obtener la preferencia de pago.');
+    }
+
+    console.log('Preferencia creada:', response.preference_id);
+    console.log('Pedido ID:', response.pedidoId);
+    console.log('URL de checkout:', response.preference_url);
+
+    this.closeModal();
+    window.location.href = response.preference_url;
+  }
+
+  /**
+   * Manejar error en Mercado Pago
+   */
+  private manejarErrorMercadoPago(error: any): void {
+    console.error('Error en Mercado Pago:', error);
+    this.mostrarError('Error al procesar el pago: ' + (error.message || 'Intenta de nuevo'));
+  }
+
+  // ============================================================================
+  // CULQI (FLUJO REACTIVO)
+  // ============================================================================
+
+  /**
+   * Procesar pago con Culqi usando flujo reactivo
+   */
+  /**
+   * Procesar pago con Culqi usando flujo reactivo
+   */
+  proceedToCulqui(): void {
+    this.verificarAutenticacion$().pipe(
+      takeUntil(this.destroy$),
+      switchMap(isAuthenticated => {
+        if (!isAuthenticated) {
+          throw new Error('Usuario no autenticado');
+        }
+
+        if (this.cartItems.length === 0) {
+          throw new Error('El carrito está vacío');
+        }
+
+        return this.cartTotal$;
+      }),
+      takeUntil(this.destroy$),
+      tap(total => {
+        if (isNaN(total) || total <= 0) {
+          throw new Error('Error: El total del carrito no es válido.');
+        }
+
+        this.configurarYAbrirCulqi(total);
+      })
+    ).subscribe({
+      error: (error) => this.manejarErrorCulqiInicial(error)
+    });
+  }
+
+  /**
+   * Configurar y abrir modal de Culqi
+   */
+  private configurarYAbrirCulqi(total: number): void {
+    const montoCulqi = Math.round(total * 100);
+
+    if (!window.Culqi) {
+      this.mostrarError('Error: Culqi no está disponible. Por favor, intenta más tarde.');
+      return;
+    }
+
+    window.Culqi.publicKey = 'pk_test_eb16955d4d3abdf7';
+    window.Culqi.settings({
+      title: 'TIENDA ONLINE IKAZA IMPORT',
+      currency: 'PEN',
+      amount: montoCulqi
+    });
+
+    window.Culqi.options({
+      lang: "auto",
+      installments: false,
+      paymentMethods: {
+        yapeQR: true,
+        yape: true,
+        tarjeta: true,
+        bancaMovil: true,
+        pagoEfectivo: true,
+        transferencia: true,
+        pagoFacil: true,
+        mercadoPagoQR: true,
+        pagoQR: true,
+        pagoLink: true,
+      },
+      style: {
+        logo: "https://tse2.mm.bing.net/th/id/OIP.E9TIFcPkumP9HbJxTPpTJQHaHa?pid=Api&P=0&h=180",
+        maincolor: "#28a745",
+        buttontextcolor: "#ffffff",
+        desccolor: "#28a745",
+        maintextcolor: "#000000",
+        subtitletextcolor: "#000000",
+        overlaycolor: "#000000",
+        overlayopacity: "0.6"
+      }
+    });
+
+    this.closeModal();
+    window.Culqi.open();
+  }
+
+  /**
+   * Callback invocado por Culqi al completar el pago
+   */
+  private culqiCallback(): void {
+    if (window.Culqi.token) {
+      this.procesarTokenCulqi(window.Culqi.token.id);
+    } else if (window.Culqi.error) {
+      this.manejarErrorCulqi(window.Culqi.error);
+    }
+  }
+
+  /**
+   * Procesar token de Culqi usando flujo reactivo
+   */
+  private procesarTokenCulqi(token: string): void {
+    this.isProcessing = true;
+
+    this.cartTotal$.pipe(
+      takeUntil(this.destroy$),
+      switchMap(total => {
+        const montoCulqi = Math.round(total * 100);
+        console.log('💳 Procesando cargo en backend...');
+
+        return this.culqiService.charge(token, montoCulqi);
+      }),
+      finalize(() => this.isProcessing = false)
+    ).subscribe({
+      next: (response) => this.manejarRespuestaCulqi(response),
+      error: (error) => this.manejarErrorProcesamientoCulqi(error)
+    });
+  }
+
+  /**
+   * Manejar respuesta exitosa de Culqi
+   */
+  private manejarRespuestaCulqi(response: CulqiChargeResponse): void {
+    if (response.success) {
+      console.log('✅ Pago exitoso:', response.transactionId);
+      this.cartService.clearCart();
+
+      this.router.navigate(['/pago-exito'], {
+        queryParams: {
+          transactionId: response.transactionId,
+          method: 'culqi'
+        }
+      });
+    } else {
+      throw new Error(response.error || 'Error desconocido');
+    }
+  }
+
+  // ============================================================================
+  // MANEJO DE ERRORES
+  // ============================================================================
+
+  /**
+   * Manejar error inicial de Culqi
+   */
+  private manejarErrorCulqiInicial(error: any): void {
+    console.error('❌ Error al abrir Culqi:', error);
+    this.mostrarError('Error al iniciar el pago: ' + (error.message || 'Intenta de nuevo'));
+  }
+
+  /**
+   * Manejar error de procesamiento de Culqi
+   */
+  private manejarErrorProcesamientoCulqi(error: any): void {
+    console.error('❌ Error en Culqi:', error);
+    this.router.navigate(['/pago-error'], {
+      queryParams: {
+        motivo: error.message || 'Error al procesar el pago',
+        method: 'culqi'
+      }
+    });
+  }
+
+  /**
+   * Manejar error específico de Culqi
+   */
+  private manejarErrorCulqi(error: any): void {
+    const errorMessage = error.merchant_message ||
+      error.user_message ||
+      'Error desconocido';
+
+    console.error('❌ Error de Culqi:', errorMessage);
+    this.router.navigate(['/pago-error'], {
+      queryParams: {
+        motivo: errorMessage,
+        method: 'culqi'
+      }
+    });
+  }
+
+  /**
+  * Mostrar mensaje de error en el modal
+  */
+  private mostrarError(message: string): void {
+    this.errorMessage = message;
+    setTimeout(() => {
+      this.errorMessage = '';
+    }, 5000);
+  }
+  
+  // ============================================================================
+  // MÉTODOS ADICIONALES
+  // ============================================================================
+
+  /**
+   * Manejar éxito de pago (opcional)
+   */
   onPaymentSuccess(): void {
     console.log('Pago exitoso en modal');
     this.cartService.clearCart();

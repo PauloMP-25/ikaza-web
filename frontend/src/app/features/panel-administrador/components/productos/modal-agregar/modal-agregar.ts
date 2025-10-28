@@ -45,10 +45,6 @@ export class ModalAgregar {
     this.loadCategories();
   }
 
-  ngOnInit(): void {
-    this.loadCategories();
-  }
-
   ngOnDestroy(): void {
     this.categoriesSubscription?.unsubscribe();
   }

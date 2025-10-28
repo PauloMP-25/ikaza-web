@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { map, catchError } from 'rxjs/operators';
 import { ActualizarClienteRequest, ClienteResponse, MessageResponse } from '@core/models/usuarios/usuario-model';
 
 @Injectable({

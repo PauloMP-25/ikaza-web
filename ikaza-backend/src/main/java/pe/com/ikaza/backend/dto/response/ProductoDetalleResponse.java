@@ -30,14 +30,10 @@ public class ProductoDetalleResponse {
     private Long idCategoria;
 
     // Información de MongoDB
-    private String codigo;
+    private String codigo; //sku
     private String marca;
-    private String modelo;
-    private String garantia;
-    private String instruccionesUso;
     private List<ImagenDto> imagenes;
     private Map<String, String> atributos;
-    private List<EspecificacionDto> especificaciones;
     private List<VarianteDto> variantes;
     private SeoDto seo;
 
@@ -68,7 +64,6 @@ public class ProductoDetalleResponse {
         private String sku;
         private String color;
         private String talla;
-        private String material;
         private Integer stockAdicional;
         private String imagenUrl;
     }

@@ -32,3 +32,31 @@ export interface UserData {
     updatedAt?: Date;
     lastPasswordChange?: Date;
 }
+
+// ====================================================================================================
+// Define los cuatro estados posibles del flujo de autenticación de la aplicación 
+// (LOADING, AUTHENTICATED, UNAUTHENTICATED, ERROR).
+// Utilizado en:
+// AuthStateService para actualizar el estado reactivo de la sesion. 
+// ===================================================================================================
+export enum AuthState {
+    LOADING = 'loading',
+    AUTHENTICATED = 'authenticated',
+    UNAUTHENTICATED = 'unauthenticated',
+    ERROR = 'error'
+}
+
+// ====================================================================================================
+// Objeto contenedor que agrupa toda la información de la sesión: 
+// - el estado actual (AuthState)
+// - el objeto UserData
+// - las banderas de loading y error.
+// Utilizado en:
+// AuthStateService para exponer el estado completo de la sesión a toda la aplicación.
+// ===================================================================================================
+export interface AuthStateInfo {
+    state: AuthState;
+    user: UserData | null;
+    loading: boolean;
+    error: string | null;
+}
