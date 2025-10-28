@@ -1,33 +1,60 @@
 .fondo {
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.6);
-    z-index: 1;
-    height: 850px;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.6);
+  z-index: 1;
+  height: 850px;
 }
 
 .image-background-section {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    .mission-card {
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        transition: transform 0.3s ease;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-        &:hover {
-            transform: translateY(-5px);
-        }
+.image-background-section > .position-absolute {
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.45);
+}
 
-        h3 {
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
+.mission-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(3px);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
 
-        p {
-            color: #444;
-            line-height: 1.6;
-        }
-    }
+.mission-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.mission-card h3 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  letter-spacing: 0.3px;
+}
+
+.mission-card p {
+  font-family: "Open Sans", sans-serif;
+  color: #555;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+[data-aos="zoom-in"] {
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.image-overlay-cards {
+  padding-top: 120px; /* aumenta este valor si quieres bajarlo más */
+  padding-bottom: 100px;
+}
+
+.image-overlay-cards .row {
+  gap: 30px; /* separación horizontal entre las columnas */
 }
