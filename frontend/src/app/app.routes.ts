@@ -26,7 +26,6 @@ import { checkoutGuard } from '@core/guards/checkout.guard';
 export const routes: Routes = [
     // RUTA POR DEFECTO (404 y redirección)
     { path: '', redirectTo: 'home', pathMatch: 'full' },
-    { path: '**', redirectTo: 'home' },
 
     // RUTAS PÚBLICAS
     {
@@ -105,5 +104,10 @@ export const routes: Routes = [
         path: 'login',
         canActivate: [NoAuthGuard],
         loadComponent: () => import('./features/login/login').then(m => m.LoginComponent)
-    }
+    },
+    // ----------------------------------------------------------------
+    // RUTA WILDCARD
+    // ----------------------------------------------------------------
+    // Si la ruta no coincide con ninguna de las anteriores, redirige a 'home'.
+    { path: '**', redirectTo: 'home' },
 ];

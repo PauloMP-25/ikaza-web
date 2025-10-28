@@ -1,20 +1,16 @@
-
-import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, tap, switchMap, finalize } from 'rxjs/operators';
-// Importaciones necesarias:
+import { HttpClient } from '@angular/common/http';
+import { Subject, takeUntil, catchError, tap, finalize, of, switchMap } from 'rxjs';
+
 import { PedidoDetalleResponse } from '@core/models/pedido/pedido.model';
 import { FormatoUltimosDigitos } from '@shared/pipes/formatoUltimosDigitos.pipe';
 import { TarjetaService } from '@core/services/tarjetas/tarjeta.service';
 import { PedidoService } from '@core/services/pedidos/pedido.service';
 import { ClienteService } from '@core/services/clientes/cliente.service';
-import { of } from 'rxjs'; // Necesario para of()
-// Servicios y Modelos que debes importar (verifica tus paths)
 import { AuthService } from '@core/services/auth/auth';
-import { ClienteResponse } from '@core/models/usuarios/usuario-model'; // Asegúrate que esta ruta es correcta
+import { ClienteResponse } from '@core/models/usuarios/usuario-model';
 import { environment } from 'src/environments/environment';
-
 @Component({
   selector: 'app-detalle-pedido-modal',
   standalone: true,
@@ -23,67 +19,118 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./detalle-pedido-modal.scss']
 })
 export class DetallePedidoModal implements OnChanges {
-  // Inyecciones
+  // ============================================================================
+  // INYECCIÓN DE DEPENDENCIAS
+  // ============================================================================
   private tarjetaService = inject(TarjetaService);
   private authService = inject(AuthService);
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/api/usuarios`;
-  private pedidoService = inject(PedidoService); // Necesario para obtener el detalle del pedido
+  private pedidoService = inject(PedidoService);
   private clienteService = inject(ClienteService);
+  private apiUrl = `${environment.apiUrl}/api/usuarios`;
 
+  // ============================================================================
+  // INPUTS Y OUTPUTS
+  // ============================================================================
   @Input() detalle: PedidoDetalleResponse | null = null;
   @Input() showModal: boolean = false;
   @Output() closeModal = new EventEmitter<void>();
 
-  //Estados
+  // ============================================================================
+  // ESTADO DEL COMPONENTE
+  // ============================================================================
   datosCliente: ClienteResponse | null = null;
   isLoadingClientData: boolean = false;
   pedidoId: number | string | null = null;
 
-  // Detecta cuando showModal cambia para disparar la carga de datos
+  // ============================================================================
+  // SUBJECT PARA LIMPIAR SUBSCRIPTIONS
+  // ============================================================================
+  private destroy$ = new Subject<void>();
+
+  // ============================================================================
+  // LIFECYCLE HOOKS
+  // ============================================================================
+
+  /**
+   * Detecta cambios en los inputs
+   * - Se ejecuta cada vez que showModal cambia (abrir/cerrar)
+   * - Se ejecuta cada vez que detalle cambia (nuevo pedido)
+   */
   ngOnChanges(changes: SimpleChanges): void {
+    // Actualizar pedidoId cuando cambia el detalle
     if (changes['detalle'] && this.detalle?.pedidoId) {
       this.pedidoId = this.detalle.pedidoId;
     }
 
+    // Cargar datos del cliente cuando se abre el modal
     if (changes['showModal'] && changes['showModal'].currentValue === true) {
-      // La lógica de cargar el detalle de pedido ya fue llamada en HistorialComprasComponent,
+      console.log('Modal abierto, cargando datos del cliente...');
       this.cargarDatosCliente();
     }
 
+    // Limpiar datos cuando se cierra el modal
     if (changes['showModal'] && changes['showModal'].currentValue === false) {
-      this.datosCliente = null;
+      console.log('Modal cerrado, limpiando datos...');
+      this.limpiarDatos();
     }
   }
 
   /**
-   * Obtiene los datos completos del cliente autenticado.
-   * Depende del Interceptor para adjuntar el token.
+   * Limpiar subscriptions al destruir el componente
    */
-  cargarDatosCliente(): void {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+
+
+  // ============================================================================
+  // CARGA DE DATOS - VERSIÓN REACTIVA
+  // ============================================================================
+
+  /**
+   *  Cargar datos del cliente (REACTIVO OPTIMIZADO)
+   */
+  private cargarDatosCliente(): void {
     this.datosCliente = null;
     this.isLoadingClientData = true;
 
-    const currentUser = this.authService.getCurrentUser();
-
-    if (!currentUser || !currentUser.uid) {
-      console.warn('Usuario no autenticado o UID faltante.');
-      this.isLoadingClientData = false;
-      return;
-    }
-
-    const firebaseUid = currentUser.uid;
-
-    // Llamada estándar. Si falla con 403, el token no es el problema, sino el backend.
-    this.clienteService.obtenerPerfil(firebaseUid).pipe(
-      tap(perfil => {
-        this.datosCliente = perfil;
+    this.authService.getCurrentUser$().pipe(
+      takeUntil(this.destroy$),
+      tap(currentUser => {
+        if (!currentUser || !currentUser.uid) {
+          console.warn('Usuario no autenticado o UID faltante.');
+          throw new Error('Usuario no autenticado');
+        }
+        console.log('Usuario obtenido:', currentUser.email);
       }),
+      //switchMap: Encadena la llamada al backend sin anidar subscriptions
+      switchMap(currentUser =>
+        this.clienteService.obtenerPerfil(currentUser!.uid).pipe(
+          tap(perfil => {
+            console.log('Perfil del cliente obtenido:', perfil);
+            this.datosCliente = perfil;
+          }),
+          catchError(error => {
+            console.error('Error al obtener perfil del cliente:', error);
+            this.datosCliente = null;
+
+            // Mensajes específicos según el error
+            if (error.status === 404) {
+              console.warn('Perfil del cliente no encontrado');
+            } else if (error.status === 403) {
+              console.error('Sin permisos para acceder al perfil');
+            }
+
+            return of(null);
+          })
+        )
+      ),
       catchError(error => {
-        console.error('❌ Error al obtener perfil del cliente:', error);
-        // Mostrar un error amigable o dejar nulo para que el template maneje la ausencia de datos
-        this.datosCliente = null;
-        return of(error);
+        console.error('Error obteniendo usuario autenticado:', error);
+        return of(null);
       }),
       finalize(() => {
         this.isLoadingClientData = false;
@@ -91,8 +138,31 @@ export class DetallePedidoModal implements OnChanges {
     ).subscribe();
   }
 
+  // ============================================================================
+  // MÉTODOS DE LIMPIEZA
+  // ============================================================================
 
-  // Métodos de utilidad de estado
+  /**
+   * Limpiar datos cuando se cierra el modal
+   * IMPORTANTE:
+   * - Evita que datos de un pedido anterior se muestren al abrir otro
+   * - Cancela cualquier petición en curso
+   */
+  private limpiarDatos(): void {
+    this.datosCliente = null;
+    this.isLoadingClientData = false;
+
+    // Cancelar cualquier petición en curso
+    this.destroy$.next();
+  }
+
+  // ============================================================================
+  // MÉTODOS DE UTILIDAD
+  // ============================================================================
+
+  /**
+   * Obtener clase CSS según el estado del pedido
+   */
   obtenerClaseEstado(estado: string): string {
     const clases: { [key: string]: string } = {
       'APROBADO': 'bg-success',
@@ -103,8 +173,11 @@ export class DetallePedidoModal implements OnChanges {
     return clases[estado] || 'bg-secondary';
   }
 
-  // Método para cerrar el modal y notificar al padre
+  /**
+   * Cerrar modal y notificar al componente padre
+   */
   onClose(): void {
+    console.log('Cerrando modal...');
     this.closeModal.emit();
   }
 }

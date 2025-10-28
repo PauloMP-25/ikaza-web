@@ -8020,3 +8020,4170 @@ Caused by: org.postgresql.util.PSQLException: ERROR: llave duplicada viola restr
 2025-10-27 11:03:57 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
 2025-10-27 11:03:57 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/google-maps/geocode?lat=-0.00406428923838414&lng=-75.7004730988991
 2025-10-27 11:03:57 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/google-maps/geocode
+2025-10-28 01:57:03 [restartedMain] INFO  p.c.ikaza.backend.BackendApplication - Starting BackendApplication using Java 21.0.2 with PID 8124 (D:\proyecto-ikaza-web\ikaza-backend\target\classes started by user in D:\proyecto-ikaza-web\ikaza-backend)
+2025-10-28 01:57:03 [restartedMain] DEBUG p.c.ikaza.backend.BackendApplication - Running with Spring Boot v3.5.6, Spring v6.2.11
+2025-10-28 01:57:03 [restartedMain] INFO  p.c.ikaza.backend.BackendApplication - The following 1 profile is active: "dev"
+2025-10-28 01:57:03 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-28 01:57:03 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-28 01:57:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-28 01:57:04 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-28 01:57:05 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 117 ms. Found 13 JPA repository interfaces.
+2025-10-28 01:57:05 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-28 01:57:05 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2025-10-28 01:57:05 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 8 ms. Found 1 MongoDB repository interface.
+2025-10-28 01:57:06 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-28 01:57:06 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-28 01:57:06 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-28 01:57:07 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-28 01:57:07 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3514 ms
+2025-10-28 01:57:07 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-28 01:57:07 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-28 01:57:07 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-28 01:57:08 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-28 01:57:08 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-28 01:57:10 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@35cb21af
+2025-10-28 01:57:10 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-28 01:57:10 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-28 01:57:10 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 17.4
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-28 01:57:13 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-28 01:57:15 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-28 01:57:16 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-28 01:57:17 [restartedMain] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - Filter 'firebaseAuthTokenFilter' configured for use
+2025-10-28 01:57:19 [restartedMain] INFO  org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "5.5.1"}, "os": {"type": "Windows", "name": "Windows 10", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/21.0.2+13-LTS-58"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@5d1665c7, com.mongodb.Jep395RecordCodecProvider@3f72c188, com.mongodb.KotlinCodecProvider@7511acf9]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2025-10-28 01:57:19 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-10-28 01:57:20 [cluster-ClusterId{value='6900694fde916284cdd2f775', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=574753300, minRoundTripTimeNanos=0}
+2025-10-28 01:57:20 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-28 01:57:21 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2025-10-28 01:57:21 [restartedMain] WARN  o.s.s.c.a.w.c.AuthorizeHttpRequestsConfigurer$AuthorizationManagerRequestMatcherRegistry - One of the patterns in [api/inventario/**] is missing a leading slash. This is discouraged; please include the leading slash in all your request matcher patterns. In future versions of Spring Security, leaving out the leading slash will result in an exception.
+2025-10-28 01:57:21 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, FirebaseAuthTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-28 01:57:22 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-10-28 01:57:22 [restartedMain] INFO  p.c.ikaza.backend.BackendApplication - Started BackendApplication in 20.398 seconds (process running for 21.509)
+2025-10-28 02:14:16 [http-nio-8080-exec-4] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-28 02:14:16 [http-nio-8080-exec-4] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-28 02:14:16 [http-nio-8080-exec-4] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 7 ms
+2025-10-28 02:14:16 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:14:16 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:14:16 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-vendido
+2025-10-28 02:14:16 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:14:16 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:14:16 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:14:16 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:14:16 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:14:16 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:14:16 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:14:16 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:14:16 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:14:16 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:14:16 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:14:16 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-vendido
+2025-10-28 02:14:16 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:14:16 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:14:16 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:14:16 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:14:16 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:14:16 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.fecha_creacion desc 
+    fetch
+        first ? rows only
+2025-10-28 02:14:16 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.precio 
+    fetch
+        first ? rows only
+2025-10-28 02:14:16 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.calificacion_promedio desc,
+        p1_0.fecha_creacion desc 
+    fetch
+        first 1 rows only
+2025-10-28 02:14:16 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock between 5 and 10 
+    order by
+        p1_0.stock 
+    fetch
+        first ? rows only
+2025-10-28 02:14:17 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:14:17 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:14:17 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:14:17 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:14:17 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:14:17 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:14:17 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:14:17 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:14:17 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:14:17 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:14:18 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:14:18 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:18 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:18 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:18 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:18 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:14:20 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:14:20 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:14:21 [http-nio-8080-exec-7] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-7] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:14:21 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:14:21 [http-nio-8080-exec-8] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-8] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:14:21 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-vendido
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:16:13 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-vendido
+2025-10-28 02:16:13 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:16:13 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:16:13 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:16:13 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:16:13 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock between 5 and 10 
+    order by
+        p1_0.stock 
+    fetch
+        first ? rows only
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.calificacion_promedio desc,
+        p1_0.fecha_creacion desc 
+    fetch
+        first 1 rows only
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.precio 
+    fetch
+        first ? rows only
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:16:13 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.fecha_creacion desc 
+    fetch
+        first ? rows only
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:16:13 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:16:13 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:16:15 [http-nio-8080-exec-8] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-8] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:16:15 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:16:15 [http-nio-8080-exec-1] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-1] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:16:15 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:20:46 [restartedMain] INFO  p.c.ikaza.backend.BackendApplication - Starting BackendApplication using Java 21.0.2 with PID 13864 (D:\proyecto-ikaza-web\ikaza-backend\target\classes started by user in D:\proyecto-ikaza-web\ikaza-backend)
+2025-10-28 02:20:46 [restartedMain] DEBUG p.c.ikaza.backend.BackendApplication - Running with Spring Boot v3.5.6, Spring v6.2.11
+2025-10-28 02:20:46 [restartedMain] INFO  p.c.ikaza.backend.BackendApplication - The following 1 profile is active: "dev"
+2025-10-28 02:20:46 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-28 02:20:46 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-28 02:20:48 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-28 02:20:48 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-28 02:20:48 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 169 ms. Found 13 JPA repository interfaces.
+2025-10-28 02:20:48 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-28 02:20:48 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2025-10-28 02:20:48 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 9 ms. Found 1 MongoDB repository interface.
+2025-10-28 02:20:50 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-28 02:20:50 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-28 02:20:50 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-28 02:20:50 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-28 02:20:50 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4164 ms
+2025-10-28 02:20:51 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-28 02:20:51 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-28 02:20:51 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-28 02:20:51 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-28 02:20:51 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-28 02:20:52 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@36e9af21
+2025-10-28 02:20:52 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-28 02:20:52 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-28 02:20:52 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 17.4
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-28 02:20:55 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-28 02:20:58 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-28 02:20:59 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-28 02:21:00 [restartedMain] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - Filter 'firebaseAuthTokenFilter' configured for use
+2025-10-28 02:21:02 [restartedMain] INFO  org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "5.5.1"}, "os": {"type": "Windows", "name": "Windows 10", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/21.0.2+13-LTS-58"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@242f77f9, com.mongodb.Jep395RecordCodecProvider@356c8851, com.mongodb.KotlinCodecProvider@2b283d38]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2025-10-28 02:21:02 [cluster-ClusterId{value='69006eded894a4d8324f3dbe', description='null'}-localhost:27017] INFO  org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=25, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=85573600, minRoundTripTimeNanos=0}
+2025-10-28 02:21:02 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-10-28 02:21:03 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-28 02:21:04 [restartedMain] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2025-10-28 02:21:04 [restartedMain] WARN  o.s.s.c.a.w.c.AuthorizeHttpRequestsConfigurer$AuthorizationManagerRequestMatcherRegistry - One of the patterns in [api/inventario/**] is missing a leading slash. This is discouraged; please include the leading slash in all your request matcher patterns. In future versions of Spring Security, leaving out the leading slash will result in an exception.
+2025-10-28 02:21:04 [restartedMain] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, FirebaseAuthTokenFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-28 02:21:05 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-10-28 02:21:05 [restartedMain] INFO  p.c.ikaza.backend.BackendApplication - Started BackendApplication in 19.883 seconds (process running for 20.951)
+2025-10-28 02:21:06 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-28 02:21:06 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-28 02:21:06 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-vendido
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:21:06 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:21:06 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:21:06 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:21:06 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-vendido
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:21:06 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.fecha_creacion desc 
+    fetch
+        first ? rows only
+2025-10-28 02:21:06 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock between 5 and 10 
+    order by
+        p1_0.stock 
+    fetch
+        first ? rows only
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.precio 
+    fetch
+        first ? rows only
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.calificacion_promedio desc,
+        p1_0.fecha_creacion desc 
+    fetch
+        first 1 rows only
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:21:06 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:21:06 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:21:06 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:21:08 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:08 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:21:09 [http-nio-8080-exec-5] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-5] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:21:09 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:21:09 [http-nio-8080-exec-6] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-6] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:21:09 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:22:04 [http-nio-8080-exec-2] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:22:04 [http-nio-8080-exec-2] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:04 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:22:12 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/usuarios/direcciones
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/usuarios/direcciones
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/usuarios/direcciones
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:22:12 [http-nio-8080-exec-3] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/usuarios/direcciones
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/usuarios/direcciones
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity pe.com.ikaza.backend.controller.DireccionController.cargarDirecciones(); target is of class [pe.com.ikaza.backend.controller.DireccionController]
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity pe.com.ikaza.backend.controller.DireccionController.cargarDirecciones(); target is of class [pe.com.ikaza.backend.controller.DireccionController]
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.email=?
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:12 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        d1_0.id_direccion,
+        d1_0.alias,
+        d1_0.codigo_postal,
+        d1_0.direccion,
+        d1_0.distrito,
+        d1_0.es_principal,
+        d1_0.fecha_creacion,
+        d1_0.id_usuario,
+        d1_0.latitud,
+        d1_0.longitud,
+        d1_0.pais,
+        d1_0.provincia,
+        d1_0.referencia,
+        d1_0.region 
+    from
+        direcciones d1_0 
+    where
+        d1_0.id_usuario=?
+2025-10-28 02:22:20 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/usuarios/pagos
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/usuarios/pagos
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/usuarios/pagos
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:22:20 [http-nio-8080-exec-8] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/usuarios/pagos
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/usuarios/pagos
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity pe.com.ikaza.backend.controller.TarjetaController.cargarTarjetas(); target is of class [pe.com.ikaza.backend.controller.TarjetaController]
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity pe.com.ikaza.backend.controller.TarjetaController.cargarTarjetas(); target is of class [pe.com.ikaza.backend.controller.TarjetaController]
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.email=?
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:20 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        t1_0.id_metodo,
+        t1_0.activo,
+        t1_0.alias,
+        t1_0.banco_emisor,
+        t1_0.es_principal,
+        t1_0.fecha_creacion,
+        t1_0.fecha_expiracion,
+        t1_0.id_usuario,
+        t1_0.nombre_titular,
+        t1_0.tipo,
+        t1_0.tipo_tarjeta,
+        t1_0.token_pago,
+        t1_0.ultimos_4_digitos 
+    from
+        metodos_pago t1_0 
+    where
+        t1_0.id_usuario=? 
+        and t1_0.activo
+2025-10-28 02:22:29 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/usuarios/pedidos/mis-pedidos
+2025-10-28 02:22:29 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/usuarios/pedidos/mis-pedidos
+2025-10-28 02:22:29 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/usuarios/pedidos/mis-pedidos
+2025-10-28 02:22:29 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:22:29 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:22:29 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:22:30 [http-nio-8080-exec-7] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/usuarios/pedidos/mis-pedidos
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/usuarios/pedidos/mis-pedidos
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.email=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pedido,
+        p1_0.estado,
+        p1_0.estado_pago,
+        p1_0.fecha_pago,
+        p1_0.fecha_pedido,
+        p1_0.id_usuario,
+        p1_0.metodo_pago,
+        p1_0.numero_pedido,
+        p1_0.subtotal,
+        p1_0.total,
+        p1_0.transaccion_id 
+    from
+        pedidos p1_0 
+    where
+        p1_0.id_usuario=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_pago,
+        p1_0.banco_emisor,
+        p1_0.datos_pasarela_json,
+        p1_0.estado,
+        p1_0.fecha_creacion,
+        p1_0.fecha_pago,
+        p1_0.id_metodo,
+        p1_0.metodo_usado,
+        p1_0.monto,
+        p1_0.id_pedido,
+        p2_0.id_pedido,
+        p2_0.estado,
+        p2_0.estado_pago,
+        p2_0.fecha_pago,
+        p2_0.fecha_pedido,
+        p2_0.id_usuario,
+        p2_0.metodo_pago,
+        p2_0.numero_pedido,
+        p2_0.subtotal,
+        p2_0.total,
+        p2_0.transaccion_id,
+        p1_0.referencia_pasarela,
+        p1_0.tipo_tarjeta,
+        p1_0.transaccion_externa_id,
+        p1_0.ultimos_4_digitos 
+    from
+        pagos p1_0 
+    join
+        pedidos p2_0 
+            on p2_0.id_pedido=p1_0.id_pedido 
+    where
+        p1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:22:30 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        count(dp1_0.id_detalle) 
+    from
+        detalle_pedido dp1_0 
+    where
+        dp1_0.id_pedido=?
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:23:10 [http-nio-8080-exec-4] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:10 [http-nio-8080-exec-4] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:23:10 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:23:58 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/auth/logout?firebaseUid=mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing POST /api/auth/logout?firebaseUid=mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/auth/logout
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:23:58 [http-nio-8080-exec-3] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured POST /api/auth/logout?firebaseUid=mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/auth/logout
+2025-10-28 02:23:58 [http-nio-8080-exec-3] INFO  p.c.i.b.controller.AuthController - 👋 Cerrando sesión para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:23:58 [http-nio-8080-exec-3] INFO  p.c.i.backend.service.AuthService - ✅ Último acceso actualizado para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:23:58 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    update
+        usuarios 
+    set
+        activo=?,
+        email=?,
+        fecha_actualizacion=?,
+        firebase_uid=?,
+        password=?,
+        id_rol=?,
+        ultimo_acceso=? 
+    where
+        id_usuario=?
+2025-10-28 02:23:58 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/productos/mas-vendido
+2025-10-28 02:23:58 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/productos/por-agotarse?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/productos/mas-recientes?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/productos/mas-baratos?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-vendido
+2025-10-28 02:23:58 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:23:58 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:23:58 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-vendido
+2025-10-28 02:23:58 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:23:58 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.calificacion_promedio desc,
+        p1_0.fecha_creacion desc 
+    fetch
+        first 1 rows only
+2025-10-28 02:23:58 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock between 5 and 10 
+    order by
+        p1_0.stock 
+    fetch
+        first ? rows only
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.fecha_creacion desc 
+    fetch
+        first ? rows only
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:23:58 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.precio 
+    fetch
+        first ? rows only
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:23:58 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:23:58 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-vendido
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-vendido
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.calificacion_promedio desc,
+        p1_0.fecha_creacion desc 
+    fetch
+        first 1 rows only
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:26:36 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:36 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:26:36 [http-nio-8080-exec-9] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:26:36 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:26:36 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:26:36 [http-nio-8080-exec-9] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:26:36 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock between 5 and 10 
+    order by
+        p1_0.stock 
+    fetch
+        first ? rows only
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.fecha_creacion desc 
+    fetch
+        first ? rows only
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:26:36 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.precio 
+    fetch
+        first ? rows only
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:26:36 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/categorias
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/categorias
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/categorias
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/categorias
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos?page=0&size=1000&sort=nombreProducto&direction=ASC
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos?page=0&size=1000&sort=nombreProducto&direction=ASC
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.activo 
+    order by
+        c1_0.nombre_categoria
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.nombre_producto 
+    offset
+        ? rows 
+    fetch
+        first ? rows only
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:43 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:26:43 [http-nio-8080-exec-1] WARN  o.s.d.w.c.SpringDataJacksonConfiguration$PageModule$WarningLoggingModifier - Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        count(p1_0.id_producto) 
+    from
+        productos p1_0 
+    where
+        p1_0.id_categoria=?
+2025-10-28 02:26:43 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        count(p1_0.id_producto) 
+    from
+        productos p1_0 
+    where
+        p1_0.id_categoria=?
+2025-10-28 02:28:26 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/auth/login-token
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing POST /api/auth/login-token
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/auth/login-token
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Secured POST /api/auth/login-token
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/auth/login-token
+2025-10-28 02:28:26 [http-nio-8080-exec-9] INFO  p.c.i.b.controller.AuthController - 🔐 Intento de login con token (Social/Estandar)
+2025-10-28 02:28:26 [http-nio-8080-exec-9] INFO  p.c.i.backend.service.AuthService - Verificando ID Token de Firebase para login/sincronización...
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:28:26 [http-nio-8080-exec-9] INFO  p.c.i.backend.service.AuthService - Sincronización/Login exitoso para: cesar_2002_love@hotmail.com
+2025-10-28 02:28:26 [http-nio-8080-exec-9] DEBUG org.hibernate.SQL - 
+    update
+        usuarios 
+    set
+        activo=?,
+        email=?,
+        fecha_actualizacion=?,
+        firebase_uid=?,
+        password=?,
+        id_rol=?,
+        ultimo_acceso=? 
+    where
+        id_usuario=?
+2025-10-28 02:28:26 [http-nio-8080-exec-9] INFO  p.c.i.b.controller.AuthController - ✅ Login/Sincronización exitosa para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔐 No hay token Bearer - URI: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1. Spring Security manejará la auth.
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /error
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔐 No hay token Bearer - URI: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1. Spring Security manejará la auth.
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /error
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-3] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-vendido
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-vendido
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.calificacion_promedio desc,
+        p1_0.fecha_creacion desc 
+    fetch
+        first 1 rows only
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:28:28 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:28:28 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:28:28 [http-nio-8080-exec-6] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:28:28 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:28:28 [http-nio-8080-exec-6] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:28:28 [http-nio-8080-exec-6] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock between 5 and 10 
+    order by
+        p1_0.stock 
+    fetch
+        first ? rows only
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.fecha_creacion desc 
+    fetch
+        first ? rows only
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:28:28 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔐 No hay token Bearer - URI: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1. Spring Security manejará la auth.
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.precio 
+    fetch
+        first ? rows only
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /error
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:28:28 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔐 No hay token Bearer - URI: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1. Spring Security manejará la auth.
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing GET /error
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:28 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.Http403ForbiddenEntryPoint - Pre-authenticated entry point called. Rejecting access
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing POST /api/auth/login-token
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/auth/login-token
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured POST /api/auth/login-token
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/auth/login-token
+2025-10-28 02:28:47 [http-nio-8080-exec-4] INFO  p.c.i.b.controller.AuthController - 🔐 Intento de login con token (Social/Estandar)
+2025-10-28 02:28:47 [http-nio-8080-exec-4] INFO  p.c.i.backend.service.AuthService - Verificando ID Token de Firebase para login/sincronización...
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:28:47 [http-nio-8080-exec-4] INFO  p.c.i.backend.service.AuthService - Sincronización/Login exitoso para: cesar_2002_love@hotmail.com
+2025-10-28 02:28:47 [http-nio-8080-exec-4] DEBUG org.hibernate.SQL - 
+    update
+        usuarios 
+    set
+        activo=?,
+        email=?,
+        fecha_actualizacion=?,
+        firebase_uid=?,
+        password=?,
+        id_rol=?,
+        ultimo_acceso=? 
+    where
+        id_usuario=?
+2025-10-28 02:28:47 [http-nio-8080-exec-4] INFO  p.c.i.b.controller.AuthController - ✅ Login/Sincronización exitosa para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:28:48 [http-nio-8080-exec-3] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:48 [http-nio-8080-exec-3] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:28:48 [http-nio-8080-exec-3] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:28:49 [http-nio-8080-exec-8] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/clientes/perfil/mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:49 [http-nio-8080-exec-8] INFO  p.c.i.b.controller.ClienteController - 👤 Obteniendo perfil para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:28:49 [http-nio-8080-exec-8] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    left join
+        usuarios u1_0 
+            on u1_0.id_usuario=c1_0.id_usuario 
+    where
+        u1_0.id_usuario=?
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing POST /api/auth/logout?firebaseUid=mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/auth/logout
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Token válido - UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1, Email: cesar_2002_love@hotmail.com
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🔑 Rol obtenido de BD: CLIENTE
+2025-10-28 02:31:02 [http-nio-8080-exec-1] INFO  p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Usuario autenticado: cesar_2002_love@hotmail.com (rol: CLIENTE)
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured POST /api/auth/logout?firebaseUid=mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - ✅ Aplicando filtro a: /api/auth/logout
+2025-10-28 02:31:02 [http-nio-8080-exec-1] INFO  p.c.i.b.controller.AuthController - 👋 Cerrando sesión para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id_usuario,
+        u1_0.activo,
+        u1_0.email,
+        u1_0.fecha_actualizacion,
+        u1_0.fecha_creacion,
+        u1_0.firebase_uid,
+        u1_0.password,
+        u1_0.id_rol,
+        u1_0.ultimo_acceso 
+    from
+        usuarios u1_0 
+    where
+        u1_0.firebase_uid=?
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_cliente,
+        c1_0.apellidos_cliente,
+        c1_0.fecha_actualizacion,
+        c1_0.fecha_nacimiento,
+        c1_0.genero,
+        c1_0.nombres_cliente,
+        c1_0.numero_documento,
+        c1_0.prefijo_telefono,
+        c1_0.telefono,
+        c1_0.telefono_verificado,
+        c1_0.tipo_documento,
+        c1_0.id_usuario 
+    from
+        clientes c1_0 
+    where
+        c1_0.id_usuario=?
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion_rol,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.id_rol=?
+2025-10-28 02:31:02 [http-nio-8080-exec-1] INFO  p.c.i.backend.service.AuthService - ✅ Último acceso actualizado para UID: mVYvPiBUCDN6d7JiSeEGoZx3Wqs1
+2025-10-28 02:31:02 [http-nio-8080-exec-1] DEBUG org.hibernate.SQL - 
+    update
+        usuarios 
+    set
+        activo=?,
+        email=?,
+        fecha_actualizacion=?,
+        firebase_uid=?,
+        password=?,
+        id_rol=?,
+        ultimo_acceso=? 
+    where
+        id_usuario=?
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-vendido
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-vendido
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-vendido
+2025-10-28 02:31:04 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:31:04 [http-nio-8080-exec-10] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.calificacion_promedio desc,
+        p1_0.fecha_creacion desc 
+    fetch
+        first 1 rows only
+2025-10-28 02:31:04 [http-nio-8080-exec-10] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:31:04 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/por-agotarse?limite=12
+2025-10-28 02:31:04 [http-nio-8080-exec-10] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/por-agotarse
+2025-10-28 02:31:04 [http-nio-8080-exec-10] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock between 5 and 10 
+    order by
+        p1_0.stock 
+    fetch
+        first ? rows only
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-recientes?limite=12
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-recientes
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    order by
+        p1_0.fecha_creacion desc 
+    fetch
+        first ? rows only
+2025-10-28 02:31:04 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:31:04 [http-nio-8080-exec-5] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/productos/mas-baratos?limite=12
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG p.c.i.b.s.FirebaseAuthTokenFilter - 🚫 Excluyendo del filtro: /api/productos/mas-baratos
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        p1_0.id_producto,
+        p1_0.calificacion_promedio,
+        p1_0.id_categoria,
+        p1_0.descripcion_producto,
+        p1_0.fecha_actualizacion,
+        p1_0.fecha_creacion,
+        p1_0.mongo_product_id,
+        p1_0.nombre_producto,
+        p1_0.precio,
+        p1_0.stock,
+        p1_0.stock_minimo 
+    from
+        productos p1_0 
+    where
+        p1_0.stock>0 
+    order by
+        p1_0.precio 
+    fetch
+        first ? rows only
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        c1_0.id_categoria,
+        c1_0.activo,
+        c1_0.descripcion_categoria,
+        c1_0.fecha_creacion,
+        c1_0.nombre_categoria 
+    from
+        categorias c1_0 
+    where
+        c1_0.id_categoria=?
+2025-10-28 02:31:05 [http-nio-8080-exec-2] DEBUG org.hibernate.SQL - 
+    select
+        i1_0.id_inventario,
+        i1_0.fecha_actualizacion,
+        i1_0.id_producto,
+        i1_0.stock_actual,
+        i1_0.stock_disponible,
+        i1_0.stock_reservado 
+    from
+        inventario i1_0 
+    where
+        i1_0.id_producto=?
