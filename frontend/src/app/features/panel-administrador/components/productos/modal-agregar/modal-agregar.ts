@@ -1,5 +1,4 @@
-
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Product } from '@core/services/productos/producto-adapter.service';
@@ -18,7 +17,7 @@ declare var bootstrap: any;
   templateUrl: './modal-agregar.html',
   styleUrls: ['./modal-agregar.scss']
 })
-export class ModalAgregar {
+export class ModalAgregar implements OnInit, OnDestroy {
 
   private managementService = inject(ProductoManagementService);
   private categoriaService = inject(CategoriaService)
@@ -35,6 +34,14 @@ export class ModalAgregar {
   errorMessage: string = '';
 
   private categoriesSubscription?: Subscription;
+
+  ngOnInit(): void {
+      this.loadCategories();
+  }
+  
+  ngOnDestroy(): void {
+      this.categoriesSubscription?.unsubscribe();
+  }
 
   guardarProducto() {
     this.mapearVariaciones();
@@ -57,7 +64,6 @@ export class ModalAgregar {
     this.managementService.addProduct(this.producto).subscribe({
       next: (res: ProductoDetalle) => {
         alert('Producto agregado correctamente.');
-        // Emitir el producto en el formato principal
         this.productoAgregado.emit(res);
         this.resetForm();
         this.cerrarModal();
@@ -69,23 +75,20 @@ export class ModalAgregar {
     });
   }
 
-  /**
-     * Cargar todas las categorías activas
-     */
   loadCategories(): void {
-    console.log('📂 Iniciando carga de categorías...');
+    console.log('Iniciando carga de categorías...');
 
     this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
       next: (categorias: Categoria[]) => {
-        console.log('✅ Categorías recibidas del backend:', categorias);
-        console.log('📊 Cantidad de categorías:', categorias.length);
-        // Agregar "Todos" al inicio
+        console.log('Categorías recibidas del backend:', categorias);
+        console.log('Cantidad de categorías:', categorias.length);
+
         this.categoriasUnicas = categorias;
 
-        console.log('✅ Categorías finales procesadas:', this.categoriasUnicas);
+        console.log('Categorías finales procesadas:', this.categoriasUnicas);
       },
       error: (error) => {
-        console.error('❌ Error al cargar categorías:', error);
+        console.error('Error al cargar categorías:', error);
         this.errorMessage = 'Error al cargar las categorías';
       }
     });

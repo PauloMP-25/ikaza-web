@@ -26,16 +26,14 @@
                     placeholder="Ej: LLG5-2023" required />
                   <div class="form-text">Identificador único.</div>
                 </div>
-                <div class="col-12">
-                  <label class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
-                  <select class="form-select" [(ngModel)]="producto.category" name="category" required>
-                    <option value="" disabled selected>Selecciona una categoría</option>
-
-                    <option *ngFor="let cat of categoriasUnicas" [value]="cat">
-                      {{ cat }}
-                    </option>
-                  </select>
-                </div>
+<div class="col-12">
+  <label class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
+<select class="form-select" [(ngModel)]="producto.category" name="category" required>
+  <option value="" disabled selected>Selecciona una categoría</option>
+  <option *ngFor="let cat of categoriasUnicas" [value]="cat.idCategoria">     {{ cat.nombreCategoria }}
+  </option>
+</select>
+</div>
 
               </div>
             </div>

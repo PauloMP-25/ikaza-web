@@ -10,7 +10,7 @@ import {
     ProductoDetalle,
     ProductoRequest,
     ProductoUpdateRequest,
-    // Se eliminan Variante e ImagenProducto ya que eran solo para mocks
+    
 } from '@core/models/productos/producto-backend.model';
 
 @Injectable({
@@ -114,23 +114,21 @@ export class ProductoService {
 
     // --- MÉTODOS ADMIN (CRUD) ---
 
-    /**
-     * Crear producto (admin)
-     */
-    crearProducto(producto: ProductoRequest): Observable<Producto> {
-        return this.http.post<Producto>(this.apiUrl, producto).pipe(
-            catchError(this.handleError)
-        );
-    }
+  crearProducto(producto: ProductoRequest): Observable<Producto> {
+    return this.http.post<Producto>(this.apiUrl, producto).pipe(
+      catchError(this.handleError)
+    );
+  }
 
-    /**
-     * Actualizar producto (admin)
-     */
-    actualizarProducto(id: number, producto: ProductoUpdateRequest): Observable<Producto> {
-        return this.http.put<Producto>(`${this.apiUrl}/${id}`, producto).pipe(
-            catchError(this.handleError)
-        );
-    }
+  actualizarProducto(id: number, producto: ProductoUpdateRequest): Observable<Producto> {
+    return this.http.put<Producto>(`${this.apiUrl}/${id}`, producto).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
+
+
 
     /**
      * Eliminar producto (admin)

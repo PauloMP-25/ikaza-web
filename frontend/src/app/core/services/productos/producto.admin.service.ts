@@ -1,95 +1,102 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, of, switchMap, catchError, throwError } from 'rxjs';
 import { ProductoService } from './producto.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { Producto, ProductoDetalle } from '@core/models/productos/producto-backend.model';
 import { Product, ProductAdapterService } from './producto-adapter.service';
 
-
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class ProductoManagementService {
-    private productoService = inject(ProductoService);
-    private cloudinaryService = inject(CloudinaryService);
-    private adapterService = inject(ProductAdapterService);
+  private productoService = inject(ProductoService);
+  private cloudinaryService = inject(CloudinaryService);
+  private adapterService = inject(ProductAdapterService);
+
+  // 🟢 AGREGAR PRODUCTO
+  public addProduct(producto: Product): Observable<Producto> {
+    const productoAEnviar = { ...producto }; //26 DE OCTUBRE
 
 
+    const upload$ = productoAEnviar.imagenFile instanceof File
+      ? this.cloudinaryService.subirImagen(productoAEnviar.imagenFile, productoAEnviar.category.toLowerCase())
+      : of(null);
 
-    // MÉTODO PRINCIPAL: AGREGAR PRODUCTO
+    return upload$.pipe(
+      switchMap(uploadResult => {
+        //AGREGADO EL 26 DE OCTUBRE
+if (uploadResult?.secure_url) {
+  productoAEnviar.image = uploadResult.secure_url;
 
-    // Recibe un objeto Product con toda la información del producto.
-    // 1. Prepara los datos para el backend (limpia y estructura).
-    // 2. Si existe una imagen local, la sube a Cloudinary.
-    // 3. Una vez subida, guarda el producto final en la API.
-    public addProduct(producto: Product): Observable<Producto> {
-        const productoAEnviar = this.prepareProductForApi(producto);
+  // ✅ Agregamos el campo que el backend espera:
+  (productoAEnviar as any).imagenPrincipal = uploadResult.secure_url;
+} else {
+  productoAEnviar.image ||= '';
+  (productoAEnviar as any).imagenPrincipal ||= '';
+}
 
-        const upload$ = productoAEnviar.imagenFile instanceof File
-            ? this.cloudinaryService.subirImagen(productoAEnviar.imagenFile, productoAEnviar.category.toLowerCase())
-            : of(null);
+        //
 
-        return upload$.pipe(
-            switchMap(uploadResult => {
-                if (uploadResult && uploadResult.secure_url) {
-                    productoAEnviar.image = uploadResult.secure_url;
-                } else if (!productoAEnviar.image) {
-                    productoAEnviar.image = '';
-                }
+        delete productoAEnviar.imagenFile;
+        delete productoAEnviar.imagenPreview;
+        delete productoAEnviar.imagenFileName;
 
-                delete productoAEnviar.imagenFile;
-                delete productoAEnviar.imagenPreview;
-                delete productoAEnviar.imagenFileName;
+        const productoRequest = this.adapterService.productToProductoRequest(productoAEnviar);
+        return this.productoService.crearProducto(productoRequest);
+      }),
+      catchError(err => this.handleError('Error al agregar producto', err))
+    );
+  }
 
-                // Convertir a ProductoRequest usando el adapter
-                const productoRequest = this.adapterService.productToProductoRequest(productoAEnviar);
-                return this.productoService.crearProducto(productoRequest);
-            })
-        );
+  // 🟡 EDITAR PRODUCTO
+  public updateProduct(producto: Product): Observable<Producto> {
+    const productoAEnviar = this.prepareProductForApi(producto);
+
+    if (!productoAEnviar.id) {
+      return throwError(() => new Error('El producto a actualizar no tiene ID definido.'));
     }
 
+    const upload$ = productoAEnviar.imagenFile instanceof File
+      ? this.cloudinaryService.subirImagen(productoAEnviar.imagenFile, productoAEnviar.category.toLowerCase())
+      : of(null);
 
-    // MÉTODO PRINCIPAL: EDITAR PRODUCTO
-    // Recibe un producto con modificaciones. 
-    // 1. Si el usuario cambió la imagen, la sube primero.
-    // 2. Luego, envía la información actualizada a la API.
-    public updateProduct(producto: Product): Observable<Producto> {
-        const productoAEnviar = this.prepareProductForApi(producto);
+    return upload$.pipe(
+      switchMap(uploadResult => {
+        if (uploadResult?.secure_url) {
+          productoAEnviar.image = uploadResult.secure_url;
+        }
 
-        const upload$ = productoAEnviar.imagenFile instanceof File
-            ? this.cloudinaryService.subirImagen(productoAEnviar.imagenFile, productoAEnviar.category.toLowerCase())
-            : of(null);
+        delete productoAEnviar.imagenFile;
+        delete productoAEnviar.imagenPreview;
+        delete productoAEnviar.imagenFileName;
 
-        return upload$.pipe(
-            switchMap(uploadResult => {
-                if (uploadResult && uploadResult.secure_url) {
-                    productoAEnviar.image = uploadResult.secure_url;
-                }
+        const productoUpdateRequest = this.adapterService.productToProductoUpdateRequest(productoAEnviar);
+        return this.productoService.actualizarProducto(productoAEnviar.id, productoUpdateRequest);
+      }),
+      catchError(err => this.handleError('Error al actualizar producto', err))
+    );
+  }
 
-                delete productoAEnviar.imagenFile;
-                delete productoAEnviar.imagenPreview;
-                delete productoAEnviar.imagenFileName;
+  // 🔄 CONVERTIR A MODELO v2
+  public getProductAsV2(productoDetalle: ProductoDetalle): Product {
+    return this.adapterService.productoDetalleToProduct(productoDetalle);
+  }
 
-                // Convertir a ProductoUpdateRequest usando el adapter
-                const productoUpdateRequest = this.adapterService.productToProductoUpdateRequest(productoAEnviar);
-                return this.productoService.actualizarProducto(productoAEnviar.id, productoUpdateRequest);
-            })
-        );
-    }
+  // ⚙️ PREPARAR DATOS PARA API
+  private prepareProductForApi(producto: Product): Product {
+    const productoAEnviar = { ...producto };
+    productoAEnviar.hasSizes = Boolean(productoAEnviar.sizes?.length);
+    productoAEnviar.hasColors = Boolean(productoAEnviar.colors?.length);
+    return productoAEnviar;
+  }
 
-    // Obtener producto como modelo v2
-    public getProductAsV2(productoDetalle: ProductoDetalle): Product {
-        return this.adapterService.productoDetalleToProduct(productoDetalle);
-    }
+  // ❌ MANEJO CENTRALIZADO DE ERRORES (sin librerías externas)
+  private handleError(mensaje: string, error: any): Observable<never> {
+    console.error(`${mensaje}:`, error);
 
+    // Mostrar mensaje de error básico con alert()
+    alert(`${mensaje}. Por favor, inténtalo nuevamente.`);
 
-    // FUNCIÓN INTERNA DE PREPARACIÓN DE DATOS
-    private prepareProductForApi(producto: Product): Product {
-        const productoAEnviar = { ...producto };
-
-        productoAEnviar.hasSizes = (productoAEnviar.sizes && productoAEnviar.sizes.length > 0) || false;
-        productoAEnviar.hasColors = (productoAEnviar.colors && productoAEnviar.colors.length > 0) || false;
-
-        return productoAEnviar;
-    }
+    return throwError(() => error);
+  }
 }

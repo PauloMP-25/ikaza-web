@@ -3,7 +3,7 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { from, switchMap, catchError, throwError, of } from 'rxjs';
+import { from, switchMap, catchError, throwError } from 'rxjs';
 
 /**
  * Interceptor que agrega el token de Firebase a las peticiones
@@ -16,8 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     console.log('🔄 Interceptor ejecutándose para:', req.url);
 
     // Solo aplicar el interceptor a peticiones del backend Spring Boot
-    const isBackendRequest = req.url.includes('localhost:8080') ||
-        req.url.includes('api/');
+    const isBackendRequest = req.url.includes('localhost:8080') || req.url.includes('api/');
 
     if (!isBackendRequest) {
         console.log('🔄 Request no es del backend, continuando sin token');
@@ -33,10 +32,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
 
     // Obtener el token de Firebase y agregarlo al header Authorization
-    return from(currentUser.getIdToken()).pipe(
+    return from(currentUser.getIdToken(true)).pipe(  // 'true' fuerza renovación si expira
         switchMap(token => {
+             console.log('🔑 TOKEN OBTENIDO PARA COPIAR:', token);  // TOKEN
             if (!token) {
-                console.warn('⚠️ Token es null/undefined, continuando sin token');
+                console.warn('⚠️ Token es null, continuando sin token');
                 return next(req);
             }
 
@@ -51,7 +51,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         }),
         catchError((error: any) => {
             console.error('❌ Error obteniendo ID token de Firebase:', error);
-            return next(req);
+            
+            // En caso de error, redirigir a login o mostrar error (no continuar sin token)
+            router.navigate(['/login'], {
+                queryParams: {
+                    message: 'Error de autenticación. Por favor, inicia sesión nuevamente.',
+                    display: 'modal'
+                }
+            });
+            
+            // Re-lanzar el error para que no se envíe la petición sin token
+            return throwError(() => error);
         })
     );
 };

@@ -25,9 +25,6 @@
     </div>
 
     <app-modal-agregar (productoAgregado)="onProductoAgregado($event)"></app-modal-agregar>
-    <app-modal-editar *ngIf="productoAEditar" [producto="productoAEditar"
-        (productoEditado)="onProductoEditado($event)">
-    </app-modal-editar>
 
     <!-- Filtros -->
     <div class="row mb-4">
@@ -40,11 +37,12 @@
             </div>
         </div>
         <div class="col-lg-4 d-flex align-items-center">
-            <select class="form-select me-2" aria-label="Filtro" [(ngModel)]="categoriaSeleccionada"
-                (change)="filtrarProductos()">
-                <option value="">Todas las Categorías</option>
-                <option *ngFor="let cat of categoriasUnicas" [value]="cat">{{ cat }}</option>
-            </select>
+<select [(ngModel)]="categoriaSeleccionada" (change)="filtrarProductos()">
+    <option value="">Todas las Categorías</option>
+    <option *ngFor="let cat of categoriasMaestras" [value]="cat.nombreCategoria"> 
+        {{ cat.nombreCategoria }} 
+    </option>
+</select>
         </div>
     </div>
 
@@ -92,11 +90,11 @@
                         <tr *ngFor="let prod of productosPaginados; let i = index">
                             <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
                             <td>
-                                <p>Hola</p>
-                                <!--<img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/placeholder.png'"
+                                
+                                <img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/placeholder.jpg'"
                                     alt="{{ prod.nombreProducto }}" class="img-fluid rounded"
-                                    onerror="this.src='assets/images/placeholder.png'">
-                            -->
+                                    onerror="this.src='assets/images/Accesorios/Lentes_de_halloween.jpg'">
+                           
                             </td>
                             <td class="text-truncate" [title]="prod.nombreProducto">
                                 {{ prod.nombreProducto }}

@@ -4,10 +4,10 @@
         <!-- Detalles del producto -->
         <div class="col-12 col-lg-6 order-1 order-lg-2 ps-1 ps-lg-1">
             <!-- Nombre clicable para navegar -->
-            <h3 class="h4 fw-bold text-success text-sucesivo" (click)="onImageClick()">
-                {{ product.nombreProducto }}
-            </h3>
-            <p class="text-secondary mt-2">{{ product.descripcionProducto }}</p>
+<h3 class="h4 fw-bold text-success text-sucesivo" (click)="onImageClick()">
+  {{ product?.nombreCategoria }}
+</h3>
+<p class="text-secondary mt-2">{{ product?.descripcionProducto }}</p>
 
             <!-- Selector de colores -->
             <div class="mb-3" *ngIf="uniqueColors.length">
