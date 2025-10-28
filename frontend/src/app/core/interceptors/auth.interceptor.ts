@@ -1,75 +1,70 @@
-// src/app/core/interceptors/auth.interceptor.ts
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
-import { from, switchMap, catchError, throwError, of } from 'rxjs';
+/**
+ * ============================================================================
+ * Interceptor de Autenticación Reactivo
+ * ============================================================================
+ * - Agrega el token de Firebase a todas las peticiones del backend
+ * - Obtiene el token de forma reactiva usando AuthService.getIdToken$()
+ * - Solo aplica a peticiones del backend (localhost:8080 o /api/)
+ * SEGURIDAD:
+ *    - Si no hay token, la petición continúa sin Authorization header
+ *    - El backend debe validar y rechazar peticiones sin token
+ *    - No se exponen errores sensibles al cliente
+ * LOGS:
+ *    - Logs informativos de cada petición interceptada
+ *    - Identificación clara de peticiones con/sin token
+ *    - Logs de errores sin exponer información sensible
+ * ============================================================================
+ */
 
-/**
- * Interceptor que agrega el token de Firebase a las peticiones
- * y maneja errores de autenticación (401, 403)
- */
-/**
- * Interceptor que agrega el token de Firebase a las peticiones
- * y maneja errores de autenticación (401, 403)
- */
+import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { switchMap, catchError} from 'rxjs';
+import { AuthService } from '@core/services/auth/auth';
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-    const auth = inject(Auth);
+    const authService = inject(AuthService);
     const router = inject(Router);
 
-    console.log('🔄 Interceptor ejecutándose para:', req.url);
+    console.log('Auth Interceptor ejecutándose para:', req.url);
 
-    const isBackendRequest = req.url.includes('localhost:8080') || req.url.includes('api/');
+    // ============================================================
+    // PASO 1: Filtrar solo peticiones del backend
+    // ============================================================
+    const isBackendRequest = req.url.includes('localhost:8080') || req.url.includes('/api/');
 
     if (!isBackendRequest) {
-        console.log('🔄 Request no es del backend, continuando sin token');
+        console.log('Request externa (no backend), continuando sin token');
         return next(req);
     }
 
-    const currentUser = auth.currentUser;
-    const localToken = localStorage.getItem('authToken');
-
-    // 🚨 PASO 1: Si NO hay usuario logueado, usar el token de localStorage como fallback.
-    if (!currentUser) {
-        if (localToken) {
-            console.log('🔑 Usando token de localStorage (Fallback)');
-            const clonedRequest = req.clone({
-                setHeaders: { Authorization: `Bearer ${localToken}` }
-            });
-            return next(clonedRequest);
-        }
-        console.log('👤 No hay usuario autenticado ni token local, continuando sin token');
-        return next(req);
-    }
-
-    // 🚨 PASO 2: Usuario logueado. Obtener el token de Firebase (Asíncrono)
-    return from(currentUser.getIdToken()).pipe(
-        switchMap(firebaseToken => {
-            // Usar el token de Firebase si está disponible, sino el token local (si aún existe)
-            const finalToken = firebaseToken || localToken;
-
-            if (finalToken) {
+    // ============================================================
+    // PASO 2: Obtener token de forma reactiva usando AuthService
+    // ============================================================
+    return authService.getIdToken$().pipe(
+        switchMap(token => {
+            // Si hay token, agregarlo a los headers
+            if (token) {
                 const clonedRequest = req.clone({
                     setHeaders: {
-                        Authorization: `Bearer ${finalToken}` // Aquí finalToken ya es string
+                        Authorization: `Bearer ${token}`
                     }
                 });
-                console.log('🔑 ID Token agregado a:', req.url);
+                console.log('Token agregado a la petición:', req.url);
                 return next(clonedRequest);
             }
 
-            console.warn('⚠️ No se pudo obtener el token, continuando sin Authorization.');
-            return next(req); // Continúa sin cabecera si el token es nulo
+            // Si no hay token, continuar sin Authorization header
+            console.warn('No hay token disponible, continuando sin Authorization header');
+            return next(req);
         }),
-        catchError((error: any) => {
-            console.error('❌ Error obteniendo ID token de Firebase:', error);
-            // Intentar usar token local como último recurso si hay un error
-            if (localToken) {
-                const clonedRequest = req.clone({
-                    setHeaders: { Authorization: `Bearer ${localToken}` }
-                });
-                return next(clonedRequest);
-            }
+        catchError((error) => {
+            // Error obteniendo el token (poco probable con getIdToken$)
+            console.error('Error obteniendo token:', error);
+
+            // Continuar la petición sin token
+            // El backend rechazará la petición si requiere autenticación
+            console.warn('Continuando petición sin token debido a error');
             return next(req);
         })
     );

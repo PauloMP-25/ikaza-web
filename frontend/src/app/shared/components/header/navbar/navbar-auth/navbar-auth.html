@@ -14,6 +14,10 @@
                 data-bs-toggle="dropdown" aria-expanded="false">
                 <!-- Avatar del usuario -->
                 <div class="user-avatar">
+                    <!-- Si el usuario no tiene foto ni icono, mostrar iniciales -->
+                    <div *ngIf="!userAvatar.value" class="avatar-initials">
+                        {{ userInitials }}
+                    </div>
                     <!-- Foto de perfil -->
                     <img *ngIf="userAvatar.type === 'image'" [src]="userAvatar.value" alt="Avatar"
                         class="avatar-image" />
@@ -44,7 +48,8 @@
                         </div>
                         <div class="user-details">
                             <div class="fw-bold">{{ displayName }}</div>
-                            <small class="text-muted">{{ currentUser .email.toLocaleLowerCase() || currentUser .displayName }}</small>
+                            <small class="text-muted">{{ currentUser .email.toLocaleLowerCase() || currentUser
+                                .displayName }}</small>
                         </div>
                     </div>
                 </li>

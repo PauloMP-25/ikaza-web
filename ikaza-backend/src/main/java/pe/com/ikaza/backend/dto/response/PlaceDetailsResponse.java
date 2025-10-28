@@ -2,6 +2,8 @@ package pe.com.ikaza.backend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class PlaceDetailsResponse {
     @JsonProperty("result")
     private Result result;
@@ -21,6 +23,24 @@ public class PlaceDetailsResponse {
         @JsonProperty("geometry")
         private Geometry geometry;
 
+        @JsonProperty("place_id")
+        private String placeId;
+
+        @JsonProperty("types")
+        private List<String> types;
+
+        @JsonProperty("address_components")
+        private List<AddressComponent> addressComponents;
+
+        // Getters y setters
+        public String getPlaceId() {
+            return placeId;
+        }
+
+        public void setPlaceId(String placeId) {
+            this.placeId = placeId;
+        }
+
         // Getters y setters
         public String getFormattedAddress() {
             return formattedAddress;
@@ -36,6 +56,59 @@ public class PlaceDetailsResponse {
 
         public void setGeometry(Geometry geometry) {
             this.geometry = geometry;
+        }
+
+        // Getter y Setter para AddressComponents
+        public List<AddressComponent> getAddressComponents() {
+            return addressComponents;
+        }
+
+        public void setAddressComponents(List<AddressComponent> addressComponents) {
+            this.addressComponents = addressComponents;
+        }
+
+        public List<String> getTypes() {
+            return types;
+        }
+
+        public void setTypes(List<String> types) {
+            this.types = types;
+        }
+
+    }
+
+    public static class AddressComponent {
+        @JsonProperty("long_name")
+        private String longName;
+        @JsonProperty("types")
+        private List<String> types;
+
+        @JsonProperty("short_name")
+        private String shortName;
+
+        // Getters y setters
+        public String getShortName() {
+            return shortName;
+        }
+
+        public void setShortName(String shortName) {
+            this.shortName = shortName;
+        }
+
+        public String getLongName() {
+            return longName;
+        }
+
+        public void setLongName(String longName) {
+            this.longName = longName;
+        }
+
+        public List<String> getTypes() {
+            return types;
+        }
+
+        public void setTypes(List<String> types) {
+            this.types = types;
         }
     }
 

@@ -113,9 +113,6 @@ public class ProductoService {
         if (detalle != null) {
             response.setCodigo(detalle.getCodigo());
             response.setMarca(detalle.getMarca());
-            response.setModelo(detalle.getModelo());
-            response.setGarantia(detalle.getGarantia());
-            response.setInstruccionesUso(detalle.getInstruccionesUso());
             response.setAtributos(detalle.getAtributos());
 
             // Convertir imágenes
@@ -123,23 +120,6 @@ public class ProductoService {
                 response.setImagenes(detalle.getImagenes().stream()
                         .map(img -> new ProductoDetalleResponse.ImagenDto(
                                 img.getUrl(), img.getAlt(), img.getEsPrincipal(), img.getOrden()))
-                        .collect(Collectors.toList()));
-            }
-
-            // Convertir especificaciones
-            if (detalle.getEspecificaciones() != null) {
-                response.setEspecificaciones(detalle.getEspecificaciones().stream()
-                        .map(esp -> new ProductoDetalleResponse.EspecificacionDto(
-                                esp.getNombre(), esp.getValor(), esp.getUnidad()))
-                        .collect(Collectors.toList()));
-            }
-
-            // Convertir variantes
-            if (detalle.getVariantes() != null) {
-                response.setVariantes(detalle.getVariantes().stream()
-                        .map(var -> new ProductoDetalleResponse.VarianteDto(
-                                var.getSku(), var.getColor(), var.getTalla(),
-                                var.getMaterial(), var.getStockAdicional(), var.getImagenUrl()))
                         .collect(Collectors.toList()));
             }
 

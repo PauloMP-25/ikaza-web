@@ -86,6 +86,7 @@ public class SecurityConfig {
                 // REGLA GENERAL: Todos los endpoints bajo /api/usuarios/ requieren CLIENTE.
                 //cubre: /direcciones, /perfil, /pagos, /pedidos, etc.
                 .requestMatchers("/api/usuarios/**").hasAuthority("CLIENTE")
+                .requestMatchers("/api/clientes/**").hasAuthority("CLIENTE")
                 
                 // REGLA GENERAL: Todos los endpoints bajo /api/inventario/ requieren ADMINISTRADOR.   
                 .requestMatchers("api/inventario/**").hasAuthority("ADMINISTRADOR")

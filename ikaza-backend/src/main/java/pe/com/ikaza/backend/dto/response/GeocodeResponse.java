@@ -1,6 +1,7 @@
 package pe.com.ikaza.backend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class GeocodeResponse {
@@ -34,7 +35,30 @@ public class GeocodeResponse {
         @JsonProperty("geometry")
         private Geometry geometry;
 
-        // Puedes agregar más campos según necesites, como place_id, etc.
+        @JsonProperty("place_id")
+        private String placeId;
+
+        @JsonProperty("types")
+        private List<String> types;
+
+        @JsonProperty("address_components")
+        private List<PlaceDetailsResponse.AddressComponent> addressComponents;
+
+        public String getPlaceId() {
+            return placeId;
+        }
+
+        public void setPlaceId(String placeId) {
+            this.placeId = placeId;
+        }
+
+        public List<String> getTypes() {
+            return types;
+        }
+
+        public void setTypes(List<String> types) {
+            this.types = types;
+        }
 
         // Getters y setters
         public String getFormattedAddress() {
@@ -51,6 +75,14 @@ public class GeocodeResponse {
 
         public void setGeometry(Geometry geometry) {
             this.geometry = geometry;
+        }
+
+        public List<PlaceDetailsResponse.AddressComponent> getAddressComponents() {
+            return addressComponents;
+        }
+
+        public void setAddressComponents(List<PlaceDetailsResponse.AddressComponent> addressComponents) {
+            this.addressComponents = addressComponents;
         }
     }
 

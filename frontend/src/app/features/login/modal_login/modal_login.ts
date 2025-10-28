@@ -7,9 +7,7 @@ import { AuthService } from '@core/services/auth/auth';
 import { AuthStateService } from '@core/services/auth/auth.state';
 
 // Modelos
-import { LoginCredentials } from '@core/models/auth-firebase/login-credentials';
-import { RegisterData } from '@core/models/auth-firebase/register-data';
-
+import { LoginCredentials, RegisterData } from '@core/models/auth-firebase/auth.backend.models';
 @Component({
   selector: 'app-modal-login',
   standalone: true,

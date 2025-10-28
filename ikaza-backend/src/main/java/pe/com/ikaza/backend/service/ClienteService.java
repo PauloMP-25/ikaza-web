@@ -398,12 +398,29 @@ public class ClienteService {
 
     /**
      * Verifica si el Cliente tiene todos los datos de perfil requeridos
+     * para proceder con operaciones sensibles (como el Checkout).
+     * Incluye validaciones de nulos y campos vacíos.
      */
     private boolean tieneDatosCompletos(Cliente cliente) {
-        return cliente.getNumeroDocumento() != null &&
+        if (cliente == null) {
+            logger.warn("⚠️ Verificación de datos completos fallida: cliente es null");
+            return false;
+        }
+
+        boolean datosCompletos = cliente.getNombresCliente() != null && !cliente.getNombresCliente().isBlank() &&
+                cliente.getApellidosCliente() != null && !cliente.getApellidosCliente().isBlank() &&
+                cliente.getTipoDocumento() != null &&
+                cliente.getNumeroDocumento() != null && !cliente.getNumeroDocumento().isBlank() &&
                 cliente.getFechaNacimiento() != null &&
-                cliente.getTelefono() != null &&
-                cliente.getTelefonoVerificado() != null &&
-                cliente.getTelefonoVerificado();
+                cliente.getPrefijoTelefono() != null && !cliente.getPrefijoTelefono().isBlank() &&
+                cliente.getTelefono() != null && !cliente.getTelefono().isBlank() &&
+                Boolean.TRUE.equals(cliente.getTelefonoVerificado());
+
+        if (!datosCompletos) {
+            logger.info("📋 Perfil incompleto para cliente con ID: {}",
+                    cliente.getUsuario() != null ? cliente.getUsuario().getIdUsuario() : "desconocido");
+        }
+
+        return datosCompletos;
     }
 }

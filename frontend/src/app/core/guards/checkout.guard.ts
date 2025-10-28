@@ -1,95 +1,88 @@
-// src/app/guards/checkout.guard.ts
+/**
+ * ============================================================================
+ * checkoutGuard - Protege la ruta de checkout
+ * ============================================================================
+ * - Verifica que el usuario esté autenticado
+ * - Verifica que el carrito tenga productos
+ * - Verifica que el perfil del cliente exista
+ * - Verifica si el email está verificado (warning)
+ * ============================================================================
+ */
+
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '@core/services/auth/auth';
 import { CartService } from '@core/services/carrito/cart';
+import { ClienteService } from '@core/services/clientes/cliente.service';
+import { catchError, map, of, switchMap } from 'rxjs';
 
-/**
- * Guard para proteger la ruta de checkout
- * Verifica que el usuario esté autenticado y tenga items en el carrito
- */
 export const checkoutGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
+    const clienteService = inject(ClienteService);
     const cartService = inject(CartService);
     const router = inject(Router);
 
-    // 1. Verificar si el usuario está autenticado
-    const currentUser = authService.getCurrentUser();
-
-    if (!currentUser) {
-        console.warn('Usuario no autenticado, redirigiendo a login...');
-
-        // Guardar la URL de destino para redirigir después del login
-        authService.setRedirectUrl(state.url);
-
-        // Mostrar mensaje al usuario (usando query params en lugar de localStorage es mejor)
-        // localStorage.setItem('checkoutMessage', 'Debes iniciar sesión para proceder con la compra'); 
-        // 👆 Esto lo podemos mover al queryParams, si el Login/Modal lo procesa.
-
-        // Redirigir al login con la instrucción del modal
-        router.navigate(['/auth/login'], { // ⚠️ Asumo que /auth/login es la ruta correcta
-            queryParams: {
-                returnUrl: state.url,
-                message: 'Debes iniciar sesión para proceder con la compra', // 👈 Mensaje informativo
-                display: 'modal' // 👈 NUEVO: Instrucción para abrir el modal
+    return authService.getCurrentUser$().pipe(
+        switchMap(currentUser => {
+            // ============================================================
+            // Verificar autenticación
+            // ============================================================
+            if (!currentUser) {
+                console.warn('Checkout Guard: Usuario no autenticado. Redirigiendo a login...');
+                authService.setRedirectUrl(state.url);
+                router.navigate(['/login'], {
+                    queryParams: {
+                        returnUrl: state.url,
+                        message: 'Debes iniciar sesión para proceder con la compra',
+                        display: 'modal'
+                    }
+                });
+                return of(false);
             }
-        });
 
-        return false;
-    }
+            // ============================================================
+            // Verificar carrito
+            // ============================================================
+            const cartItems = cartService.getCartItems();
+            if (!cartItems || cartItems.length === 0) {
+                console.warn('Checkout Guard: Carrito vacío. Redirigiendo al catálogo...');
+                router.navigate(['/catalogo'], {
+                    queryParams: {
+                        message: 'Tu carrito está vacío. Agrega productos antes de continuar.'
+                    }
+                });
+                return of(false);
+            }
 
-    // 2. Verificar si hay items en el carrito
-    const cartItems = cartService.getCartItems();
+            // ============================================================
+            // Verificar email verificado (warning, no bloquea)
+            // ============================================================
+            if (!currentUser.emailVerified) {
+                console.warn('Checkout Guard: Email no verificado. Continuará con advertencia.');
+                localStorage.setItem(
+                    'checkoutWarning',
+                    'Tu email no está verificado. Verifica tu correo para evitar problemas con tu pedido.'
+                );
+            }
 
-    if (cartItems.length === 0) {
-        console.warn('Carrito vacío, redirigiendo al catálogo...');
-
-        // Mostrar mensaje
-        localStorage.setItem('checkoutMessage', 'Tu carrito está vacío. Agrega productos antes de continuar.');
-
-        // Redirigir al catálogo
-        router.navigate(['/catalogo']);
-
-        return false;
-    }
-
-    // 3. Verificar si el usuario tiene datos completos
-    const firebaseUser = authService.getFirebaseCurrentUser();
-
-    if (firebaseUser && !firebaseUser.emailVerified) {
-        console.warn('Email no verificado');
-
-        // Permitir continuar pero mostrar advertencia
-        localStorage.setItem('checkoutWarning', 'Tu email no está verificado. Verifica tu correo para evitar problemas con tu pedido.');
-    }
-
-    // 4. Todo OK, permitir acceso
-    return true;
+            // ============================================================
+            // Verificar perfil del cliente
+            // ============================================================
+            return clienteService.obtenerPerfil(currentUser.uid).pipe(
+                map(() => {
+                    console.log('Checkout Guard: Perfil del cliente verificado. Acceso permitido.');
+                    return true;
+                }),
+                catchError((error) => {
+                    console.error('Checkout Guard: Error al obtener perfil del cliente:', error);
+                    router.navigate(['/panel-usuario/datos-personales'], {
+                        queryParams: {
+                            message: 'Completa tu información de perfil antes de continuar con la compra.'
+                        }
+                    });
+                    return of(false);
+                })
+            );
+        })
+    );
 };
-
-/**
- * Guard para proteger la ruta de checkout
- * Verifica que el usuario esté autenticado antes de proceder al pago
- * Si no está autenticado, redirige al login y guarda la URL de checkout
- */
-export const authCheckoutGuard: CanActivateFn = (route, state) => {
-    const authService = inject(AuthService);
-    const router = inject(Router);
-
-    // Verificar si el usuario está autenticado
-    if (authService.isAuthenticated()) {
-        return true;
-    }
-
-    // Si no está autenticado, guardar la URL de checkout y redirigir al login
-    authService.setRedirectUrl('carrito/pago'); // Mantengo esta lógica específica
-    router.navigate(['/login'], {
-        queryParams: {
-            returnUrl: state.url, // Opcionalmente, puedes usar 'carrito/pago' si quieres forzar
-            message: 'Debes iniciar sesión para completar tu compra',
-            display: 'modal' //Instrucción para abrir el modal
-        }
-    });
-
-    return false;
-}
