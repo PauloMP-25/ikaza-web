@@ -21,6 +21,7 @@ export interface RegisterData {
     email: string;
     password: string;
     confirmPassword: string;
+    username?: string;
 }
 
 // ====================================================================================================
@@ -31,6 +32,7 @@ export interface AuthResponse {
     refreshToken: string;
     idUsuario: number;
     email: string;
+    username?: string;
     rol: string;
     isAdmin: boolean;
     activo: boolean;
@@ -46,10 +48,10 @@ export interface AuthResponse {
 export interface UserData {
     idUsuario: number;
     email: string;
+    username?: string;
     rol: string;
     isAdmin: boolean;
     activo: boolean;
-    displayName?: string;
     photoURL?: string;
     customIcon?: string;
     fechaCreacion: Date;
