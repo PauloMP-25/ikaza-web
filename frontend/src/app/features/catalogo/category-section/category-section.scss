@@ -1,196 +1,222 @@
-// Sección de Categoría
-.category-section {
-    margin-bottom: 3rem;
-    padding: 0 1rem;
+// =============================================
+// SECCIÓN DE CATEGORÍA MINIMALISTA
+// =============================================
+
+:host {
+  --category-badge-bg: #ffffff;
+  --category-badge-border: #e9ecef;
+  --category-badge-color: #495057;
 }
 
-// Header de Categoría
-.category-header {
-    position: relative;
-    margin-bottom: 2rem;
-    padding: 1rem 0;
+.category-section-minimal {
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.6s ease-out;
 }
 
-// Wrapper del Título (Centrado)
-.category-title-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
+.minimal-header {
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
 }
 
-// Icono de Categoría
-.title-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--c2, #0d6efd) 0%, var(--c3, #198754) 100%);
-    border-radius: 50%;
-    color: white;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-
-    &:hover {
-        transform: scale(1.1) rotate(5deg);
-    }
-}
-
-// Título de Categoría
-.category-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--c1, #212529);
-    margin: 0;
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--category-badge-bg);
+  border: 1px solid var(--category-badge-border);
+  border-radius: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: var(--c2, #0d6efd);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  i {
+    font-size: 1.1rem;
+    color: var(--c2, #0d6efd);
+  }
+  
+  .category-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--category-badge-color);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    background: linear-gradient(135deg, var(--c2, #0d6efd) 0%, var(--c3, #198754) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    letter-spacing: 0.5px;
+  }
+  
+  .product-count-badge {
+    background: linear-gradient(135deg, var(--c2, #0d6efd), var(--c3, #198754));
+    color: #ffffff;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 30px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+  }
 }
 
-// Línea Decorativa Centrada
-.title-underline {
-    width: 100px;
-    height: 4px;
-    background: linear-gradient(90deg, transparent 0%, var(--c2, #0d6efd) 50%, transparent 100%);
-    border-radius: 2px;
-    margin: 0 auto;
-}
-
-// GRID DE 4 COLUMNAS PRIORITARIO
-.row.g-4 {
-    display: flex !important;
-    flex-wrap: wrap !important;
+.products-grid-minimal {
+  .row.g-3 {
     margin: 0 -0.5rem !important;
-    gap: 0; // Usar padding en lugar de gap para mejor control
-}
-
-// COLUMNAS: 4 por defecto, responsive en pantallas menores
-.col-12,
-.col-sm-6,
-.col-md-4,
-.col-lg-3 {
+  }
+  
+  .col-12, .col-sm-6, .col-md-4, .col-lg-3 {
     padding: 0.5rem !important;
+    animation: cardEntrance 0.6s ease-out both;
+  }
 }
 
-// Forzar 4 columnas en pantallas grandes (≥1200px)
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@for $i from 1 through 12 {
+  .col-12:nth-child(#{$i}),
+  .col-sm-6:nth-child(#{$i}),
+  .col-md-4:nth-child(#{$i}),
+  .col-lg-3:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.05}s;
+  }
+}
+
+.no-products-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 15px;
+  border: 2px dashed #dee2e6;
+  margin: 1rem 0;
+  
+  i {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
 @media (min-width: 1200px) {
-    .col-lg-3 {
-        flex: 0 0 25% !important;
-        max-width: 25% !important;
-    }
+  .col-lg-3 {
+    flex: 0 0 25% !important;
+    max-width: 25% !important;
+  }
 }
 
-// 4 columnas también en desktop mediano (≥992px)
 @media (min-width: 992px) and (max-width: 1199px) {
-    .col-lg-3 {
-        flex: 0 0 25% !important;
-        max-width: 25% !important;
-    }
+  .col-lg-3 {
+    flex: 0 0 25% !important;
+    max-width: 25% !important;
+  }
 }
 
-// 3 columnas en tablets (768px - 991px)
 @media (min-width: 768px) and (max-width: 991px) {
-    .col-md-4 {
-        flex: 0 0 33.333% !important;
-        max-width: 33.333% !important;
-    }
+  .col-md-4 {
+    flex: 0 0 33.333% !important;
+    max-width: 33.333% !important;
+  }
 }
 
-// 2 columnas en móviles grandes (576px - 767px)
 @media (min-width: 576px) and (max-width: 767px) {
-    .col-sm-6 {
-        flex: 0 0 50% !important;
-        max-width: 50% !important;
-    }
+  .col-sm-6 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
 }
 
-// 1 columna en móviles pequeños (<576px)
 @media (max-width: 575px) {
-    .col-12 {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
+  .col-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .category-badge {
+    padding: 0.6rem 1rem;
+    
+    .category-name {
+      font-size: 0.9rem;
     }
+    
+    .product-count-badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+    }
+  }
 }
 
-// Estilos para las tarjetas dentro del grid
-app-product-card {
-    display: block;
-    height: 100%;
-
-    .card {
-        height: 100%;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-        &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        }
-    }
-}
-
-// Animación de entrada
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.category-section {
-    animation: fadeInUp 0.6s ease-out;
+// =============================================
+// FORZAR 4 COLUMNAS EN DESKTOP
+// =============================================
+
+.products-grid-minimal {
+  .row.g-3 {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -0.75rem !important; // ← AUMENTADO: Más espacio entre columnas
+  }
+  
+  .col-12, .col-sm-6, .col-md-4, .col-lg-3 {
+    padding: 0.75rem !important; // ← AUMENTADO: Más padding
+  }
 }
 
-// Responsive
-@media (max-width: 992px) {
-    .category-title {
-        font-size: 1.5rem;
-    }
-
-    .title-icon {
-        width: 45px;
-        height: 45px;
-        font-size: 1.25rem;
-    }
-
-    .title-underline {
-        width: 80px;
-        height: 3px;
-    }
+// FORZAR 4 COLUMNAS EN TODOS LOS DISPOSITIVOS GRANDES
+@media (min-width: 992px) {
+  .col-lg-3 {
+    flex: 0 0 25% !important;
+    max-width: 25% !important;
+  }
 }
 
-@media (max-width: 768px) {
-    .category-title-wrapper {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .category-title {
-        font-size: 1.25rem;
-    }
-
-    .title-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1.125rem;
-    }
-
-    .title-underline {
-        width: 60px;
-    }
+// Tablets: 2 columnas
+@media (min-width: 768px) and (max-width: 991px) {
+  .col-md-4 {
+    flex: 0 0 50% !important; // ← 2 columnas en tablets
+    max-width: 50% !important;
+  }
 }
 
-// Ocultar secciones si es necesario
-.d-none {
-    display: none !important;
+// Móviles grandes: 2 columnas
+@media (min-width: 576px) and (max-width: 767px) {
+  .col-sm-6 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
+}
+
+// Móviles pequeños: 1 columna
+@media (max-width: 575px) {
+  .col-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
 }
