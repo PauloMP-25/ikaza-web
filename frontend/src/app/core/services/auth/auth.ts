@@ -10,7 +10,6 @@ import {
   signInWithCustomToken,
   updateProfile,
   sendEmailVerification,
-  User,
   IdTokenResult
 } from '@angular/fire/auth';
 import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
@@ -19,10 +18,9 @@ import { environment } from 'src/environments/environment';
 // Servicios existentes
 import { AuthStateService } from './auth.state';
 import { FirebaseAuthService } from '../firebase/firebase-auth.service';
-import { ClienteService } from '../clientes/cliente.service';
 
 // Modelos
-import { UserData } from '@core/models/auth-firebase/user-data';
+import { UserData } from '@core/models/auth-firebase/auth.state.models';
 import { LoginCredentials } from '@core/models/auth-firebase/auth.backend.models';
 import { RegisterData } from '@core/models/auth-firebase/auth.backend.models';
 import { AuthResponse, RegistroBackendRequest } from '@core/models/auth-firebase/auth.models';
@@ -48,19 +46,12 @@ import { MessageResponse } from '@core/models/usuarios/usuario-model';
  *    - Manejo robusto de sesiones expiradas
  *    - Logout limpio (Firebase + Backend + LocalStorage)
  *    - Redirecciones inteligentes por rol
- * 
- *  MÉTODOS DEPRECATED (para eliminar gradualmente):
- *    - isAuthenticated()       → Usar isAuthenticated$()
- *    - getCurrentUser()        → Usar getCurrentUser$()
- *    - getFirebaseCurrentUser() → Usar getCurrentUser$()
- * 
  * ============================================================================
  */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   // ============================================================================
   // INYECCIÓN DE DEPENDENCIAS
   // ============================================================================
@@ -69,8 +60,6 @@ export class AuthService {
   private authState = inject(AuthStateService);
   private router = inject(Router);
   private auth = inject(Auth);
-  private cliente = inject(ClienteService);
-
   // ============================================================================
   // CONFIGURACIÓN
   // ============================================================================
@@ -261,15 +250,19 @@ export class AuthService {
     return this.firebaseAuth.loginWithEmail(credentials).pipe(
       switchMap((result) => {
         return from(result.user.getIdToken()).pipe(
-          switchMap((idToken) => this.verificarLoginEnBackend(idToken))
+          switchMap((idToken) => this.verificarLoginEnBackend(idToken)),
+          //Reemplazar el acceso síncrono por la espera asíncrona de refreshCurrentUser
+          switchMap(() => this.authState.refreshCurrentUser()),
+          tap((userData) => {
+            if (userData) {
+              console.log('Login exitoso. Redirigiendo por rol...');
+              this.redirectUserByRole(userData);
+            } else {
+              throw new Error('Fallo al obtener datos de perfil después del login exitoso.');
+            }
+          }),
+          map((userData) => userData as UserData),
         );
-      }),
-      map(() => {
-        this.authState.refreshCurrentUser().subscribe();
-        return this.authState.getCurrentUser() as UserData;
-      }),
-      tap((userData) => {
-        this.redirectUserByRole(userData);
       }),
       catchError((error) => {
         console.error('Error completo en login:', error);
@@ -288,6 +281,9 @@ export class AuthService {
   /**
    * LOGIN con Google (Flujo de verificación)
    */
+  /**
+   * LOGIN con Google (Flujo de verificación)
+   */
   loginWithGoogle(): Observable<UserData> {
     this.authState.isLoading.set(true);
     this.authState.clearAuthError();
@@ -295,20 +291,29 @@ export class AuthService {
     return this.firebaseAuth.loginWithGoogle().pipe(
       switchMap((result) => {
         return from(result.user.getIdToken()).pipe(
-          switchMap((idToken) => this.verificarLoginEnBackend(idToken))
+          switchMap((idToken) => this.verificarLoginEnBackend(idToken)),
+          // FIX: Reemplazar el acceso síncrono por la espera asíncrona de refreshCurrentUser
+          switchMap(() => this.authState.refreshCurrentUser()),
+          tap((userData) => {
+            if (userData) {
+              console.log('Login con Google exitoso. Redirigiendo por rol...');
+              this.redirectUserByRole(userData);
+            } else {
+              throw new Error('Fallo al obtener datos de perfil después del login con Google.');
+            }
+          }),
+          map((userData) => userData as UserData),
         );
-      }),
-      map(() => {
-        this.authState.refreshCurrentUser().subscribe();
-        return this.authState.getCurrentUser() as UserData;
-      }),
-      tap((userData) => {
-        this.redirectUserByRole(userData);
       }),
       catchError((error) => {
         console.error('Error en login con Google:', error);
+        // La causa original de tu error (Cannot read properties of null...)
+        // se maneja en el tap. Aquí atrapamos el error si no hay userData o
+        // si falla una etapa anterior.
         const errorMessage = error.error?.mensaje || error.message || 'Error al iniciar sesión con Google';
         this.authState.authError.set(errorMessage);
+        // Considerar hacer logout si es un error que invalida la sesión
+        this.firebaseAuth.logout().subscribe();
         throw new Error(errorMessage);
       }),
       finalize(() => {

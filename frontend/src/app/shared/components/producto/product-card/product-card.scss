@@ -196,3 +196,484 @@
 .bg-c3 {
   background-color: var(--c3, #198754) !important;
 }
+
+/* NUEVOS CAMBIOS
+// =============================================
+// TARJETA DE PRODUCTO - DISEÑO PREMIUM
+// =============================================
+
+// Variables locales
+:host {
+  --primary-gradient: linear-gradient(135deg, var(--c2, #0d6efd) 0%, var(--c3, #198754) 100%);
+  --hover-gradient: linear-gradient(135deg, #0b5ed7 0%, #157347 100%);
+  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 15px 40px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+// =============================================
+// CARD PRINCIPAL - DISEÑO PREMIUM
+// =============================================
+
+.card {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border: none;
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  // Efecto de borde superior con gradiente
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    z-index: 2;
+  }
+
+  // Efecto de sombra interior
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // Efectos de hover
+  &:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+
+    &::before {
+      transform: scaleX(1);
+    }
+
+    .card-img-top {
+      transform: scale(1.08);
+    }
+
+    .btn-cart {
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    .btn-details {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// =============================================
+// IMAGEN MEJORADA - SE ADAPTA AL CONTENEDOR
+// =============================================
+
+.card-img-top {
+  height: 250px; // ← AUMENTADO: Más altura
+  width: 100%;
+  object-fit: contain; // ← CAMBIADO: contain en lugar de cover para evitar recortes
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  padding: 1rem; // ← NUEVO: Padding para que no toque bordes
+  transition: all 0.4s ease;
+
+  .card:hover & {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #ffffff, #f8f9fa); // ← NUEVO: Fondo cambia en hover
+  }
+}
+
+// =============================================
+// CARD PRINCIPAL MEJORADA
+// =============================================
+
+.card {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  // Asegurar que el contenido ocupe todo el espacio disponible
+  .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Botones siempre en la parte inferior
+  .d-flex.gap-2.mt-auto {
+    margin-top: auto;
+  }
+}
+
+// =============================================
+// CUERPO DE LA CARD MEJORADO
+// =============================================
+
+.card-body {
+  padding: 1.5rem;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  // Efecto de fondo sutil
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.9));
+    z-index: -1;
+  }
+}
+
+// =============================================
+// TÍTULO MEJORADO
+// =============================================
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--c1, #212529);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.8em;
+  transition: color 0.3s ease;
+
+  .card:hover & {
+    color: var(--c2, #0d6efd);
+  }
+}
+
+// =============================================
+// PRECIO MEJORADO
+// =============================================
+
+.product-price {
+  margin-bottom: 1rem;
+
+  .price-text {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--c3, #198754);
+    position: relative;
+
+    &::before {
+      content: 'S/.';
+      font-size: 1rem;
+      font-weight: 600;
+      margin-right: 2px;
+      opacity: 0.8;
+    }
+  }
+}
+
+// =============================================
+// RATING DE ESTRELLAS MEJORADO
+// =============================================
+
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  .stars {
+    display: flex;
+    gap: 0.15rem;
+
+    i {
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+
+      &.bi-star {
+        color: #dee2e6;
+      }
+
+      &.bi-star-fill {
+        color: #ffc107;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      &.bi-star-half {
+        color: #ffc107;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  .rating-value {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+  }
+}
+
+// =============================================
+// STOCK MEJORADO
+// =============================================
+
+.card-text.text-muted {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    font-size: 1rem;
+    color: var(--c3, #198754);
+  }
+}
+
+// =============================================
+// CONTENEDOR DE BOTONES MEJORADO
+// =============================================
+
+.d-flex.gap-2.mt-auto {
+  min-height: 50px;
+  align-items: center;
+  padding: 0.5rem 0;
+  margin-top: auto;
+
+  .btn {
+    opacity: 1 !important;
+    visibility: visible !important;
+    min-height: 45px;
+    line-height: 1.5;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+  }
+}
+
+// =============================================
+// BOTÓN CARRITO MEJORADO
+// =============================================
+
+.btn-cart {
+  background: var(--primary-gradient) !important;
+  color: white !important;
+  width: 50px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  i {
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    background: var(--hover-gradient) !important;
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+
+    &::before {
+      left: 100%;
+    }
+
+    i {
+      transform: scale(1.2) rotate(10deg);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.95);
+  }
+}
+
+// =============================================
+// BOTÓN DETALLES MEJORADO
+// =============================================
+
+.btn-details {
+  flex: 1;
+  background-color: white;
+  color: var(--c2, #0d6efd) !important;
+  border: 2px solid var(--c2, #0d6efd) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gradient);
+    transition: left 0.3s ease;
+    z-index: -1;
+  }
+
+  i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    color: white !important;
+    border-color: transparent !important;
+
+    &::before {
+      left: 0;
+    }
+
+    i {
+      transform: translateX(2px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+// =============================================
+// CLASES DE TEXTO (mantener existentes)
+// =============================================
+
+.text-c1 {
+  color: var(--c1, #212529) !important;
+}
+
+.text-c4 {
+  color: var(--c4, #6c757d) !important;
+}
+
+.bg-c3 {
+  background-color: var(--c3, #198754) !important;
+}
+
+// =============================================
+// DISEÑO RESPONSIVE
+// =============================================
+
+// Tablets (768px - 991px)
+@media (max-width: 991px) {
+  .card-img-top {
+    height: 200px;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    min-height: 2.4em;
+  }
+
+  .product-price .price-text {
+    font-size: 1.3rem;
+  }
+}
+
+// Móviles grandes (576px - 767px)
+@media (max-width: 767px) {
+  .card-img-top {
+    height: 180px;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    min-height: 2.2em;
+  }
+
+  .product-price .price-text {
+    font-size: 1.2rem;
+  }
+
+  .btn-cart,
+  .btn-details {
+    min-height: 40px;
+    font-size: 0.875rem;
+  }
+}
+
+// Móviles pequeños (<576px)
+@media (max-width: 575px) {
+  .card {
+    border-radius: 15px;
+
+    &:hover {
+      transform: translateY(-5px) scale(1.01);
+    }
+  }
+
+  .card-img-top {
+    height: 160px;
+  }
+
+  .card-body {
+    padding: 0.875rem;
+  }
+
+  .rating-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+*/
