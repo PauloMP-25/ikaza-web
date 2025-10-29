@@ -92,3 +92,18 @@
 .color-option:hover {
     transform: scale(1.1);
 }
+.comentarios {
+  .comentario {
+    background-color: #fff;
+  }
+  .rating {
+    font-size: 1.5rem;
+    .star {
+      cursor: pointer;
+      color: #ccc;
+      &.selected {
+        color: #ffc107;
+      }
+    }
+  }
+}

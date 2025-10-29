@@ -67,6 +67,14 @@ export interface PageResponse<T> {
     first: boolean;
     last: boolean;
 }
+export interface Review {
+  id?: number;
+  productId?: number;
+  name: string;
+  rating: number;  // 1 a 5
+  comment: string;
+  createdAt: string;
+}
 
 export interface ProductoRequest {
     idCategoria: number;

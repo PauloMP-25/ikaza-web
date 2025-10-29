@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { Review } from '@core/models/productos/producto-backend.model';
 import {
     Producto,
     PageResponse,
@@ -183,4 +184,23 @@ export class ProductoService {
             catchError(this.handleError)
         );
     }
+    getReviews(productId: number | string): Observable<Review[]> {
+    return this.http
+    .get<Review[]>(`${this.apiUrl}/${productId}/reviews`)
+    .pipe(
+      // si el backend aún no está listo, devolvemos [] en vez de romper la UI
+      catchError(() => of([]))
+    );
+    }
+
+    addReview(
+    productId: number | string,
+    review: Omit<Review, 'id' | 'createdAt' | 'productId'>
+    ): Observable<Review> {
+    return this.http.post<Review>(`${this.apiUrl}/${productId}/reviews`, review)
+    .pipe(
+      // si quieres que el error “suba” y lo manejes en el componente, quita este catchError
+      catchError(this.handleError.bind(this))
+    );
+}
 }

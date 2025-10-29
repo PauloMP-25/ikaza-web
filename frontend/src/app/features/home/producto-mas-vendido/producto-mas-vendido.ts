@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { CartService } from '@core/services/carrito/cart';
 import { ProductUtilsService } from '@core/services/productos/product-utils.service';
 import { ProductoService } from '@core/services/productos/producto.service';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+
 // Interfaces necesarias del modelo global
 import { ProductoDetalle, Variante } from '@core/models/productos/producto-backend.model';
 import { Subscription } from 'rxjs';
@@ -21,11 +23,15 @@ interface ProductoMasVendido extends ProductoDetalle {
   templateUrl: './producto-mas-vendido.html',
   styleUrls: ['./producto-mas-vendido.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, ReactiveFormsModule]
+  
 })
 export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
 
   product: ProductoMasVendido | null = null;
+  reviews: Review[] = [];
+  reviewForm!: FormGroup;
+  averageRating = 0;
 
   // Usamos strings para almacenar la selección del usuario para el filtro de variante
   selectedColorValue: string | null = null;
@@ -39,12 +45,21 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private productUtils: ProductUtilsService,
     private productService: ProductoService,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
     this.loadProduct();
+    this.reviewForm = this.fb.group({
+    name: ['', Validators.required],
+    rating: [0, [Validators.required, Validators.min(1)]],
+    comment: ['', [Validators.required, Validators.minLength(5)]],
+    });
+
+    this.loadReviews();
   }
+  
 
   ngOnDestroy(): void {
     this.productSubscription?.unsubscribe();
@@ -212,5 +227,49 @@ export class ProductoMasVendidoComponent implements OnInit, OnDestroy {
     if (!this.product) return; // 🔑 Comprobación de nulidad
 
     this.router.navigate(['/producto', this.product.idProducto]);
+    
   }
+  // Cargar reseñas (simulado )
+  loadReviews(): void {
+  // Simulación (luego conectaremos con el servicio)
+  this.reviews = [
+    { id: 1, name: 'Juan Pérez', rating: 5, comment: 'Excelente producto!', createdAt: new Date() },
+    { id: 2, name: 'María López', rating: 4, comment: 'Muy bueno, pero tardó un poco el envío.', createdAt: new Date() }
+  ];
+  this.updateAverageRating();
+}
+
+// Calcular promedio
+updateAverageRating(): void {
+  if (this.reviews.length === 0) {
+    this.averageRating = 0;
+    return;
+  }
+  const total = this.reviews.reduce((acc, r) => acc + r.rating, 0);
+  this.averageRating = parseFloat((total / this.reviews.length).toFixed(1));
+}
+
+// Publicar comentario
+addReview(): void {
+  if (this.reviewForm.invalid) return;
+
+  const newReview: Review = {
+    ...this.reviewForm.value,
+    id: this.reviews.length + 1,
+    createdAt: new Date(),
+  };
+
+  this.reviews.unshift(newReview); // Inserta arriba
+  this.reviewForm.reset({ rating: 0 });
+  this.updateAverageRating();
+  
+}
+
+}
+interface Review {
+  id?: number;
+  name: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
 }
