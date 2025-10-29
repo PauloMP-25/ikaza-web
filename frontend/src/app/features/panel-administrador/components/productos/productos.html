@@ -87,6 +87,14 @@
                 </span>
             </div>
         </div>
+        <div class="col-lg-4 d-flex align-items-center">
+<select [(ngModel)]="categoriaSeleccionada" (change)="filtrarProductos()">
+    <option value="">Todas las Categorías</option>
+    <option *ngFor="let cat of categoriasMaestras" [value]="cat.nombreCategoria"> 
+        {{ cat.nombreCategoria }} 
+    </option>
+</select>
+        </div>
     </div>
 
     <!-- Información de resultados y paginación -->
@@ -145,9 +153,11 @@
 
                             <!-- Imagen -->
                             <td>
-                                <img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/placeholder.png'"
-                                    [alt]="prod.nombreProducto" class="img-fluid rounded shadow-sm"
-                                    aria-label="Imagen principal" onerror="this.src='assets/images/placeholder.png'" />
+                                
+                                <img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/placeholder.jpg'"
+                                    alt="{{ prod.nombreProducto }}" class="img-fluid rounded"
+                                    onerror="this.src='assets/images/Accesorios/Lentes_de_halloween.jpg'">
+                           
                             </td>
 
                             <!-- Nombre -->
