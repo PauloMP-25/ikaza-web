@@ -26,8 +26,6 @@ export interface ClienteResponse {
     nombres: string;
     apellidos: string;
     nombreCompleto: string;
-    nombreRol: string;
-    isAdmin: boolean;
     tipoDocumento?: string;
     numeroDocumento?: string;
     fechaNacimiento?: string;

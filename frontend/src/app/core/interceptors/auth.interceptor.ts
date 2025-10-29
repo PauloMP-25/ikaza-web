@@ -16,10 +16,10 @@
  * ============================================================================
  */
 
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { switchMap, catchError} from 'rxjs';
+import { switchMap, catchError, throwError } from 'rxjs';
 import { AuthService } from '@core/services/auth/auth';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -44,28 +44,49 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return authService.getIdToken$().pipe(
         switchMap(token => {
             // Si hay token, agregarlo a los headers
+            let clonedRequest = req;
             if (token) {
-                const clonedRequest = req.clone({
+                clonedRequest = req.clone({
                     setHeaders: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 console.log('Token agregado a la petición:', req.url);
-                return next(clonedRequest);
+            } else {
+                // Si no hay token, la petición continúa sin Authorization header
+                console.warn('No hay token disponible, continuando sin Authorization header');
             }
+            // ============================================================
+            // PASO 3: Enviar la petición y manejar errores de respuesta
+            // ============================================================
+            return next(clonedRequest).pipe(
+                catchError((error: HttpErrorResponse) => {
+                    if (error.status === 401) {
+                        console.error('❌ 401 Unauthorized: Token inválido o expirado en el backend.', req.url);
+                        // Desencadenar el logout completo (Firebase + app state + redirección)
+                        // Esto garantiza que la sesión se limpie completamente.
+                        authService.logout().subscribe({
+                            error: (logoutError) => console.error('Error durante el logout forzado:', logoutError)
+                        });
+                        // Lanza el error para que la lógica de manejo de errores del componente lo reciba
+                        return throwError(() => new Error('Sesión expirada o inválida.'));
+                    }
 
-            // Si no hay token, continuar sin Authorization header
-            console.warn('No hay token disponible, continuando sin Authorization header');
-            return next(req);
+                    if (error.status === 403) {
+                        console.error('❌ 403 Forbidden: No tiene permisos para esta acción.', req.url);
+                    }
+
+                    // Lanza otros errores HTTP
+                    return throwError(() => error);
+                })
+            );
         }),
-        catchError((error) => {
+        catchError((tokenError) => {
             // Error obteniendo el token (poco probable con getIdToken$)
-            console.error('Error obteniendo token:', error);
-
-            // Continuar la petición sin token
-            // El backend rechazará la petición si requiere autenticación
-            console.warn('Continuando petición sin token debido a error');
+            console.error('Error fatal al obtener token:', tokenError);
+            console.warn('Continuando petición SIN token debido a error de obtención.');
+            // Permitir que la petición original (sin token) pase para que el backend la rechace si es necesario
             return next(req);
         })
     );
-};
+}

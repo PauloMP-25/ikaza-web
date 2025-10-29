@@ -23,7 +23,6 @@ export interface UserData {
     customIcon?: string;
     isAdmin: boolean;
 
-    
     // ========================================
     // METADATOS DE TRACKING
     // ========================================

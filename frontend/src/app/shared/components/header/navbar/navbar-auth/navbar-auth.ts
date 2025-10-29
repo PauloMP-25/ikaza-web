@@ -6,8 +6,7 @@ import { Subject, takeUntil, tap } from 'rxjs';
 import { AuthService } from '@core/services/auth/auth';
 import { ModalLoginComponent } from '@features/login/modal_login/modal_login';
 import { ModalService } from '@core/services/auth/modal.service';
-import { UserData } from '@core/models/auth-firebase/user-data';
-
+import { UserData } from '@core/models/auth-firebase/auth.state.models';
 @Component({
   selector: 'app-navbar-auth',
   standalone: true,
@@ -61,7 +60,7 @@ export class NavbarAuthComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 🆕 Limpiar subscriptions al destruir el componente
+   * Limpiar subscriptions al destruir el componente
    */
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -69,7 +68,7 @@ export class NavbarAuthComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================================
-  // 🆕 INICIALIZACIÓN - VERSIÓN REACTIVA
+  // INICIALIZACIÓN - VERSIÓN REACTIVA
   // ============================================================================
 
   /**
