@@ -2,191 +2,291 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { from, Observable } from 'rxjs';
-import { switchMap, tap, finalize, catchError, map, filter, take } from 'rxjs/operators';
-import { User } from 'firebase/auth';
-import { Auth, user } from '@angular/fire/auth';
+import { from, Observable, throwError, of, BehaviorSubject } from 'rxjs';
+import { switchMap, tap, finalize, catchError, map, shareReplay, distinctUntilChanged } from 'rxjs/operators';
+import {
+  Auth,
+  getIdTokenResult,
+  signInWithCustomToken,
+  updateProfile,
+  sendEmailVerification,
+  User,
+  IdTokenResult
+} from '@angular/fire/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from '@angular/fire/auth';
 import { environment } from 'src/environments/environment';
 
 // Servicios existentes
-import { UserDataService } from '../firebase/user-data.service';
 import { AuthStateService } from './auth.state';
 import { FirebaseAuthService } from '../firebase/firebase-auth.service';
-import { ProfileService } from '../usuarios/servicio-perfil.service';
-import { PasswordService } from './service-password';
+import { ClienteService } from '../clientes/cliente.service';
 
 // Modelos
 import { UserData } from '@core/models/auth-firebase/user-data';
-import { ProfileUpdateData } from '@core/models/auth-firebase/profile-update-data';
-import { LoginCredentials } from '@core/models/auth-firebase/login-credentials';
-import { RegisterData } from '@core/models/auth-firebase/register-data';
-import { AuthResponse, RegistroBackendRequest } from '@core/models/auth-firebase/auth-request-backend';
+import { LoginCredentials } from '@core/models/auth-firebase/auth.backend.models';
+import { RegisterData } from '@core/models/auth-firebase/auth.backend.models';
+import { AuthResponse, RegistroBackendRequest } from '@core/models/auth-firebase/auth.models';
+import { MessageResponse } from '@core/models/usuarios/usuario-model';
 
+/**
+ * 
+ * Servicio de autenticación 100% reactivo y profesional.
+ * 
+ * ARQUITECTURA REACTIVA:
+ *    - Todos los métodos importantes retornan Observables
+ *    - Uso de BehaviorSubjects para estado en tiempo real
+ *    - Optimización con shareReplay() para evitar llamadas duplicadas
+ * 
+ * MÉTODOS PRINCIPALES (REACTIVE):
+ *    - isAuthenticated$()      → Observable<boolean>
+ *    - getCurrentUser$()       → Observable<UserData | null>
+ *    - getIdToken$()           → Observable<string | null>
+ *    - getIdTokenResult$()     → Observable<IdTokenResult>
+ * 
+ * GESTIÓN AVANZADA:
+ *    - Control total del ciclo de vida del token
+ *    - Manejo robusto de sesiones expiradas
+ *    - Logout limpio (Firebase + Backend + LocalStorage)
+ *    - Redirecciones inteligentes por rol
+ * 
+ *  MÉTODOS DEPRECATED (para eliminar gradualmente):
+ *    - isAuthenticated()       → Usar isAuthenticated$()
+ *    - getCurrentUser()        → Usar getCurrentUser$()
+ *    - getFirebaseCurrentUser() → Usar getCurrentUser$()
+ * 
+ * ============================================================================
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  // ============================================================================
+  // INYECCIÓN DE DEPENDENCIAS
+  // ============================================================================
   private http = inject(HttpClient);
   private firebaseAuth = inject(FirebaseAuthService);
-  private userDataService = inject(UserDataService);
   private authState = inject(AuthStateService);
   private router = inject(Router);
   private auth = inject(Auth);
-  private profileService = inject(ProfileService);
-  private passwordService = inject(PasswordService);
+  private cliente = inject(ClienteService);
 
+  // ============================================================================
+  // CONFIGURACIÓN
+  // ============================================================================
   private apiUrl = `${environment.apiUrl}/api/auth`;
   private redirectUrl: string | null = null;
+  private confirmationResult: ConfirmationResult | null = null;
 
-  // Exponer propiedades del estado
+  // ============================================================================
+  // SUBJECTS INTERNOS PARA ESTADO REACTIVO
+  // ============================================================================
+  private tokenSubject = new BehaviorSubject<string | null>(null);
+  private tokenResultSubject = new BehaviorSubject<IdTokenResult | null>(null);
+
+  // ============================================================================
+  // PROPIEDADES PÚBLICAS (del AuthStateService)
+  // ============================================================================
   currentUser = this.authState.currentUser;
   isLoading = this.authState.isLoading;
   user$ = this.authState.user$;
 
+  // ============================================================================
+  // CONSTRUCTOR - Inicializar listeners
+  // ============================================================================
+  constructor() {
+    this.initializeTokenListener();
+  }
+
+  // ============================================================================
+  // MÉTODOS REACTIVOS ENTERPRISE-LEVEL
+  // ============================================================================
 
   /**
-  * Establecer URL de redirección después del login
-  */
+   * Verifica si el usuario está autenticado
+   * @returns Observable<boolean> - true si hay usuario autenticado
+   */
+  isAuthenticated$(): Observable<boolean> {
+    return this.user$.pipe(
+      map(user => user !== null),
+      distinctUntilChanged(),
+      shareReplay(1)
+    );
+  }
+
+  /**
+   * Obtiene el usuario actual
+   * @returns Observable<UserData | null> - Datos del usuario o null
+   */
+  getCurrentUser$(): Observable<UserData | null> {
+    return this.user$.pipe(
+      distinctUntilChanged((prev, curr) => prev?.uid === curr?.uid),
+      shareReplay(1)
+    );
+  }
+
+  /**
+   * Obtiene el token ID de Firebase
+   * @returns Observable<string | null> - Token de Firebase o null
+   */
+  getIdToken$(): Observable<string | null> {
+    const currentUser = this.auth.currentUser;
+
+    if (!currentUser) {
+      this.tokenSubject.next(null);
+      return of(null);
+    }
+
+    return from(currentUser.getIdToken()).pipe(
+      tap(token => this.tokenSubject.next(token)),
+      catchError(error => {
+        console.error('❌ Error obteniendo token:', error);
+        this.tokenSubject.next(null);
+        return of(null);
+      }),
+      shareReplay(1)
+    );
+  }
+
+  /**
+   * Obtiene el resultado completo del token (incluye expiración y claims)
+   * @returns Observable<IdTokenResult> - Información completa del token
+   */
+  getIdTokenResult$(): Observable<IdTokenResult> {
+    const currentUser = this.auth.currentUser;
+
+    if (!currentUser) {
+      return throwError(() => new Error('No hay usuario autenticado'));
+    }
+
+    return from(getIdTokenResult(currentUser)).pipe(
+      tap(result => {
+        this.tokenResultSubject.next(result);
+        console.log('🔍 Token Result obtenido:', {
+          expirationTime: result.expirationTime,
+          issuedAtTime: result.issuedAtTime,
+          claims: result.claims
+        });
+      }),
+      catchError(error => {
+        console.error('❌ Error obteniendo IdTokenResult:', error);
+        this.tokenResultSubject.next(null);
+        return throwError(() => error);
+      }),
+      shareReplay(1)
+    );
+  }
+
+  // ============================================================================
+  // GESTIÓN DE REDIRECCIONES
+  // ============================================================================
+
+  /**
+   * Establecer URL de redirección después del login
+   */
   setRedirectUrl(url: string): void {
     this.redirectUrl = url;
   }
 
   /**
-  * Obtener y limpiar URL de redirección
-  */
+   * Obtener y limpiar URL de redirección
+   */
   getAndClearRedirectUrl(): string | null {
     const url = this.redirectUrl;
     this.redirectUrl = null;
     return url;
   }
 
+  // ============================================================================
+  // REGISTRO DE USUARIOS
+  // ============================================================================
+
   /**
-  * REGISTRO con backend usa POST /api/auth/registro
-  */
+   * REGISTRO con backend (Flujo de dos pasos)
+   * 1. Backend crea usuario en Firebase y devuelve Custom Token.
+   * 2. Frontend usa Custom Token para loguear en Firebase.
+   * 3. Frontend llama al ClienteService para crear la entidad Cliente (perfil inicial).
+   */
   register(registerData: RegisterData): Observable<string> {
     this.authState.isLoading.set(true);
     this.authState.clearAuthError();
 
-    // Preparar datos para el backend
-    const displayName = registerData.username || registerData.email.split('@')[0];
-    const nameParts = displayName.split(' ');
-
     const backendRequest: RegistroBackendRequest = {
       email: registerData.email,
       password: registerData.password,
-      nombres: nameParts[0] || displayName,
-      apellidos: nameParts.slice(1).join(' ') || ''
     };
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/registro`, backendRequest).pipe(
-      tap((response) => {
-        console.log('Usuario registrado en backend:', response);
+      switchMap((authResponse: AuthResponse) => {
+        console.log('Registro Backend exitoso. Custom Token recibido.');
 
-        // Guardar token en localStorage
-        localStorage.setItem('authToken', response.token);
+        return from(signInWithCustomToken(this.auth, authResponse.token)).pipe(
+          switchMap((userCredential) => {
+            const user = userCredential.user;
+            const uid = user.uid;
 
-        // Crear UserData desde la respuesta del backend
-        const userData: UserData = {
-          uid: response.firebaseUid,
-          email: response.email,
-          username: response.nombreCompleto,
-          displayName: response.nombreCompleto,
-          isAdmin: response.isAdmin,
-          emailVerified: false, // El usuario debe verificar su email
-          createdAt: new Date(response.fechaCreacion)
-        };
-
-        // Actualizar estado
-        this.authState.currentUser.set(userData);
-      }),
-      map((response) => response.mensaje),
-      catchError((error) => {
-        console.error('❌ Error en registro:', error);
-        const errorMessage = error.error?.mensaje || error.message || 'Error al registrar usuario';
-        this.authState.authError.set(errorMessage);
-        throw new Error(errorMessage);
-      }),
-      finalize(() => {
-        this.authState.isLoading.set(false);
-      })
-    );
-  }
-
-  /**
-  * 🆕 LOGIN mejorado con mejor manejo de errores
-  */
-  login(credentials: LoginCredentials): Observable<UserData> {
-    this.authState.isLoading.set(true);
-    this.authState.clearAuthError();
-
-    console.log('🔐 Iniciando proceso de login...');
-
-    return this.firebaseAuth.loginWithEmail(credentials).pipe(
-      switchMap((result) => {
-        console.log('✅ Login Firebase exitoso:', result.user.uid);
-
-        if (!result.user.emailVerified) {
-          console.warn('⚠️ Email no verificado');
-          throw new Error('Por favor verifica tu correo electrónico antes de continuar');
-        }
-
-        // Obtener token de Firebase
-        return from(result.user.getIdToken()).pipe(
-          switchMap((idToken) => {
-            console.log('🔑 Token Firebase obtenido');
-            // Verificar token en backend
-            return this.verificarTokenEnBackend(idToken);
-          })
-        );
-      }),
-      switchMap((authResponse) => {
-        console.log('✅ Backend verification exitosa. Esperando sincronización de Firebase...');
-
-        // CORRECCIÓN CLAVE: Usar la función 'user(this.auth)' para obtener el Observable del estado
-        return user(this.auth).pipe(
-          filter((user): user is User => user !== null), // Filtra hasta que user NO sea null
-          take(1), // Toma el primer valor válido y completa
-          switchMap((firebaseUser) => {
-            console.log('✅ Firebase sincronizado. Obteniendo datos de Firestore...');
-            // Ahora firebaseUser es definitivamente del tipo User
-            return this.userDataService.getUserData(firebaseUser).pipe(
-              map((firebaseUserData) => {
-                const userData: UserData = {
-                  ...firebaseUserData,
-                  isAdmin: authResponse.isAdmin,
-                };
-                console.log('👤 Datos de usuario combinados:', userData);
-                return userData;
-              })
+            return from(updateProfile(user, {
+              displayName: registerData.username
+            })).pipe(
+              switchMap(() => this.crearPerfilInicial(uid).pipe(
+                map(() => authResponse.mensaje)
+              ))
             );
           })
         );
       }),
-      tap((userData) => {
-        console.log('🎯 Redirigiendo usuario por rol...');
-        this.redirectUserByRole(userData);
-      }),
       catchError((error) => {
-        console.error('❌ Error completo en login:', error);
-        const errorMessage = error.message || 'Error al iniciar sesión';
+        const errorMessage = error.error?.mensaje || error.message || 'Error al registrar usuario';
         this.authState.authError.set(errorMessage);
-
-        // Hacer logout de Firebase si falla el login
         this.firebaseAuth.logout().subscribe();
-
-        throw error;
+        return throwError(() => new Error(errorMessage));
       }),
       finalize(() => {
-        console.log('🏁 Proceso de login finalizado');
         this.authState.isLoading.set(false);
       })
     );
   }
 
+  // ============================================================================
+  // LOGIN DE USUARIOS
+  // ============================================================================
 
   /**
-   * 🆕 LOGIN con Google refactorizado
+   * LOGIN con email/password (Flujo de verificación)
+   */
+  login(credentials: LoginCredentials): Observable<UserData> {
+    this.authState.isLoading.set(true);
+    this.authState.clearAuthError();
+
+    return this.firebaseAuth.loginWithEmail(credentials).pipe(
+      switchMap((result) => {
+        return from(result.user.getIdToken()).pipe(
+          switchMap((idToken) => this.verificarLoginEnBackend(idToken))
+        );
+      }),
+      map(() => {
+        this.authState.refreshCurrentUser().subscribe();
+        return this.authState.getCurrentUser() as UserData;
+      }),
+      tap((userData) => {
+        this.redirectUserByRole(userData);
+      }),
+      catchError((error) => {
+        console.error('Error completo en login:', error);
+        const errorMessage = error.message || 'Error al iniciar sesión';
+        this.authState.authError.set(errorMessage);
+        this.firebaseAuth.logout().subscribe();
+        throw error;
+      }),
+      finalize(() => {
+        console.log('Proceso de login finalizado');
+        this.authState.isLoading.set(false);
+      })
+    );
+  }
+
+  /**
+   * LOGIN con Google (Flujo de verificación)
    */
   loginWithGoogle(): Observable<UserData> {
     this.authState.isLoading.set(true);
@@ -194,38 +294,19 @@ export class AuthService {
 
     return this.firebaseAuth.loginWithGoogle().pipe(
       switchMap((result) => {
-        // Obtener token de Firebase
         return from(result.user.getIdToken()).pipe(
-          switchMap((idToken) => {
-            // Verificar/sincronizar con backend
-            return this.verificarTokenEnBackend(idToken);
-          }),
-          switchMap((authResponse) => {
-            // CORRECCIÓN 3: Replicar el mismo patrón seguro para Google login
-            return user(this.auth).pipe( // <--- CORRECCIÓN CLAVE
-              filter((user): user is User => user !== null),
-              take(1),
-              switchMap((firebaseUser) => {
-                // Obtener datos completos de Firestore
-                return this.userDataService.getUserData(firebaseUser).pipe(
-                  map((firebaseUserData) => {
-                    const userData: UserData = {
-                      ...firebaseUserData,
-                      isAdmin: authResponse.isAdmin
-                    };
-                    return userData;
-                  })
-                );
-              })
-            );
-          })
+          switchMap((idToken) => this.verificarLoginEnBackend(idToken))
         );
+      }),
+      map(() => {
+        this.authState.refreshCurrentUser().subscribe();
+        return this.authState.getCurrentUser() as UserData;
       }),
       tap((userData) => {
         this.redirectUserByRole(userData);
       }),
       catchError((error) => {
-        console.error('❌ Error en login con Google:', error);
+        console.error('Error en login con Google:', error);
         const errorMessage = error.error?.mensaje || error.message || 'Error al iniciar sesión con Google';
         this.authState.authError.set(errorMessage);
         throw new Error(errorMessage);
@@ -236,40 +317,12 @@ export class AuthService {
     );
   }
 
-  /**
-   * 🆕 Verificar token en backend
-   * POST /api/auth/verificar-token
-   */
-  private verificarTokenEnBackend(idToken: string): Observable<AuthResponse> {
-    console.log('🔐 Verificando token en backend...');
-
-    const headers = {
-      'Authorization': `Bearer ${idToken}`,
-      'Content-Type': 'application/json'
-    };
-
-    return this.http.post<AuthResponse>(`${this.apiUrl}/verificar-token`, {}, { headers }).pipe(
-      tap((response) => {
-        console.log('✅ Token verificado en backend:', response);
-        // Guardar token
-        localStorage.setItem('authToken', idToken);
-        console.log('💾 Token guardado en localStorage');
-      }),
-      catchError((error) => {
-        console.error('❌ Error verificando token en backend:', error);
-        console.log('📊 Detalles del error:', {
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          error: error.error
-        });
-        throw error;
-      })
-    );
-  }
+  // ============================================================================
+  // LOGOUT
+  // ============================================================================
 
   /**
-   * Logout
+   * Logout completo (Firebase + Backend + LocalStorage)
    */
   logout(): Observable<void> {
     const currentUser = this.currentUser();
@@ -278,115 +331,170 @@ export class AuthService {
     if (currentUser) {
       this.http.post(`${this.apiUrl}/logout?firebaseUid=${currentUser.uid}`, {})
         .subscribe({
-          next: () => console.log('✅ Logout registrado en backend'),
-          error: (err) => console.warn('⚠️ Error en logout backend:', err)
+          next: () => console.log('Logout registrado en backend'),
+          error: (err) => console.warn('Error en logout backend:', err)
         });
     }
 
     return this.firebaseAuth.logout().pipe(
       tap(() => {
-        // Limpiar localStorage
         localStorage.removeItem('authToken');
         localStorage.removeItem('currentUser');
 
-        // Limpiar estado
+        this.tokenSubject.next(null);
+        this.tokenResultSubject.next(null);
+
         this.authState.currentUser.set(null);
 
-        // Redirigir
-        this.router.navigate(['/']);
+        this.router.navigate(['/home']);
       })
     );
   }
 
-  /**
-   * Verificar si el usuario está autenticado
-   */
-  isAuthenticated(): boolean {
-    return this.authState.isAuthenticated();
-  }
+  // ============================================================================
+  // VERIFICACIÓN DE EMAIL
+  // ============================================================================
 
   /**
-   * Verificar si el usuario es administrador
+   * Envía el correo de verificación de Firebase al usuario actualmente autenticado.
    */
-  isAdmin(): boolean {
-    return this.authState.isAdmin();
-  }
+  sendVerificationEmail(): Observable<void> {
+    const firebaseUser = this.auth.currentUser;
 
-  /**
-   * Obtener usuario actual
-   */
-  getCurrentUser(): UserData | null {
-    return this.authState.getCurrentUser();
-  }
-
-  /**
-   * Obtener usuario actual de Firebase Auth
-   */
-  getFirebaseCurrentUser(): User | null {
-    return this.auth.currentUser;
-  }
-
-  /**
-   * Actualizar datos del usuario en Firestore
-   */
-  updateUserData(updates: Partial<UserData>): Observable<void> {
-    const currentUser = this.getCurrentUser();
-    if (!currentUser) {
-      throw new Error('No hay usuario autenticado');
+    if (!firebaseUser) {
+      return throwError(() => new Error('No hay usuario de Firebase logueado.'));
     }
 
-    return this.userDataService.updateUserData(currentUser.uid, updates).pipe(
+    return from(sendEmailVerification(firebaseUser)).pipe(
       tap(() => {
-        this.authState.refreshCurrentUser().subscribe();
+        console.log('Correo de verificación enviado a:', firebaseUser.email);
+      }),
+      catchError((error) => {
+        console.error('Error al enviar correo de verificación:', error);
+        if (error.code === 'auth/too-many-requests') {
+          return throwError(() => new Error('Has solicitado muchos correos. Intenta más tarde.'));
+        }
+        return throwError(() => new Error('Error al enviar el correo de verificación.'));
       })
     );
   }
 
-  // Métodos delegados
-  updateProfile(profileData: ProfileUpdateData): Observable<void> {
-    return this.profileService.updateProfile(profileData).pipe(
+  // ============================================================================
+  // AUTENTICACIÓN POR SMS
+  // ============================================================================
+
+  /**
+   * PASO 1: Envía el código SMS al número de teléfono.
+   */
+  sendSmsCode(phoneNumber: string, appVerifier: RecaptchaVerifier): Observable<void> {
+    return from(signInWithPhoneNumber(this.auth, phoneNumber, appVerifier)).pipe(
+      tap(result => {
+        this.confirmationResult = result;
+        console.log('Código SMS enviado. Esperando verificación.');
+      }),
+      map(() => void 0)
+    );
+  }
+
+  /**
+   * PASO 2: Verifica el código SMS.
+   */
+  verifySmsCode(code: string): Observable<void> {
+    if (!this.confirmationResult) {
+      return throwError(() => new Error('No se ha solicitado ningún código de verificación.'));
+    }
+
+    return from(this.confirmationResult.confirm(code)).pipe(
       tap(() => {
-        this.authState.refreshCurrentUser().subscribe();
+        this.confirmationResult = null;
+        console.log('Verificación de código SMS exitosa.');
+      }),
+      map(() => void 0),
+      catchError(error => {
+        if (error.code === 'auth/invalid-verification-code') {
+          return throwError(() => new Error('Código de verificación incorrecto.'));
+        }
+        return throwError(() => error);
       })
     );
   }
 
-  uploadProfileImage(base64Image: string): Observable<string> {
-    return this.profileService.uploadProfileImage(base64Image);
-  }
+  // ============================================================================
+  // ACTUALIZACIÓN DE USUARIO
+  // ============================================================================
 
-  removeProfileImage(): Observable<void> {
-    return this.profileService.removeProfileImage().pipe(
-      tap(() => {
-        this.authState.refreshCurrentUser().subscribe();
-      })
-    );
-  }
-
-  changePassword(currentPassword: string, newPassword: string): Observable<void> {
-    return this.passwordService.changePassword(currentPassword, newPassword);
-  }
-
-  validatePasswordStrength(password: string): {
-    isValid: boolean;
-    errors: string[];
-    strength: 'weak' | 'medium' | 'strong';
-  } {
-    return this.passwordService.validatePasswordStrength(password);
-  }
-
-  getUserExtendedData(userId: string): Observable<any> {
-    return this.profileService.getUserExtendedData(userId);
-  }
-
-  checkUserAdminStatus(uid: string): Observable<boolean> {
-    return this.userDataService.checkIfUserIsAdmin(uid);
-  }
-
+  /**
+   * Refresca los datos del usuario actual
+   */
   refreshUser(): Observable<UserData | null> {
-    return this.authState.refreshCurrentUser();
+    const user = this.authState.getCurrentUser();
+    if (!user) {
+      return of(null);
+    }
+    return this.authState.refreshCurrentUser().pipe(
+      catchError(() => of(null))
+    );
   }
 
+  // ============================================================================
+  // MÉTODOS PRIVADOS
+  // ============================================================================
+
+  /**
+   * Inicializar listener del token
+   */
+  private initializeTokenListener(): void {
+    this.auth.onAuthStateChanged((user) => {
+      if (user) {
+        user.getIdToken().then(token => {
+          this.tokenSubject.next(token);
+        }).catch(() => {
+          this.tokenSubject.next(null);
+        });
+      } else {
+        this.tokenSubject.next(null);
+      }
+    });
+  }
+
+  /**
+   * Verificar login en backend
+   */
+  private verificarLoginEnBackend(idToken: string): Observable<AuthResponse> {
+    console.log('🔍 Verificando y sincronizando token en backend...');
+    const requestBody = { idToken: idToken };
+
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login-token`, requestBody).pipe(
+      tap((response) => {
+        console.log('Login Token exitoso:', response);
+        localStorage.setItem('authToken', idToken);
+      }),
+      catchError((error) => {
+        console.error('Error verificando token en backend:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Crear perfil inicial del cliente
+   */
+  private crearPerfilInicial(uid: string): Observable<MessageResponse> {
+    console.log('Creando registro Cliente inicial (Perfil).');
+    return this.http.post<MessageResponse>(`${environment.apiUrl}/api/clientes/crear-perfil/${uid}`, {}).pipe(
+      tap(() => {
+        console.log('Entidad Cliente creada exitosamente.');
+      }),
+      catchError((error) => {
+        console.error('Error creando perfil Cliente:', error);
+        return throwError(() => new Error('Error al crear el perfil de cliente inicial.'));
+      })
+    );
+  }
+
+  /**
+   * Redirigir usuario según su rol
+   */
   private redirectUserByRole(userData: UserData): void {
     const redirectUrl = this.getAndClearRedirectUrl();
 
@@ -399,48 +507,21 @@ export class AuthService {
     }
   }
 
-  // En tu AuthService, agrega este método:
-
   /**
-   * 🆕 Obtener el token ID de Firebase para el usuario actual
-   * Este método es usado por el interceptor
-   */
-  getIdToken(): Observable<string | null> {
-    return new Observable(observer => {
-      const currentUser = this.auth.currentUser;
-
-      if (!currentUser) {
-        console.log('👤 No hay usuario autenticado para obtener token');
-        observer.next(null);
-        observer.complete();
-        return;
-      }
-
-      console.log('🔑 Obteniendo token para usuario:', currentUser.uid);
-
-      from(currentUser.getIdToken()).subscribe({
-        next: (token) => {
-          console.log('✅ Token obtenido exitosamente');
-          observer.next(token);
-          observer.complete();
-        },
-        error: (error) => {
-          console.error('❌ Error al obtener token:', error);
-          observer.next(null); // Devolver null en caso de error
-          observer.complete();
-        }
-      });
-    });
+   * Verificar si el usuario es administrador (síncrono)
+  */
+  isAdmin(): boolean {
+    return this.authState.isAdmin();
   }
 
   /**
-   * 🆕 Verificar estado de autenticación actual
+   * Verificar estado de autenticación actual (reactivo)
    */
   checkAuthState(): Observable<boolean> {
     return new Observable(observer => {
       this.auth.onAuthStateChanged((user) => {
         const isAuthenticated = !!user;
-        console.log('🔐 Estado de autenticación:', isAuthenticated ? 'Autenticado' : 'No autenticado');
+        console.log('🔍 Estado de autenticación:', isAuthenticated ? 'Autenticado' : 'No autenticado');
         observer.next(isAuthenticated);
         observer.complete();
       });

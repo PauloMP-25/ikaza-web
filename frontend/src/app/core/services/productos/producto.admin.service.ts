@@ -1,9 +1,9 @@
+// src/app/core/services/productos/producto-management.service.ts
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, switchMap, catchError, throwError } from 'rxjs';
 import { ProductoService } from './producto.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { Producto, ProductoDetalle } from '@core/models/productos/producto-backend.model';
-import { Product, ProductAdapterService } from './producto-adapter.service';
+import { Producto, ProductoDetalle, ProductoRequest, ProductoUpdateRequest } from '@core/models/productos/producto-backend.model';
 
 @Injectable({
   providedIn: 'root'

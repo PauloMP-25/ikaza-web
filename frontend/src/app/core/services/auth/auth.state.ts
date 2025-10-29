@@ -1,5 +1,4 @@
 // src/app/services/auth/auth-state.service.ts
-
 import { Injectable, inject, signal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -7,9 +6,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { FirebaseConfigService } from '../firebase/firebase-config.service';
 import { UserDataService } from '../firebase/user-data.service';
 import { UserData } from '@core/models/auth-firebase/user-data';
-import { AuthState } from '@core/models/auth-firebase/auth-state';
-import { AuthStateInfo } from '@core/models/auth-firebase/auth-state-info';
-
+import { AuthState, AuthStateInfo } from '@core/models/auth-firebase/auth.state.models';
 @Injectable({
     providedIn: 'root'
 })

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.com.ikaza.backend.dto.request.DireccionRequest;
 import pe.com.ikaza.backend.dto.response.DireccionResponse;
 import pe.com.ikaza.backend.service.DireccionService;
-import pe.com.ikaza.backend.service.UsuarioService;
+import pe.com.ikaza.backend.service.ClienteService;
 import pe.com.ikaza.backend.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -25,7 +25,7 @@ public class DireccionController {
     private DireccionService direccionService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private ClienteService clienteService;
 
     @Autowired
     private SecurityUtils securityUtils;
@@ -44,8 +44,8 @@ public class DireccionController {
         }
         
         // 2. Usar el email para buscar el id_usuario en la BD
-        // ** NOTA: Reemplazar el 6 por una llamada a usuarioService.obtenerIdPorEmail(email)
-        return usuarioService.obtenerIdPorEmail(email);
+        // ** NOTA: Reemplazar el 6 por una llamada a ClienteService.obtenerIdPorEmail(email)
+        return clienteService.obtenerIdPorEmail(email);
     }
     
     /**

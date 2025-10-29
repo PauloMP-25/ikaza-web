@@ -15,49 +15,64 @@ import org.springframework.web.bind.annotation.*;
 import pe.com.ikaza.backend.dto.request.ActualizarUsuarioRequest;
 import pe.com.ikaza.backend.dto.response.MessageResponse;
 import pe.com.ikaza.backend.dto.response.UsuarioResponse;
-import pe.com.ikaza.backend.service.UsuarioService;
+import pe.com.ikaza.backend.service.ClienteService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Controlador REST para gestión de usuarios (CRUD y administración)
- * 
- * SEPARACIÓN DE RESPONSABILIDADES:
- * - AuthController: Registro, Login, Tokens
- * - UsuarioController: Gestión de usuarios, Perfil, Administración
+ * Controlador REST para la gestión del Perfil Cliente y Administración de
+ * Clientes.
+ * Rutas base: /api/clientes
  */
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/clientes")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class UsuarioController {
+public class ClienteController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClienteController.class);
 
     @Autowired
-    private UsuarioService usuarioService;
+    private ClienteService clienteService;
 
     // ===============================================
     // ENDPOINTS DE PERFIL (Usuario autenticado)
     // ===============================================
 
     /**
-     * GET /api/usuarios/perfil/{firebaseUid}
-     * Obtener perfil del usuario autenticado
-     * 
-     * AUTENTICADO - Ver perfil propio
+     * POST /api/clientes/crear-perfil
+     * Crea el registro inicial Cliente después del registro/login minimalista.
+     * REQUIERE AUTENTICACIÓN (token de Firebase válido en el header)
+     */
+    @PostMapping("/crear-perfil/{firebaseUid}")
+    public ResponseEntity<?> crearPerfilInicial(@PathVariable String firebaseUid) {
+        try {
+            logger.info("📝 Recibiendo petición para crear perfil inicial Cliente para UID: {}", firebaseUid);
+            UsuarioResponse response = clienteService.crearPerfilInicial(firebaseUid);
+            logger.info("✅ Perfil Cliente inicial creado/obtenido exitosamente.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            logger.error("❌ Error al crear perfil inicial: {}", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new MessageResponse(e.getMessage(), false));
+        }
+    }
+
+    /**
+     * GET /api/clientes/perfil/{firebaseUid}
+     * Obtener perfil del usuario autenticado.
+     * REQUIERE AUTENTICACIÓN
      */
     @GetMapping("/perfil/{firebaseUid}")
     public ResponseEntity<?> obtenerPerfil(@PathVariable String firebaseUid) {
         try {
             logger.info("👤 Obteniendo perfil para UID: {}", firebaseUid);
-
-            UsuarioResponse usuario = usuarioService.obtenerPorFirebaseUid(firebaseUid);
-            return ResponseEntity.ok(usuario);
-
+            UsuarioResponse cliente = clienteService.obtenerPorFirebaseUid(firebaseUid);
+            return ResponseEntity.ok(cliente);
         } catch (RuntimeException e) {
-            logger.warn("⚠️ Usuario no encontrado: {}", firebaseUid);
+            logger.warn("⚠️ Cliente no encontrado: {}", firebaseUid);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(new MessageResponse(e.getMessage(), false));
@@ -65,10 +80,9 @@ public class UsuarioController {
     }
 
     /**
-     * PUT /api/usuarios/perfil/{firebaseUid}
-     * Actualizar perfil del usuario autenticado
-     * 
-     * AUTENTICADO - Editar perfil propio
+     * PUT /api/clientes/perfil/{firebaseUid}
+     * Actualizar perfil del usuario autenticado.
+     * REQUIERE AUTENTICACIÓN
      */
     @PutMapping("/perfil/{firebaseUid}")
     public ResponseEntity<?> actualizarPerfil(
@@ -76,12 +90,9 @@ public class UsuarioController {
             @Valid @RequestBody ActualizarUsuarioRequest request) {
         try {
             logger.info("✏️ Actualizando perfil para UID: {}", firebaseUid);
-
-            UsuarioResponse usuario = usuarioService.actualizarUsuario(firebaseUid, request);
-
+            UsuarioResponse cliente = clienteService.actualizarCliente(firebaseUid, request);
             logger.info("✅ Perfil actualizado exitosamente");
-            return ResponseEntity.ok(usuario);
-
+            return ResponseEntity.ok(cliente);
         } catch (RuntimeException e) {
             logger.error("❌ Error al actualizar perfil: {}", e.getMessage());
             return ResponseEntity
@@ -101,7 +112,7 @@ public class UsuarioController {
         try {
             logger.info("📱 Verificando teléfono para UID: {}", firebaseUid);
 
-            UsuarioResponse usuario = usuarioService.verificarTelefono(firebaseUid);
+            UsuarioResponse usuario = clienteService.verificarTelefono(firebaseUid);
             return ResponseEntity.ok(usuario);
 
         } catch (RuntimeException e) {
@@ -112,170 +123,78 @@ public class UsuarioController {
         }
     }
 
+    // ===============================================
+    // ENDPOINTS ADMINISTRATIVOS (Solo ADMINISTRADOR)
+    // ===============================================
 
     // ===============================================
     // ENDPOINTS ADMINISTRATIVOS (Solo ADMINISTRADOR)
     // ===============================================
 
     /**
-     * GET /api/usuarios
-     * Listar todos los usuarios con paginación
-     * 
-     * ADMIN - Listar usuarios
+     * GET /api/clientes
+     * Listar todos los clientes con paginación (Datos esenciales).
+     * ADMIN - Listar clientes
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> listarUsuarios(
+    public ResponseEntity<?> listarClientes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "fechaCreacion") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDir) {
         try {
-            logger.info("📋 Listando usuarios - Página: {}, Tamaño: {}", page, size);
-
+            logger.info("📋 Listando clientes - Página: {}, Tamaño: {}", page, size);
             Sort sort = sortDir.equalsIgnoreCase("ASC")
                     ? Sort.by(sortBy).ascending()
                     : Sort.by(sortBy).descending();
-
             Pageable pageable = PageRequest.of(page, size, sort);
-            Page<UsuarioResponse> usuarios = usuarioService.listarUsuariosPaginados(pageable);
 
-            // Crear respuesta con metadatos de paginación
+            // Usamos el nuevo método del servicio
+            Page<UsuarioResponse> clientes = clienteService.listarClientesPaginados(pageable);
+
             Map<String, Object> response = new HashMap<>();
-            response.put("usuarios", usuarios.getContent());
-            response.put("currentPage", usuarios.getNumber());
-            response.put("totalItems", usuarios.getTotalElements());
-            response.put("totalPages", usuarios.getTotalPages());
+            response.put("clientes", clientes.getContent());
+            response.put("currentPage", clientes.getNumber());
+            response.put("totalItems", clientes.getTotalElements());
+            response.put("totalPages", clientes.getTotalPages());
 
             return ResponseEntity.ok(response);
-
         } catch (Exception e) {
-            logger.error("❌ Error al listar usuarios: {}", e.getMessage());
+            logger.error("❌ Error al listar clientes: {}", e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MessageResponse("Error al listar usuarios", false));
+                    .body(new MessageResponse("Error al listar clientes", false));
         }
     }
 
     /**
-     * GET /api/usuarios/{id}
-     * Obtener usuario por ID
-     * 
-     * ADMIN - Ver usuario específico
-     */
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable Integer id) {
-        try {
-            logger.info("🔍 Obteniendo usuario ID: {}", id);
-
-            UsuarioResponse usuario = usuarioService.obtenerPorId(id);
-            return ResponseEntity.ok(usuario);
-
-        } catch (RuntimeException e) {
-            logger.warn("⚠️ Usuario no encontrado ID: {}", id);
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new MessageResponse(e.getMessage(), false));
-        }
-    }
-
-    /**
-     * GET /api/usuarios/buscar
-     * Buscar usuarios por diferentes criterios
-     * 
+     * GET /api/clientes/buscar
+     * Buscar clientes por email, documento o teléfono.
      * ADMIN - Buscar con filtros
      */
     @GetMapping("/buscar")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> buscarUsuarios(
+    public ResponseEntity<?> buscarClientes(
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String nombre,
             @RequestParam(required = false) String documento,
-            @RequestParam(required = false) Boolean activo) {
+            @RequestParam(required = false) String telefono) {
         try {
-            logger.info("🔎 Buscando usuarios con filtros...");
-
-            List<UsuarioResponse> usuarios = usuarioService.buscarUsuarios(email, nombre, documento, activo);
-            return ResponseEntity.ok(usuarios);
+            logger.info("🔎 Buscando clientes con filtros...");
+            List<UsuarioResponse> clientes = clienteService.buscarClientes(email, documento, telefono);
+            return ResponseEntity.ok(clientes);
 
         } catch (Exception e) {
-            logger.error("❌ Error al buscar usuarios: {}", e.getMessage());
+            logger.error("❌ Error al buscar clientes: {}", e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MessageResponse("Error al buscar usuarios", false));
+                    .body(new MessageResponse("Error al buscar clientes", false));
         }
     }
 
     /**
-     * GET /api/usuarios/incompletos
-     * Obtener usuarios con datos incompletos
-     * 
-     * ADMIN - Usuarios que no han completado su perfil
-     */
-    @GetMapping("/incompletos")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<UsuarioResponse>> obtenerUsuariosIncompletos() {
-        logger.info("📝 Obteniendo usuarios con datos incompletos");
-
-        List<UsuarioResponse> usuarios = usuarioService.obtenerUsuariosConDatosIncompletos();
-        return ResponseEntity.ok(usuarios);
-    }
-
-    /**
-     * GET /api/usuarios/estadisticas
-     * Obtener estadísticas de usuarios
-     * 
-     * ADMIN - Dashboard administrativo
-     */
-    @GetMapping("/estadisticas")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> obtenerEstadisticas() {
-        try {
-            logger.info("📊 Obteniendo estadísticas de usuarios");
-
-            Map<String, Object> stats = usuarioService.obtenerEstadisticas();
-            return ResponseEntity.ok(stats);
-
-        } catch (Exception e) {
-            logger.error("❌ Error al obtener estadísticas: {}", e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MessageResponse("Error al obtener estadísticas", false));
-        }
-    }
-
-    /**
-     * PUT /api/usuarios/{id}
-     * Actualizar usuario (admin)
-     * 
-     * ADMIN - Editar cualquier usuario
-     */
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> actualizarUsuario(
-            @PathVariable Integer id,
-            @Valid @RequestBody ActualizarUsuarioRequest request) {
-        try {
-            logger.info("✏️ Admin actualizando usuario ID: {}", id);
-
-            UsuarioResponse usuario = usuarioService.actualizarUsuarioPorId(id, request);
-
-            logger.info("✅ Usuario actualizado por admin");
-            return ResponseEntity.ok(usuario);
-
-        } catch (RuntimeException e) {
-            logger.error("❌ Error al actualizar usuario: {}", e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new MessageResponse(e.getMessage(), false));
-        }
-    }
-
-    /**
-     * PUT /api/usuarios/{id}/activar
-     * Activar usuario
-     * 
+     * PUT /api/clientes/{id}/activar
+     * Activar usuario (Solo campo 'activo').
      * ADMIN - Reactivar usuario desactivado
      */
     @PutMapping("/{id}/activar")
@@ -283,8 +202,7 @@ public class UsuarioController {
     public ResponseEntity<?> activarUsuario(@PathVariable Integer id) {
         try {
             logger.info("✅ Activando usuario ID: {}", id);
-
-            usuarioService.activarUsuario(id);
+            clienteService.activarUsuario(id);
             return ResponseEntity.ok(new MessageResponse("Usuario activado exitosamente", true));
 
         } catch (RuntimeException e) {
@@ -296,9 +214,8 @@ public class UsuarioController {
     }
 
     /**
-     * PUT /api/usuarios/{id}/desactivar
-     * Desactivar usuario
-     * 
+     * PUT /api/clientes/{id}/desactivar
+     * Desactivar usuario (Solo campo 'activo').
      * ADMIN - Suspender usuario
      */
     @PutMapping("/{id}/desactivar")
@@ -306,8 +223,7 @@ public class UsuarioController {
     public ResponseEntity<?> desactivarUsuario(@PathVariable Integer id) {
         try {
             logger.info("🚫 Desactivando usuario ID: {}", id);
-
-            usuarioService.desactivarUsuario(id);
+            clienteService.desactivarUsuario(id);
             return ResponseEntity.ok(new MessageResponse("Usuario desactivado exitosamente", true));
 
         } catch (RuntimeException e) {
@@ -319,52 +235,23 @@ public class UsuarioController {
     }
 
     /**
-     * PUT /api/usuarios/{id}/cambiar-rol
-     * Cambiar rol de usuario
-     * 
-     * ADMIN - Promover/degradar usuario
+     * GET /api/clientes/estadisticas
+     * Obtener estadísticas de clientes/usuarios.
+     * ADMIN - Dashboard administrativo
      */
-    @PutMapping("/{id}/cambiar-rol")
+    @GetMapping("/estadisticas")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> cambiarRol(
-            @PathVariable Integer id,
-            @RequestParam String nuevoRol) {
+    public ResponseEntity<?> obtenerEstadisticas() {
         try {
-            logger.info("🔄 Cambiando rol de usuario ID: {} a {}", id, nuevoRol);
+            logger.info("📊 Obteniendo estadísticas de clientes");
+            Map<String, Object> stats = clienteService.obtenerEstadisticas();
+            return ResponseEntity.ok(stats);
 
-            UsuarioResponse usuario = usuarioService.cambiarRol(id, nuevoRol);
-
-            logger.info("✅ Rol actualizado exitosamente");
-            return ResponseEntity.ok(usuario);
-
-        } catch (RuntimeException e) {
-            logger.error("❌ Error al cambiar rol: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("❌ Error al obtener estadísticas: {}", e.getMessage());
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new MessageResponse(e.getMessage(), false));
-        }
-    }
-
-    /**
-     * DELETE /api/usuarios/{id}
-     * Eliminar usuario (desactivación lógica)
-     * 
-     * ADMIN - Eliminar usuario del sistema
-     */
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id) {
-        try {
-            logger.info("🗑️ Eliminando (desactivando) usuario ID: {}", id);
-
-            usuarioService.eliminarUsuario(id);
-            return ResponseEntity.ok(new MessageResponse("Usuario eliminado exitosamente", true));
-
-        } catch (RuntimeException e) {
-            logger.error("❌ Error al eliminar usuario: {}", e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new MessageResponse(e.getMessage(), false));
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error al obtener estadísticas", false));
         }
     }
 }

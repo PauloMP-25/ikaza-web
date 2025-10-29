@@ -7,11 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.com.ikaza.backend.dto.request.AjusteStockRequest;
 import pe.com.ikaza.backend.dto.response.InventarioResponse;
 import pe.com.ikaza.backend.dto.response.MovimientoInventarioResponse;
+import pe.com.ikaza.backend.entity.Cliente;
 import pe.com.ikaza.backend.entity.Inventario;
 import pe.com.ikaza.backend.entity.MovimientoInventario;
 import pe.com.ikaza.backend.entity.Producto;
 import pe.com.ikaza.backend.entity.Usuario;
 import pe.com.ikaza.backend.repository.jpa.InventarioRepository;
+import pe.com.ikaza.backend.repository.jpa.ClienteRepository;
 import pe.com.ikaza.backend.repository.jpa.MovimientoInventarioRepository;
 import pe.com.ikaza.backend.repository.jpa.ProductoRepository;
 import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
@@ -32,6 +34,7 @@ public class InventarioAdminService {
     private final MovimientoInventarioRepository movimientoRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ClienteRepository clienteRepository;
 
     /**
      * Obtiene todos los inventarios del sistema
@@ -220,9 +223,25 @@ public class InventarioAdminService {
     }
 
     /**
-     * Convierte MovimientoInventario a MovimientoInventarioResponse
+     * Convierte MovimientoInventario a MovimientoInventarioResponse.
+     * Obtiene el nombre completo del Cliente si el usuario existe.
      */
     private MovimientoInventarioResponse convertirAMovimientoResponse(MovimientoInventario movimiento) {
+        
+        String nombreCompleto = "Sistema";
+        
+        if (movimiento.getUsuario() != null) {
+            Usuario usuario = movimiento.getUsuario();
+            // Buscar la información de perfil en la entidad Cliente
+            Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario()).orElse(null);
+            
+            if (cliente != null) {
+                nombreCompleto = cliente.getNombreCompleto();
+            } else {
+                // Si el Cliente no existe, usamos el email de Usuario como fallback
+                nombreCompleto = usuario.getEmail(); 
+            }
+        }
         return MovimientoInventarioResponse.builder()
                 .idMovimiento(movimiento.getIdMovimiento())
                 .idProducto(movimiento.getProducto().getIdProducto())
@@ -233,9 +252,7 @@ public class InventarioAdminService {
                 .stockNuevo(movimiento.getStockNuevo())
                 .motivo(movimiento.getMotivo())
                 .fechaMovimiento(movimiento.getFechaMovimiento())
-                .nombreUsuario(movimiento.getUsuario() != null ? 
-                        movimiento.getUsuario().getNombres() + " " + movimiento.getUsuario().getApellidos() : 
-                        "Sistema")
+                .nombreUsuario(nombreCompleto)
                 .build();
     }
 }

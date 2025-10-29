@@ -1,9 +1,15 @@
+/**
+ * ============================================================================
+ * NoAuthGuard - Impide que usuarios autenticados accedan a login/registro
+ * ============================================================================
+ * - Si el usuario está logueado, lo redirige a su panel
+ * - Si no está logueado, permite el acceso
+ * ============================================================================
+ */
 import { Injectable, inject } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable, map, take } from 'rxjs';
 import { AuthService } from '@core/services/auth/auth';
-
-// Guard para prevenir que usuarios logueados accedan a páginas de login
 @Injectable({
     providedIn: 'root'
 })
@@ -19,14 +25,15 @@ export class NoAuthGuard implements CanActivate {
             take(1),
             map(user => {
                 if (user) {
-                    // Si el usuario está logueado, redirigir según su rol
+                    console.log('No Auth Guard: Usuario ya autenticado, redirigiendo a panel...');
                     if (user.isAdmin) {
-                        this.router.navigate(['/admin']);
+                        this.router.navigate(['/panel-administrador']);
                     } else {
                         this.router.navigate(['/panel-usuario']);
                     }
                     return false;
                 } else {
+                    console.log('No Auth Guard: Usuario no autenticado, acceso permitido');
                     return true;
                 }
             })

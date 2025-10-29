@@ -22,7 +22,7 @@
                 </p>
 
                 <!-- NUEVO: Alerta si no está autenticado -->
-                @if (!isAuthenticated) {
+                @if (!isAuthenticated$) {
                 <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     <div class="text-start">
@@ -57,13 +57,13 @@
 
                 <!-- MODIFICADO: Los botones ejecutan la verificación antes de proceder -->
                 <button type="button" class="btn btn-success px-4" (click)="proceedToCulqui()"
-                    [title]="!isAuthenticated ? 'Debes iniciar sesión primero' : 'Pagar con Culqi'">
+                    [title]="!isAuthenticated$ ? 'Debes iniciar sesión primero' : 'Pagar con Culqi'">
                     <i class="bi bi-shield-lock me-2"></i>
                     Culqi
                 </button>
 
                 <button type="button" class="btn btn-success px-4" (click)="proceedToMercadoPago()"
-                    [title]="!isAuthenticated ? 'Debes iniciar sesión primero' : 'Pagar con Mercado Pago'">
+                    [title]="!isAuthenticated$ ? 'Debes iniciar sesión primero' : 'Pagar con Mercado Pago'">
                     <i class="bi bi-shield-lock me-2"></i>
                     Mercado Pago
                 </button>

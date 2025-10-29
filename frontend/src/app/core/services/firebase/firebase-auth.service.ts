@@ -22,9 +22,7 @@ import {
 } from 'firebase/auth';
 
 import { FirebaseConfigService } from './firebase-config.service';
-import { LoginCredentials } from '@core/models/auth-firebase/login-credentials';
-import { RegisterData } from '@core/models/auth-firebase/register-data';
-
+import { LoginCredentials, RegisterData } from '@core/models/auth-firebase/auth.backend.models';
 @Injectable({
     providedIn: 'root'
 })

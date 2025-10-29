@@ -7,7 +7,7 @@ import { filter } from 'rxjs/operators'; // para mejor manejo
 import { CartService } from '@core/services/carrito/cart';
 import { CartItem } from '@core/models/carrito/cart-item';
 import { AuthService } from '@core/services/auth/auth';
-import { UsuarioBackendService } from '@core/services/usuarios/usuario-backend.service';
+import { ClienteService } from '@core/services/clientes/cliente.service';
 import { ResumenCarrito } from '@shared/components/resumen-carrito/resumen-carrito';
 import { CheckoutService } from '@core/services/checkout/checkout.service.ts';
 import { ItemPedido, PedidoRequest } from '@core/models/pedido/pedido.model';
@@ -24,7 +24,7 @@ declare var bootstrap: any;
 export class CartOffcanvasComponent implements OnInit, OnDestroy {
   private cartService = inject(CartService);
   private authService = inject(AuthService);
-  private usuarioService = inject(UsuarioBackendService);
+  private clienteService = inject(ClienteService);
   private router = inject(Router);
   private checkoutService = inject(CheckoutService);
 
@@ -85,7 +85,7 @@ export class CartOffcanvasComponent implements OnInit, OnDestroy {
   */
   private checkCompleteData(uid: string) {
     this.missingRequirements = []; // Limpiamos la lista al inicio
-    this.usuarioService.obtenerPerfil(uid).subscribe({
+    this.clienteService.obtenerPerfil(uid).subscribe({
       next: (usuario) => {
         // Validación detallada
         const missing: string[] = [];
@@ -115,7 +115,6 @@ export class CartOffcanvasComponent implements OnInit, OnDestroy {
         });
       },
       error: (error) => {
-        // ... (manejo de error existente)
         this.userHasCompleteData = false;
       }
     });

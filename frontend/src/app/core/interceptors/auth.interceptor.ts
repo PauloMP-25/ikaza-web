@@ -1,67 +1,71 @@
-// src/app/core/interceptors/auth.interceptor.ts
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
-import { from, switchMap, catchError, throwError } from 'rxjs';
-
 /**
- * Interceptor que agrega el token de Firebase a las peticiones
- * y maneja errores de autenticación (401, 403)
+ * ============================================================================
+ * Interceptor de Autenticación Reactivo
+ * ============================================================================
+ * - Agrega el token de Firebase a todas las peticiones del backend
+ * - Obtiene el token de forma reactiva usando AuthService.getIdToken$()
+ * - Solo aplica a peticiones del backend (localhost:8080 o /api/)
+ * SEGURIDAD:
+ *    - Si no hay token, la petición continúa sin Authorization header
+ *    - El backend debe validar y rechazar peticiones sin token
+ *    - No se exponen errores sensibles al cliente
+ * LOGS:
+ *    - Logs informativos de cada petición interceptada
+ *    - Identificación clara de peticiones con/sin token
+ *    - Logs de errores sin exponer información sensible
+ * ============================================================================
  */
+
+import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { switchMap, catchError} from 'rxjs';
+import { AuthService } from '@core/services/auth/auth';
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-    const auth = inject(Auth);
+    const authService = inject(AuthService);
     const router = inject(Router);
 
-    console.log('🔄 Interceptor ejecutándose para:', req.url);
+    console.log('Auth Interceptor ejecutándose para:', req.url);
 
-    // Solo aplicar el interceptor a peticiones del backend Spring Boot
-    const isBackendRequest = req.url.includes('localhost:8080') || req.url.includes('api/');
+    // ============================================================
+    // PASO 1: Filtrar solo peticiones del backend
+    // ============================================================
+    const isBackendRequest = req.url.includes('localhost:8080') || req.url.includes('/api/');
 
     if (!isBackendRequest) {
-        console.log('🔄 Request no es del backend, continuando sin token');
+        console.log('Request externa (no backend), continuando sin token');
         return next(req);
     }
 
-    // Verificar si hay un usuario autenticado en Firebase
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) {
-        console.log('👤 No hay usuario autenticado, continuando sin token');
-        return next(req);
-    }
-
-    // Obtener el token de Firebase y agregarlo al header Authorization
-    return from(currentUser.getIdToken(true)).pipe(  // 'true' fuerza renovación si expira
+    // ============================================================
+    // PASO 2: Obtener token de forma reactiva usando AuthService
+    // ============================================================
+    return authService.getIdToken$().pipe(
         switchMap(token => {
-             console.log('🔑 TOKEN OBTENIDO PARA COPIAR:', token);  // TOKEN
-            if (!token) {
-                console.warn('⚠️ Token es null, continuando sin token');
-                return next(req);
+            // Si hay token, agregarlo a los headers
+            if (token) {
+                const clonedRequest = req.clone({
+                    setHeaders: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                console.log('Token agregado a la petición:', req.url);
+                return next(clonedRequest);
             }
 
-            const clonedRequest = req.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            console.log('🔑 ID Token agregado a:', req.url);
-            return next(clonedRequest);
+            // Si no hay token, continuar sin Authorization header
+            console.warn('No hay token disponible, continuando sin Authorization header');
+            return next(req);
         }),
-        catchError((error: any) => {
-            console.error('❌ Error obteniendo ID token de Firebase:', error);
-            
-            // En caso de error, redirigir a login o mostrar error (no continuar sin token)
-            router.navigate(['/login'], {
-                queryParams: {
-                    message: 'Error de autenticación. Por favor, inicia sesión nuevamente.',
-                    display: 'modal'
-                }
-            });
-            
-            // Re-lanzar el error para que no se envíe la petición sin token
-            return throwError(() => error);
+        catchError((error) => {
+            // Error obteniendo el token (poco probable con getIdToken$)
+            console.error('Error obteniendo token:', error);
+
+            // Continuar la petición sin token
+            // El backend rechazará la petición si requiere autenticación
+            console.warn('Continuando petición sin token debido a error');
+            return next(req);
         })
     );
 };

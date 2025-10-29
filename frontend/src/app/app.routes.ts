@@ -1,21 +1,33 @@
-//COMPONENTES GENERALES DE ANGULAR
-import { Routes } from 'node_modules/@angular/router/router_module.d';
-import { AuthGuard } from '@core/guards/auth-guard';
+/*
+===========================================
+Descripción general:
+-------------------------------------------
+Define las rutas principales de la aplicación Angular.
+Incluye rutas públicas, protegidas (para usuario y administrador),
+y componentes cargados de forma diferida (lazy loading) o dinámica (loadComponent).
+
+Se utilizan diferentes guards para controlar el acceso según el tipo de usuario:
+- AuthGuard → rutas para usuarios autenticados.
+- NoAuthGuard → evita acceso al login si ya hay sesión iniciada.
+- AdminGuard → protege las rutas del panel de administrador.
+- checkoutGuard → asegura autenticación y carrito con productos antes del pago.
+===========================================
+*/
+
+import { Routes } from '@angular/router';
+// -----------------------------------
+// Guardianes
+// -----------------------------------
+import { AuthGuard } from '@core/guards/auth.guard';
 import { NoAuthGuard } from '@core/guards/noauth-guard';
-import { AdminGuard } from '@core/guards/admin-guard';
+import { AdminGuard } from '@core/guards/admin.guard';
 import { checkoutGuard } from '@core/guards/checkout.guard';
 
-//PRUEBA MERCADO PAGO
-import { PagoExitoComponent } from '@features/pagos/pago-exitoso/pago-exitoso';
-import { PagoErrorComponent } from '@features/pagos/pago-error/pago-error';
-import { PagoPendienteComponent } from '@features/pagos/pago-pendiente/pago-pendiente';
-import { SearchResultsComponent } from '@features/resultado-busqueda/search-results';
-import { HomeComponent } from './features/home/home';
-import { ProductosListaComponent } from '@shared/components/productoSpringBoot/productosSpring';
-
 export const routes: Routes = [
-    // Rutas públicas
-    { path: '', component: HomeComponent },
+    // RUTA POR DEFECTO (404 y redirección)
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+    // RUTAS PÚBLICAS
     {
         path: 'home',
         loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
@@ -25,13 +37,6 @@ export const routes: Routes = [
         path: 'producto/:id',
         loadComponent: () => import('./shared/components/producto/product-detalle/producto-detalle').then(m => m.ProductoDetalleComponent)
     },
-
-
-    // ----------------------------------- PRUEBA
-    { path: 's2', component: ProductosListaComponent },
-
-    // Busqueda
-    { path: 'search', component: SearchResultsComponent },
 
     // Catálogo y páginas informativas
     {
@@ -46,39 +51,63 @@ export const routes: Routes = [
         path: 'contactanos',
         loadComponent: () => import('./features/contactanos/contactanos/contactanos').then(m => m.ContactanosComponent)
     },
-    // OTRAS RUTAS
-    { path: 'pago-exito', component: PagoExitoComponent },
-    { path: 'pago-error', component: PagoErrorComponent },
-    { path: 'pago-pendiente', component: PagoPendienteComponent },
 
-    //RUTAS PARA USUARIO-LOGUEADO
+    // Búsqueda de productos
+    {
+        path: 'search',
+        loadComponent: () => import('@features/resultado-busqueda/search-results').then(m => m.SearchResultsComponent)
+    },
+
+    // Ruta de prueba (falta integrar)
+    {
+        path: 's2',
+        loadComponent: () => import('@shared/components/productoSpringBoot/productosSpring').then(m => m.ProductosListaComponent)
+    },
+
+    // RUTAS DE PAGOS (MERCADO PAGO)
+    {
+        path: 'pago-exito',
+        loadComponent: () => import('@features/pagos/pago-exitoso/pago-exitoso').then(m => m.PagoExitoComponent)
+    },
+    {
+        path: 'pago-error',
+        loadComponent: () => import('@features/pagos/pago-error/pago-error').then(m => m.PagoErrorComponent)
+    },
+    {
+        path: 'pago-pendiente',
+        loadComponent: () => import('@features/pagos/pago-pendiente/pago-pendiente').then(m => m.PagoPendienteComponent)
+    },
+    // RUTAS DE USUARIO AUTENTICADO
     {
         path: 'panel-usuario',
         loadChildren: () => import('./features/panel-usuario/panel-usuario.routes').then(m => m.PANEL_USUARIO_ROUTES),
         canActivate: [AuthGuard]
     },
+    // RUTAS DE ADMINISTRADOR
     {
         path: 'panel-administrador',
         loadChildren: () => import('./features/panel-administrador/panel-administrador.routes').then(m => m.PANEL_ADMIN_ROUTES),
         canActivate: [AdminGuard]
     },
 
-    // Ruta de pago protegida (usa el guard que verifica carrito y autenticación)
+    // PROCESO DE PAGO / CHECKOUT
     {
         path: 'carrito/pago',
         // Carga el componente que contendrá el modal o la lógica principal de checkout
         loadComponent: () => import('./shared/components/checkout/checkout').then(m => m.CheckoutComponent),
-        canActivate: [checkoutGuard] 
+        canActivate: [checkoutGuard]
     },
 
-    // Ruta de login (no accesible si ya está logueado)
+
+    // RUTA DE LOGIN
     {
         path: 'login',
         canActivate: [NoAuthGuard],
         loadComponent: () => import('./features/login/login').then(m => m.LoginComponent)
     },
-    {
-        path: '**',
-        redirectTo: 'home'
-    }
+    // ----------------------------------------------------------------
+    // RUTA WILDCARD
+    // ----------------------------------------------------------------
+    // Si la ruta no coincide con ninguna de las anteriores, redirige a 'home'.
+    { path: '**', redirectTo: 'home' },
 ];

@@ -18,7 +18,7 @@ export const PANEL_ADMIN_ROUTES: Routes = [
             { path: '', redirectTo: 'reportes', pathMatch: 'full' },
             // Rutas hijas (coinciden con routerLink en side-nav)
             { path: 'lista-productos', component: Productos },
-            { path: 'reportes', component:Reportes},
+            {path: 'reportes', component: Reportes},
             { path: 'inventario', component: Inventario },
             { path: 'lista-clientes', component: Clientes }, 
             { path: 'buzon-virtual', component: BuzonVirtual },

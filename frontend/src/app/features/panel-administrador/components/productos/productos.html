@@ -1,39 +1,90 @@
 <div class="container-fluid py-4">
+    <!-- Header con título y botón -->
     <div class="row align-items-center mb-4">
         <div class="col-md-6">
-            <h2 class="fw-bold">Gestión de Productos</h2>
+            <h2 class="fw-bold">
+                <i class="bi bi-box-seam me-2"></i>Gestión de Productos
+            </h2>
+            <p class="text-muted mb-0">Administra tu catálogo de productos</p>
         </div>
         <div class="col-md-6 text-md-end">
-            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#crearProductoModal">
-                <i class="bi bi-plus-lg me-2"></i>
-                Nuevo Producto
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#crearProductoModal"
+                [disabled]="isLoading">
+                <i class="bi bi-plus-lg me-2"></i>Nuevo Producto
             </button>
         </div>
     </div>
 
-    <!-- Agregar indicador de carga -->
-    <div *ngIf="isLoading" class="loading-indicator text-center py-3">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
+    <!-- Indicador de carga global -->
+    <div *ngIf="isLoading" class="loading-overlay">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando productos...</span>
+            </div>
+            <p class="mt-3 text-muted fw-semibold">Cargando productos...</p>
         </div>
-        <p class="mt-2">Cargando productos...</p>
     </div>
 
-    <!-- Agregar mensaje de error -->
-    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-        {{ errorMessage }}
+    <!-- Mensaje de error -->
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Error:</strong> {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
     </div>
 
+    <!-- Modales -->
     <app-modal-agregar (productoAgregado)="onProductoAgregado($event)"></app-modal-agregar>
+    <app-modal-editar *ngIf="productoAEditar" [producto]="productoAEditar"
+        (productoEditado)="onProductoEditado($event)">
+    </app-modal-editar>
 
-    <!-- Filtros -->
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control border-start-0"
-                    placeholder="Buscar por nombre, SKU, categoría, marca o descripción..." [(ngModel)]="filtro"
-                    (ngModelChange)="filtrarProductos()" />
+    <!-- Sección de filtros -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+
+                <!-- Buscador -->
+                <div class="col-lg-8">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0"
+                            placeholder="Buscar por nombre, SKU, categoría, marca o descripción..." [(ngModel)]="filtro"
+                            (ngModelChange)="filtrarProductos()" [disabled]="isLoading" />
+                        <!-- Botón limpiar búsqueda -->
+                        <button *ngIf="filtro" class="btn btn-outline-secondary" type="button" aria-label="Filtro"
+                            (click)="filtro = ''; filtrarProductos()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtro de categoría -->
+                <div class="col-lg-4">
+                    <select class="form-select" aria-label="Filtrar por categoría" [(ngModel)]="categoriaSeleccionada"
+                        (change)="filtrarProductos()" [disabled]="isLoading">
+                        <option value="">Todas las Categorías</option>
+                        <option *ngFor="let cat of categoriasUnicas" [value]="cat">
+                            {{ cat }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Filtros activos -->
+            <div *ngIf="filtro || categoriaSeleccionada" class="mt-3">
+                <small class="text-muted me-2">Filtros activos:</small>
+                <span *ngIf="filtro" class="badge bg-primary me-2">
+                    Búsqueda: "{{ filtro }}"
+                    <i class="bi bi-x-lg ms-1" role="button" aria-label="Filtro busqueda"
+                        (click)="filtro = ''; filtrarProductos()"></i>
+                </span>
+                <span *ngIf="categoriaSeleccionada" class="badge bg-secondary me-2">
+                    Categoría: {{ categoriaSeleccionada }}
+                    <i class="bi bi-x-lg ms-1" role="button" aria-label="Filtro categoria"
+                        (click)="categoriaSeleccionada = ''; filtrarProductos()"></i>
+                </span>
             </div>
         </div>
         <div class="col-lg-4 d-flex align-items-center">
@@ -46,24 +97,28 @@
         </div>
     </div>
 
-    <!-- Información de resultados -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <p class="text-muted mb-0">
-                    Mostrando <strong>{{ productosFiltrados.length }}</strong> de
-                    <strong>{{ productos.length }}</strong> productos
-                </p>
-                <div class="d-flex align-items-center">
-                    <label class="form-label me-2 mb-0">Productos por página:</label>
-                    <select class="form-paginacion form-select form-select-sm" aria-label="Paginacion"  [(ngModel)]="itemsPerPage"
-                        (change)="onItemsPerPageChange()">
-                        <option value="8">8</option>
-                        <option value="16">16</option>
-                        <option value="24">24</option>
-                        <option value="50">50</option>
-                    </select>
-                </div>
+    <!-- Información de resultados y paginación -->
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+            <p class="text-muted mb-0">
+                <i class="bi bi-funnel me-1"></i>
+                Mostrando <strong>{{ productosFiltrados.length }}</strong> de
+                <strong>{{ productos.length }}</strong> productos
+                <span *ngIf="filtro || categoriaSeleccionada" class="text-primary">
+                    (filtrados)
+                </span>
+            </p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <div class="d-inline-flex align-items-center">
+                <label class="form-label me-2 mb-0">Mostrar:</label>
+                <select class="form-select form-select-sm" [(ngModel)]="itemsPerPage" aria-label="Cantidad Productos"
+                    (change)="onItemsPerPageChange()" [disabled]="isLoading">
+                    <option [value]="8">8 productos</option>
+                    <option [value]="16">16 productos</option>
+                    <option [value]="24">24 productos</option>
+                    <option [value]="50">50 productos</option>
+                </select>
             </div>
         </div>
     </div>
@@ -76,7 +131,7 @@
                     <thead class="table-light">
                         <tr>
                             <th scope="col" class="general">#</th>
-                            <th scope="col" class="prueba">HOLA</th>
+                            <th scope="col" class="prueba">Imagen</th>
                             <th scope="col" class="nombre">Nombre</th>
                             <th scope="col" class="codigo">SKU</th>
                             <th scope="col" class="precio">Precio</th>
@@ -87,8 +142,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let prod of productosPaginados; let i = index">
-                            <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+                        <!-- Filas de productos -->
+                        <tr *ngFor="let prod of productosPaginados; let i = index"
+                            [class.table-secondary]="!prod.disponible">
+
+                            <!-- Número -->
+                            <td class="text-center">
+                                {{ (currentPage - 1) * itemsPerPage + i + 1 }}
+                            </td>
+
+                            <!-- Imagen -->
                             <td>
                                 
                                 <img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/placeholder.jpg'"
@@ -96,33 +159,76 @@
                                     onerror="this.src='assets/images/Accesorios/Lentes_de_halloween.jpg'">
                            
                             </td>
-                            <td class="text-truncate" [title]="prod.nombreProducto">
-                                {{ prod.nombreProducto }}
-                            </td>
-                            <td>{{ prod.codigo }}</td>
-                            <td>S/ {{ prod.precio | number:'1.2-2' }}</td>
+
+                            <!-- Nombre -->
                             <td>
-                                <span class="badge" [ngClass]="prod.stock > 10 ? 'bg-success-subtle text-success' : 
-                                                prod.stock > 0 ? 'bg-warning-subtle text-warning' : 
-                                                'bg-danger-subtle text-danger'">
-                                    {{ prod.stock }}
+                                <div class="d-flex flex-column">
+                                    <span class="fw-semibold text-truncate" [title]="prod.nombreProducto">
+                                        {{ prod.nombreProducto }}
+                                    </span>
+                                    <small class="text-muted" *ngIf="prod.marca">
+                                        {{ prod.marca }}
+                                    </small>
+                                </div>
+                            </td>
+
+                            <!-- SKU -->
+                            <td>
+                                <code class="small">{{ prod.codigo || '-' }}</code>
+                            </td>
+
+                            <!-- Precio -->
+                            <td>
+                                <span class="fw-bold text-success">
+                                    S/ {{ prod.precio | number:'1.2-2' }}
                                 </span>
                             </td>
-                            <td>{{ prod.nombreCategoria }}</td>
+
+                            <!-- Stock con badge dinámico -->
                             <td>
-                                <span class="badge rounded-pill" [ngClass]="prod.disponible ? 'bg-success' : 'bg-danger'">
+                                <span class="badge" [ngClass]="{
+                    'bg-success': prod.stock > 10,
+                    'bg-warning text-dark': prod.stock > 0 && prod.stock <= 10,
+                    'bg-danger': prod.stock === 0
+                  }">
+                                    {{ prod.stock }}
+                                </span>
+                                <div *ngIf="prod.stockMinimo && prod.stock <= prod.stockMinimo"
+                                    class="text-danger small mt-1">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> Bajo
+                                </div>
+                            </td>
+
+                            <!-- Categoría -->
+                            <td>
+                                <span class="badge bg-secondary">
+                                    {{ prod.nombreCategoria }}
+                                </span>
+                            </td>
+
+                            <!-- Estado -->
+                            <td>
+                                <span class="badge rounded-pill"
+                                    [ngClass]="prod.disponible ? 'bg-success' : 'bg-danger'">
+                                    <i [class]="prod.disponible ? 'bi bi-check-circle' : 'bi bi-x-circle'"></i>
                                     {{ prod.disponible ? 'Activo' : 'Inactivo' }}
                                 </span>
                             </td>
+
+                            <!-- Acciones -->
                             <td>
-                                <div class="d-flex justify-content-center">
-                                    <button class="btn btn-sm btn-icon me-2 text-primary" data-bs-toggle="modal"
+                                <div class="btn-group" role="group">
+                                    <!-- Botón Editar -->
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                         data-bs-target="#editarProductoModal" (click)="editarProducto(prod)"
-                                        title="Editar" [disabled]="!prod.disponible">
+                                        [title]="prod.disponible ? 'Editar producto' : 'El producto está inactivo'"
+                                        [disabled]="!prod.disponible" aria-label="Editar">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-icon text-danger" (click)="eliminarProducto(prod)"
-                                        title="Eliminar">
+
+                                    <!-- Botón Eliminar -->
+                                    <button class="btn btn-sm btn-outline-danger" (click)="eliminarProducto(prod)"
+                                        title="Eliminar producto">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -134,46 +240,51 @@
         </div>
     </div>
 
-    <!-- Paginación personalizada -->
-    <div class="d-flex justify-content-between align-items-center mt-3">
+    <!-- Paginación -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+
+        <!-- Info de paginación -->
         <div class="text-muted">
-            Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} -
-            {{ getEndIndex() }} de {{ productosFiltrados.length }} productos
+            <i class="bi bi-info-circle me-1"></i>Mostrando
+            <strong>{{ (currentPage - 1) * itemsPerPage + 1 }}</strong> -
+            <strong>{{ getEndIndex() }}</strong> de
+            <strong>{{ productosFiltrados.length }}</strong> productos
         </div>
 
-        <nav aria-label="Paginación de productos">
-            <ul class="pagination mb-0">
+        <!-- Controles de paginación -->
+        <nav aria-label="Paginación de productos" *ngIf="totalPages > 1">
+            <ul class="pagination mb-0" role="list">
                 <!-- Botón Anterior -->
                 <li class="page-item" [class.disabled]="currentPage === 1">
                     <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)"
                         aria-label="Anterior">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="bi bi-chevron-left"></i>
                     </a>
                 </li>
 
-                <!-- Página 1 -->
+                <!-- Primera página -->
                 <li class="page-item" [class.active]="currentPage === 1">
                     <a class="page-link" href="javascript:void(0)" (click)="changePage(1)">1</a>
                 </li>
 
-                <!-- Puntos suspensivos si hay muchas páginas -->
+                <!-- Puntos suspensivos inicio -->
                 <li class="page-item disabled" *ngIf="totalPages > 5 && currentPage > 3">
                     <span class="page-link">...</span>
                 </li>
 
                 <!-- Páginas intermedias -->
-                <ng-container *ngFor="let page of getIntermediatePages()">
-                    <li class="page-item" [class.active]="currentPage === page">
-                        <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
-                    </li>
-                </ng-container>
+                <li *ngFor="let page of getIntermediatePages()" class="page-item" [class.active]="currentPage === page">
+                    <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">
+                        {{ page }}
+                    </a>
+                </li>
 
-                <!-- Puntos suspensivos si hay muchas páginas -->
+                <!-- Puntos suspensivos fin -->
                 <li class="page-item disabled" *ngIf="totalPages > 5 && currentPage < totalPages - 2">
                     <span class="page-link">...</span>
                 </li>
 
-                <!-- Última página (si hay más de 1 página) -->
+                <!-- Última página -->
                 <li class="page-item" *ngIf="totalPages > 1" [class.active]="currentPage === totalPages">
                     <a class="page-link" href="javascript:void(0)" (click)="changePage(totalPages)">
                         {{ totalPages }}
@@ -184,7 +295,7 @@
                 <li class="page-item" [class.disabled]="currentPage === totalPages">
                     <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)"
                         aria-label="Siguiente">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="bi bi-chevron-right"></i>
                     </a>
                 </li>
             </ul>
@@ -194,7 +305,16 @@
     <!-- Mensaje cuando no hay productos -->
     <div *ngIf="productosFiltrados.length === 0 && !isLoading" class="text-center py-5">
         <i class="bi bi-inbox display-1 text-muted"></i>
-        <h4 class="text-muted mt-3">No se encontraron productos</h4>
-        <p class="text-muted">Intenta ajustar los filtros de búsqueda.</p>
+        <h4 class="text-muted mt-3">
+            {{ filtro || categoriaSeleccionada ? 'No se encontraron productos' : 'No hay productos registrados' }}
+        </h4>
+        <p class="text-muted">
+            {{filtro || categoriaSeleccionada ? 'Intenta ajustar los filtros de búsqueda' : 'Comienza agregando tu
+            primer producto' }}
+        </p>
+        <button *ngIf="!filtro && !categoriaSeleccionada" class="btn btn-primary mt-3" data-bs-toggle="modal"
+            data-bs-target="#crearProductoModal">
+            <i class="bi bi-plus-lg me-2"></i>Agregar Primer Producto
+        </button>
     </div>
 </div>
