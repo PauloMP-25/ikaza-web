@@ -130,5 +130,5 @@
 </div>
 
 <app-modal-login [isOpen]="isModalOpen" [returnUrl]="returnUrl" [infoMessage]="infoMessage"
-    (close)="onModalClose(false)" (loginSuccess)="onModalClose(true)">
+    (close)="onModalClose()" (loginSuccess)="onModalClose()">
 </app-modal-login>

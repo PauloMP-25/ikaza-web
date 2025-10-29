@@ -57,14 +57,26 @@
                     placeholder="Ej: LLG5-2023" />
                   <div class="form-text">Identificador único (opcional)</div>
                 </div>
-<div class="col-12">
-  <label class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
-<select class="form-select" [(ngModel)]="producto.category" name="category" required>
-  <option value="" disabled selected>Selecciona una categoría</option>
-  <option *ngFor="let cat of categoriasUnicas" [value]="cat.idCategoria">     {{ cat.nombreCategoria }}
-  </option>
-</select>
-</div>
+
+                <!-- Categoría -->
+                <div class="col-12">
+                  <label class="form-label fw-semibold">
+                    Categoría <span class="text-danger">*</span>
+                  </label>
+                  <select class="form-select" [(ngModel)]="formData.idCategoria" name="idCategoria" required
+                    #idCategoria="ngModel" [class.is-invalid]="idCategoria.invalid && idCategoria.touched">
+                    <option [value]="0" disabled>Selecciona una categoría</option>
+                    <option *ngFor="let cat of categorias" [value]="cat.idCategoria">
+                      {{ cat.nombreCategoria }}
+                    </option>
+                  </select>
+                  <div *ngIf="idCategoria.invalid && idCategoria.touched" class="invalid-feedback">
+                    Debes seleccionar una categoría
+                  </div>
+                  <div *ngIf="categorias.length === 0" class="form-text text-warning">
+                    <i class="bi bi-exclamation-circle me-1"></i>No hay categorías disponibles
+                  </div>
+                </div>
 
                 <!-- Marca -->
                 <div class="col-12">
@@ -113,6 +125,7 @@
                     min="1" placeholder="5" />
                   <div class="form-text">Alerta cuando el stock sea ≤ este valor</div>
                 </div>
+
               </div>
             </div>
 
@@ -125,8 +138,7 @@
                 (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
                 [class.border-primary]="formData.imagenPreview">
 
-                <input type="file" #fileInput class="input-file" (change)="onFileSelected($event)"
-                  accept="image/*" />
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" />
 
                 <!-- Preview de imagen -->
                 <img *ngIf="formData.imagenPreview" [src]="formData.imagenPreview" alt="Previsualización"
@@ -238,7 +250,7 @@
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" [disabled]="isLoading">
             <i class="bi bi-x-lg me-2"></i>Cancelar
           </button>
-          <button type="submit" class="btn text-white shadow-sm crear-producto"
+          <button type="submit" class="btn text-white shadow-sm"
             [disabled]="!productForm.valid || isLoading || categorias.length === 0">
             <span *ngIf="!isLoading">
               <i class="bi bi-plus-lg me-2"></i>Crear Producto

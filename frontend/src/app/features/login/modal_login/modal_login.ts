@@ -1,3 +1,4 @@
+// src/app/features/login/modal-login/modal-login.component.ts
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -5,9 +6,8 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '@core/services/auth/auth';
 import { AuthStateService } from '@core/services/auth/auth.state';
+import { LoginCredentials, RegisterData } from '@core/models/auth/auth.models';
 
-// Modelos
-import { LoginCredentials, RegisterData } from '@core/models/auth-firebase/auth.backend.models';
 @Component({
   selector: 'app-modal-login',
   standalone: true,
@@ -36,17 +36,17 @@ export class ModalLoginComponent {
   registerForm: FormGroup;
 
   constructor() {
+    // Formulario de login
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
 
-    // 🚨 CAMBIO CRÍTICO: Formulario de registro simplificado
+    // Formulario de registro
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      username: ['', [Validators.required, Validators.minLength(3)]]
+      confirmPassword: ['', [Validators.required]]
     }, {
       validators: this.passwordMatchValidator
     });
@@ -66,7 +66,10 @@ export class ModalLoginComponent {
     return null;
   }
 
-  // Getters para acceder al estado
+  // ============================================================================
+  // GETTERS
+  // ============================================================================
+
   get isLoading(): boolean {
     return this.authStateService.getLoadingState();
   }
@@ -75,11 +78,15 @@ export class ModalLoginComponent {
     return this.authStateService.getCurrentUser();
   }
 
+  // ============================================================================
+  // MÉTODOS DE UI
+  // ============================================================================
+
   /**
-     * Cerrar modal y resetear estado
-     */
+   * Cerrar modal
+   */
   onClose(): void {
-    this.close.emit(); // <--- Esto le dice al NavbarAuthComponent que se cierre.
+    this.close.emit();
     this.resetModalState();
   }
 
@@ -92,8 +99,12 @@ export class ModalLoginComponent {
     this.resetForms();
   }
 
+  // ============================================================================
+  // LOGIN
+  // ============================================================================
+
   /**
-   * Manejar login con email/password
+   * Manejar login
    */
   onLogin(): void {
     if (this.loginForm.invalid) {
@@ -107,8 +118,8 @@ export class ModalLoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: (user) => {
-        console.log('Login exitoso:', user);
-        this.handleSuccessfulLogin(); // 👈 Llamar a la nueva lógica
+        console.log('✅ Login exitoso:', user);
+        this.handleSuccessfulLogin();
       },
       error: (error) => {
         this.showError(error.message);
@@ -116,9 +127,13 @@ export class ModalLoginComponent {
     });
   }
 
+  // ============================================================================
+  // REGISTRO
+  // ============================================================================
+
   /**
-     * Manejar registro con email/password
-     */
+   * Manejar registro
+   */
   onRegister(): void {
     if (this.registerForm.invalid) {
       this.showError('Por favor completa todos los campos correctamente');
@@ -127,15 +142,14 @@ export class ModalLoginComponent {
     }
 
     this.clearMessages();
-    // NOTA: RegisterData ya no contendrá nombres/apellidos en el modelo.
     const registerData: RegisterData = this.registerForm.value;
 
     this.authService.register(registerData).subscribe({
       next: (message) => {
-        this.showSuccess('✅ Registro exitoso. ¡Inicia sesión con tu nueva cuenta!'); // Cambiamos el mensaje
+        this.showSuccess(message);
         this.registerForm.reset();
 
-        // Cambiar a login después de un tiempo
+        // Cambiar a login después de 3 segundos
         setTimeout(() => {
           this.toggleSignUp(false);
           this.successMessage = 'Ahora puedes iniciar sesión';
@@ -148,61 +162,36 @@ export class ModalLoginComponent {
     });
   }
 
-
+  // ============================================================================
+  // MANEJO DE ÉXITO
+  // ============================================================================
 
   /**
-   * Manejar login con Google
+   * Manejar login/registro exitoso
    */
-  onGoogleLogin(): void {
-    this.clearMessages();
-
-    this.authService.loginWithGoogle().subscribe({
-      next: (user) => {
-        console.log('Login con Google exitoso:', user);
-        this.handleSuccessfulLogin(); // 👈 Llamar a la nueva lógica
-      },
-      error: (error) => {
-        this.showError(error.message);
-      }
-    });
-  }
-
-  /**
-     * Manejar login exitoso y redirección
-     */
   private handleSuccessfulLogin(): void {
     this.showSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
     this.loginSuccess.emit();
+
     if (this.returnUrl) {
-      // 1. Redirigir a la ruta guardada por el Guard
       setTimeout(() => {
-        console.log('🔀 Redirigiendo a URL protegida:', this.returnUrl);
+        console.log('🔀 Redirigiendo a:', this.returnUrl);
         this.router.navigateByUrl(this.returnUrl);
-        this.loginSuccess.emit(); // Emitir evento para que el padre sepa que todo terminó
       }, 1000);
     } else {
-      // 2. Si no hay returnUrl, el servicio o el componente padre maneja la redirección
       setTimeout(() => {
-        console.log('🔀 Login exitoso sin returnUrl. Redirección por defecto.');
-        // El padre o el AuthService manejan la redirección por rol si es necesario
+        console.log('🔀 Redirección por defecto');
         this.loginSuccess.emit();
       }, 1000);
     }
   }
 
-  // Helpers para mostrar errores de validación
-  getLoginFieldError(fieldName: string): string {
-    const field = this.loginForm.get(fieldName);
-    if (field?.invalid && field?.touched) {
-      if (field.errors?.['required']) return `${fieldName} es requerido`;
-      if (field.errors?.['email']) return 'Email inválido';
-      if (field.errors?.['minlength']) return `Mínimo ${field.errors?.['minlength'].requiredLength} caracteres`;
-    }
-    return '';
-  }
+  // ============================================================================
+  // VALIDACIÓN DE CAMPOS
+  // ============================================================================
 
   /**
-   * Obtener error de validación para un campo específico
+   * Obtener error de un campo
    */
   getFieldError(form: FormGroup, fieldName: string): string {
     const field = form.get(fieldName);
@@ -214,7 +203,6 @@ export class ModalLoginComponent {
     const errors = field.errors;
     if (!errors) return '';
 
-    // Errores específicos
     if (errors['required']) {
       return `${this.getFieldDisplayName(fieldName)} es requerido`;
     }
@@ -228,7 +216,6 @@ export class ModalLoginComponent {
       return `Mínimo ${requiredLength} caracteres`;
     }
 
-    // Error específico para confirmación de contraseña
     if (fieldName === 'confirmPassword' && this.registerForm.errors?.['passwordMismatch']) {
       return 'Las contraseñas no coinciden';
     }
@@ -237,7 +224,7 @@ export class ModalLoginComponent {
   }
 
   /**
-   * Verificar si un campo tiene errores y ha sido tocado
+   * Verificar si un campo tiene error
    */
   hasFieldError(form: FormGroup, fieldName: string): boolean {
     const field = form.get(fieldName);
@@ -245,7 +232,7 @@ export class ModalLoginComponent {
   }
 
   /**
-   * Marcar todos los campos de un formulario como tocados
+   * Marcar todos los campos como tocados
    */
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {
@@ -255,55 +242,46 @@ export class ModalLoginComponent {
   }
 
   /**
-   * Obtener nombre de display para un campo
+   * Obtener nombre de display
    */
   private getFieldDisplayName(fieldName: string): string {
     const displayNames: { [key: string]: string } = {
       'email': 'Email',
       'password': 'Contraseña',
-      'confirmPassword': 'Confirmar contraseña',
-      'username': 'Nombre de usuario'
+      'confirmPassword': 'Confirmar contraseña'
     };
 
     return displayNames[fieldName] || fieldName;
   }
 
-  /**
-   * Mostrar mensaje de error
-   */
+  // ============================================================================
+  // MENSAJES
+  // ============================================================================
+
   private showError(message: string): void {
-    console.log("Mensaje de error: ", message)
     this.errorMessage = message;
     this.successMessage = '';
   }
 
-  /**
-   * Mostrar mensaje de éxito
-   */
   private showSuccess(message: string): void {
     this.successMessage = message;
     this.errorMessage = '';
   }
 
-  /**
-   * Limpiar mensajes
-   */
   private clearMessages(): void {
     this.errorMessage = '';
     this.successMessage = '';
   }
 
-  /**
-   * Resetear formularios
-   */
+  // ============================================================================
+  // RESET
+  // ============================================================================
+
   private resetForms(): void {
     this.loginForm.reset();
     this.registerForm.reset();
   }
 
-  /**
-   * Resetear estado completo del modal
-   */
   private resetModalState(): void {
     this.isSignUp = false;
     this.clearMessages();

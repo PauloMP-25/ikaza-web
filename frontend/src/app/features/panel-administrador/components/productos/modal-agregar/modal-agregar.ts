@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Output, inject, OnInit, OnDestroy } from '@angular/core';
+// src/app/features/panel-administrador/productos/modal-agregar/modal-agregar.component.ts
+import { Component, EventEmitter, Output, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CategoriaService } from '@core/services/categorias/categoria.service';
 import { ProductoManagementService } from '@core/services/productos/producto.admin.service';
-import { Producto} from '@core/models/productos/producto-backend.model';
+import { Producto, ProductoRequest } from '@core/models/productos/producto-backend.model';
 import { Categoria } from '@core/models/categoria/categoria.model';
 import { ProductoFormData, formDataToProductoRequest } from '@core/models/productos/producto-form.model';
 import { Subscription } from 'rxjs';
@@ -17,10 +18,9 @@ declare var bootstrap: any;
   templateUrl: './modal-agregar.html',
   styleUrls: ['./modal-agregar.scss']
 })
-export class ModalAgregar implements OnInit, OnDestroy {
-
+export class ModalAgregar implements OnInit {
   private managementService = inject(ProductoManagementService);
-  private categoriaService = inject(CategoriaService)
+  private categoriaService = inject(CategoriaService);
 
   @Output() productoAgregado = new EventEmitter<Producto>();
 
@@ -35,34 +35,21 @@ export class ModalAgregar implements OnInit, OnDestroy {
   errorMessage: string = '';
   isLoading: boolean = false;
 
-  categoriasUnicas: Categoria[] = [];
-  nuevaCategoria: string = '';
-
   private categoriesSubscription?: Subscription;
-  ngOnInit() {
-    console.log('🚀 CatalogoComponent: ngOnInit ejecutado');
+
+  ngOnInit(): void {
     this.loadCategories();
   }
 
-  ngOnInit(): void {
-      this.loadCategories();
-  }
-  
   ngOnDestroy(): void {
-      this.categoriesSubscription?.unsubscribe();
+    this.categoriesSubscription?.unsubscribe();
   }
 
-  guardarProducto() {
-    this.mapearVariaciones();
-
-  /*
-    Cargar todas las categorias
-  */
   loadCategories(): void {
     this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
       next: (categorias: Categoria[]) => {
         this.categorias = categorias;
-        console.log('Categorías cargadas:', this.categorias.length);
+        console.log('✅ Categorías cargadas:', this.categorias.length);
       },
       error: (error) => {
         console.error('❌ Error al cargar categorías:', error);
@@ -105,21 +92,47 @@ export class ModalAgregar implements OnInit, OnDestroy {
     });
   }
 
-  loadCategories(): void {
-    console.log('Iniciando carga de categorías...');
+  /**
+   * Mapea las variantes desde los inputs de texto (comas) al array de variantes
+   */
+  private mapearVariantes(): void {
+    if (!this.formData.tieneVariantes) {
+      return; // No hacer nada si no se activó variantes
+    }
 
-    this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
-      next: (categorias: Categoria[]) => {
-        console.log('Categorías recibidas del backend:', categorias);
-        console.log('Cantidad de categorías:', categorias.length);
+    const variantes: any[] = [];
+    const tallas = this.tallasInput.split(',').map(s => s.trim()).filter(s => s);
+    const colores = this.coloresInput.split(',').map(s => s.trim()).filter(s => s);
 
-        this.categoriasUnicas = categorias;
-
-        console.log('Categorías finales procesadas:', this.categoriasUnicas);
-      },
-      error: (error) => {
-        console.error('Error al cargar categorías:', error);
-        this.errorMessage = 'Error al cargar las categorías';
+    if (tallas.length > 0 && colores.length > 0) {
+      // Combinación de tallas y colores
+      for (const talla of tallas) {
+        for (const color of colores) {
+          variantes.push({
+            sku: `${this.formData.codigo || 'SKU'}-${talla}-${color}`,
+            talla,
+            color,
+            stockAdicional: 0
+          });
+        }
+      }
+    } else if (tallas.length > 0) {
+      // Solo tallas
+      for (const talla of tallas) {
+        variantes.push({
+          sku: `${this.formData.codigo || 'SKU'}-${talla}`,
+          talla,
+          stockAdicional: 0
+        });
+      }
+    } else if (colores.length > 0) {
+      // Solo colores
+      for (const color of colores) {
+        variantes.push({
+          sku: `${this.formData.codigo || 'SKU'}-${color}`,
+          color,
+          stockAdicional: 0
+        });
       }
     }
 

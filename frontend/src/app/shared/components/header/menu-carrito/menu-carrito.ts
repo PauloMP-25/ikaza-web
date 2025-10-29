@@ -72,7 +72,7 @@ export class CartOffcanvasComponent implements OnInit, OnDestroy {
 
       if (currentUser) {
         this.userEmail = currentUser.email || '';
-        this.checkCompleteData(currentUser.uid); // Llama a la verificación de datos
+        this.checkCompleteData(this.userEmail); // Llama a la verificación de datos
       } else {
         this.userEmail = '';
         this.userHasCompleteData = false;
@@ -83,9 +83,9 @@ export class CartOffcanvasComponent implements OnInit, OnDestroy {
   /**
   * Verificar datos completos del usuario y listar los faltantes.
   */
-  private checkCompleteData(uid: string) {
+  private checkCompleteData(email: string) {
     this.missingRequirements = []; // Limpiamos la lista al inicio
-    this.clienteService.obtenerPerfil(uid).subscribe({
+    this.clienteService.obtenerPerfil(email).subscribe({
       next: (usuario) => {
         // Validación detallada
         const missing: string[] = [];

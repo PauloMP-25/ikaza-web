@@ -36,8 +36,8 @@ export interface ProductoFormData {
 }
 
 /**
-* Estructura de variante para el formulario
-*/
+ * Estructura de variante para el formulario
+ */
 export interface VarianteForm {
     sku?: string;
     color?: string;
