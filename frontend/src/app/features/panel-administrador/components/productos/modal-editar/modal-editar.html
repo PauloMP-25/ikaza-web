@@ -48,13 +48,6 @@
                         </div>
                     </div>
 
-                    <!-- Mensaje de error -->
-                    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        {{ errorMessage }}
-                        <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
-                    </div>
-
                     <div class="tab-content p-4">
 
                         <!-- TAB 1: Detalles Generales -->
@@ -118,6 +111,8 @@
                                             <input type="text" class="form-control" [(ngModel)]="formData.marca"
                                                 name="editMarca" placeholder="Marca del producto" />
                                         </div>
+
+                                        
                                     </div>
                                 </div>
 
@@ -167,6 +162,8 @@
                                                 name="editStockMinimo" min="1" />
                                             <div class="form-text">Alerta cuando el stock sea ≤ este valor</div>
                                         </div>
+
+                                        
                                     </div>
                                 </div>
 
@@ -179,7 +176,7 @@
                                         (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
                                         (drop)="onDrop($event)" [class.border-success]="formData.imagenPreview">
 
-                                        <input type="file" #fileInput class="input-file"
+                                        <input type="file" #fileInput
                                             (change)="onFileSelected($event)" accept="image/*" />
 
                                         <!-- Preview existente o nueva -->
@@ -366,7 +363,7 @@
                         [disabled]="isLoading">
                         <i class="bi bi-x-lg me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn text-white shadow-sm btn-guardar" 
+                    <button type="submit" class="btn text-white shadow-sm" style="background-color: #28a745;"
                         [disabled]="!editForm.valid || isLoading">
                         <span *ngIf="!isLoading">
                             <i class="bi bi-check-lg me-2"></i>Guardar Cambios
