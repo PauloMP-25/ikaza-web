@@ -55,13 +55,18 @@ public class Cliente {
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
-
+    
+    public String getNombreCompleto() {
+        return nombresCliente + " " + apellidosCliente;
+    }
+    @PrePersist // <--- ESTO ES CRÍTICO
+    protected void onCreate() {
+        if (fechaActualizacion == null) {
+            fechaActualizacion = LocalDateTime.now();
+        }
+    }
     @PreUpdate
     protected void onUpdate() {
         fechaActualizacion = LocalDateTime.now();
-    }
-
-    public String getNombreCompleto() {
-        return nombresCliente + " " + apellidosCliente;
     }
 }

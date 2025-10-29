@@ -10,14 +10,14 @@ import java.util.Map;
 
 /**
  * DTO de respuesta detallada de un producto
- * Incluye información de MongoDB
+ * Incluye información extendida de producto_detalle
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductoDetalleResponse {
 
-    // Información de PostgreSQL
+    // Información de PostgreSQL (tabla productos)
     private Long idProducto;
     private String nombreProducto;
     private String descripcionProducto;
@@ -29,11 +29,14 @@ public class ProductoDetalleResponse {
     private String nombreCategoria;
     private Long idCategoria;
 
-    // Información de MongoDB
-    private String codigo; //sku
+    // Información extendida (tabla producto_detalle)
+    private String codigo; // SKU
     private String marca;
+    private String modelo;        // ⬅️ AGREGAR
+    private String garantia;      // ⬅️ AGREGAR
     private List<ImagenDto> imagenes;
     private Map<String, String> atributos;
+    private List<EspecificacionDto> especificaciones;  // ⬅️ AGREGAR
     private List<VarianteDto> variantes;
     private SeoDto seo;
 
@@ -51,7 +54,7 @@ public class ProductoDetalleResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class EspecificacionDto {
+    public static class EspecificacionDto {  // ⬅️ AGREGAR CLASE COMPLETA
         private String nombre;
         private String valor;
         private String unidad;
@@ -64,6 +67,7 @@ public class ProductoDetalleResponse {
         private String sku;
         private String color;
         private String talla;
+        private String material;        // ⬅️ AGREGAR
         private Integer stockAdicional;
         private String imagenUrl;
     }

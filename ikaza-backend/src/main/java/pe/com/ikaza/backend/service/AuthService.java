@@ -1,29 +1,30 @@
 package pe.com.ikaza.backend.service;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
-import com.google.firebase.auth.UserRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pe.com.ikaza.backend.dto.request.LoginRequest;
 import pe.com.ikaza.backend.dto.request.RegistroRequest;
 import pe.com.ikaza.backend.dto.response.AuthResponse;
-import pe.com.ikaza.backend.entity.Rol;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.RolRepository;
 import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
+import pe.com.ikaza.backend.security.JwtUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * Servicio para gestionar autenticación con Firebase.
- * Maneja el registro con credenciales y la sincronización/login mediante tokens.
+ * Servicio de autenticación sin Firebase
+ * Maneja registro, login y tokens JWT propios
  */
 @Service
 @Transactional
@@ -32,314 +33,261 @@ public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
-    private FirebaseAuth firebaseAuth;
-
-    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private RolRepository rolRepository;
-    // =========================================================================
-    // LÓGICA DE REGISTRO
-    // =========================================================================
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+    
+    @Autowired
+    private ClienteService clienteService;
 
     /**
-     * Registrar nuevo usuario con email y contraseña en Firebase y sincronizar con
-     * PostgreSQL (Usuario y Cliente).
+     * REGISTRO: Crear nuevo usuario con email y password
      */
-    public AuthResponse registrarUsuario(RegistroRequest request) throws Exception {
-        logger.info("Iniciando registro para: {}", request.getEmail());
+    public AuthResponse registrarUsuario(RegistroRequest request) {
+        logger.info("📝 Iniciando registro para: {}", request.getEmail());
 
-        // Verificar si el email ya existe en PostgreSQL
+        // Validar si el email ya existe
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("El email ya está registrado");
         }
 
-        final String defaultNombres = "Usuario";
-        final String defaultApellidos = "";
+        // Validar formato de email
+        if (!request.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Formato de email inválido");
+        }
+
+        // Validar longitud de contraseña
+        if (request.getPassword().length() < 6) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
+        }
 
         try {
-            // Crear usuario en Firebase
-            UserRecord.CreateRequest firebaseRequest = new UserRecord.CreateRequest()
-                    .setEmail(request.getEmail())
-                    .setPassword(request.getPassword())
-                    .setDisplayName(defaultNombres + " " + defaultApellidos)
-                    .setEmailVerified(false)
-                    .setDisabled(false);
-
-            UserRecord userRecord = firebaseAuth.createUser(firebaseRequest);
-            String firebaseUid = userRecord.getUid();
-
-            logger.info("Usuario creado en Firebase con UID: {}", firebaseUid);
-
-            // Asignar rol por defecto en Firebase (Custom Claims)
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("rol", "CLIENTE");
-            firebaseAuth.setCustomUserClaims(firebaseUid, claims);
-
-            // Obtener rol por defecto (crearlo si no existe)
-            Rol rolCliente = rolRepository.findByNombreRol("CLIENTE")
-                    .orElseGet(() -> {
-                        Rol nuevoRol = new Rol("CLIENTE", "Cliente de la tienda");
-                        return rolRepository.save(nuevoRol);
-                    });
-
-            // Crear registro en tabla USUARIOS
+            // Crear usuario
             Usuario usuario = new Usuario();
-            usuario.setFirebaseUid(firebaseUid);
             usuario.setEmail(request.getEmail());
+            usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+            usuario.setRol("CLIENTE");
             usuario.setActivo(true);
-            usuario.setPassword("");
-            usuario.setRol(rolCliente); // Asignar rol por defecto
+            usuario.setEmailVerificado(false);
+            usuario.setProveedorAuth("LOCAL");
 
             Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
-            logger.info("Usuario sincronizado. ID Usuario: {}", usuarioGuardado.getIdUsuario());
+            logger.info("✅ Usuario registrado exitosamente - ID: {}", usuarioGuardado.getIdUsuario());
 
-            // 6. Generar token personalizado para login automático
-            String customToken = firebaseAuth.createCustomToken(firebaseUid);
+            clienteService.crearPerfilInicial(usuarioGuardado.getEmail()); 
+            logger.info("✅ Perfil Cliente inicial creado automáticamente para: {}", usuarioGuardado.getEmail());
+            
+            // Generar tokens
+            String accessToken = jwtUtils.generateTokenFromUsername(usuarioGuardado.getEmail());
+            String refreshToken = jwtUtils.generateRefreshToken(usuarioGuardado.getEmail());
 
-            // 7. Construir respuesta
-            return AuthResponse.builder()
-                    .token(customToken)
-                    .idUsuario(usuarioGuardado.getIdUsuario())
-                    .firebaseUid(firebaseUid)
-                    .email(usuarioGuardado.getEmail())
-                    .rol(rolCliente.getNombreRol())
-                    .isAdmin(false)
-                    .activo(true)
-                    .fechaCreacion(usuarioGuardado.getFechaCreacion())
-                    .ultimoAcceso(usuarioGuardado.getUltimoAcceso())
-                    .mensaje("Usuario registrado exitosamente. Complete su perfil para comprar un producto.")
-                    .success(true)
-                    .build();
+            // Guardar refresh token
+            usuarioGuardado.setRefreshToken(refreshToken);
+            usuarioGuardado.setTokenExpiracion(LocalDateTime.now().plusDays(7));
+            usuarioRepository.save(usuarioGuardado);
 
-        } catch (FirebaseAuthException e) {
-            logger.error("❌ Error al crear usuario en Firebase: {}", e.getMessage());
-            throw new Exception("Error al registrar usuario en Firebase: " + e.getMessage());
+            return construirAuthResponse(usuarioGuardado, accessToken, refreshToken,
+                    "Usuario registrado exitosamente. Complete su perfil para continuar.");
+
+        } catch (Exception e) {
+            logger.error("❌ Error al registrar usuario: {}", e.getMessage());
+            throw new RuntimeException("Error al registrar usuario: " + e.getMessage());
         }
     }
 
-    // =========================================================================
-    // LÓGICA DE LOGIN Y SINCRONIZACIÓN
-    // =========================================================================
-
     /**
-     * Iniciar sesión o sincronizar con ID Token de Firebase.
-     * Centraliza el login por credenciales y proveedores sociales.
+     * LOGIN: Autenticar con email y password
      */
-    @Transactional
-    public AuthResponse iniciarSesionConToken(String idToken) throws Exception {
-        logger.info("Verificando ID Token de Firebase para login/sincronización...");
+    public AuthResponse login(LoginRequest request) {
+        logger.info("🔐 Intento de login para: {}", request.getEmail());
 
-        // Verificar el token con Firebase Admin SDK
-        FirebaseToken decodedToken;
         try {
-            decodedToken = firebaseAuth.verifyIdToken(idToken);
-        } catch (FirebaseAuthException e) {
-            logger.error("Token de Firebase inválido: {}", e.getMessage());
-            throw new IllegalArgumentException("Token inválido o expirado");
+            // Buscar usuario
+            Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
+
+            // Verificar si está bloqueado
+            if (usuario.estaBloqueado()) {
+                throw new RuntimeException("Usuario bloqueado temporalmente. Intente más tarde.");
+            }
+
+            // Verificar si está activo
+            if (!usuario.getActivo()) {
+                throw new DisabledException("Usuario inactivo. Contacte al administrador.");
+            }
+
+            try {
+                // Autenticar
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                request.getEmail(),
+                                request.getPassword()));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // Resetear intentos fallidos
+                usuario.resetearIntentosFallidos();
+
+                // Actualizar último acceso
+                usuario.setUltimoAcceso(LocalDateTime.now());
+
+                // Generar tokens
+                String accessToken = jwtUtils.generateJwtToken(authentication);
+                String refreshToken = jwtUtils.generateRefreshToken(usuario.getEmail());
+
+                // Guardar refresh token
+                usuario.setRefreshToken(refreshToken);
+                usuario.setTokenExpiracion(LocalDateTime.now().plusDays(7));
+                usuarioRepository.save(usuario);
+
+                logger.info("✅ Login exitoso para: {}", request.getEmail());
+
+                return construirAuthResponse(usuario, accessToken, refreshToken, "Login exitoso");
+
+            } catch (BadCredentialsException e) {
+                // Incrementar intentos fallidos
+                usuario.incrementarIntentosFallidos();
+                usuarioRepository.save(usuario);
+
+                logger.warn("⚠️ Credenciales inválidas para: {}", request.getEmail());
+                throw new BadCredentialsException("Credenciales inválidas");
+            }
+
+        } catch (BadCredentialsException e) {
+            throw e;
+        } catch (DisabledException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("❌ Error inesperado en login: {}", e.getMessage());
+            throw new RuntimeException("Error al iniciar sesión: " + e.getMessage());
         }
-
-        String firebaseUid = decodedToken.getUid();
-        String email = decodedToken.getEmail();
-
-        if (email == null) {
-            throw new IllegalArgumentException("Token de Firebase no contiene un email válido.");
-        }
-
-        // Buscar usuario en PostgreSQL por Firebase UID
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByFirebaseUid(firebaseUid);
-        Usuario usuario;
-
-        if (usuarioOpt.isEmpty()) {
-            logger.warn("Usuario UID {} no encontrado en BD. Intentando sincronización.", firebaseUid);
-            // Sincronizar (Registro automático para Social/Google Sign-In)
-            usuario = sincronizarUsuarioDesdeToken(decodedToken);
-        } else {
-            // Usuario ya existe en BD
-            usuario = usuarioOpt.get();
-        }
-
-        // Validaciones finales
-        if (!usuario.getActivo()) {
-            throw new IllegalArgumentException("Usuario inactivo. Contacte al administrador.");
-        }
-
-        // Actualizar último acceso
-        usuario.setUltimoAcceso(LocalDateTime.now());
-        usuarioRepository.save(usuario);
-
-        logger.info("Sincronización/Login exitoso para: {}", email);
-
-        // Construir respuesta (usando Cliente para nombres/apellidos)
-        return AuthResponse.builder()
-                .token(idToken)
-                .idUsuario(usuario.getIdUsuario())
-                .firebaseUid(firebaseUid)
-                .email(email)
-                .rol(usuario.getRol().getNombreRol())
-                .isAdmin("ADMINISTRADOR".equals(usuario.getRol().getNombreRol()))
-                .activo(usuario.getActivo())
-                .fechaCreacion(usuario.getFechaCreacion())
-                .ultimoAcceso(usuario.getUltimoAcceso())
-                .mensaje("Login y sincronización exitosa")
-                .success(true)
-                .build();
     }
 
     /**
-     * AUXILIAR: Crea o actualiza un usuario y su registro Cliente en PostgreSQL
-     * usando la información del token de Firebase. (Para Social Sign-In).
+     * REFRESH: Renovar access token usando refresh token
      */
-    private Usuario sincronizarUsuarioDesdeToken(FirebaseToken token) {
-        String firebaseUid = token.getUid();
-        String email = token.getEmail();
-        
-        // Obtener rol por defecto (crearlo si no existe)
-        Rol rolCliente = rolRepository.findByNombreRol("CLIENTE")
-                .orElseGet(() -> {
-                    Rol nuevoRol = new Rol("CLIENTE", "Cliente de la tienda");
-                    return rolRepository.save(nuevoRol);
-                });
+    public AuthResponse refreshToken(String refreshToken) {
+        logger.info("🔄 Solicitando renovación de token");
 
-        // Manejo de registros antiguos (sin UID de Firebase, actualiza Usuario y
-        // Cliente)
-        Optional<Usuario> usuarioSinUidOpt = usuarioRepository.findByEmailAndFirebaseUidIsNull(email);
-        if (usuarioSinUidOpt.isPresent()) {
-            Usuario usuario = usuarioSinUidOpt.get();
-            usuario.setFirebaseUid(firebaseUid);
-            usuario.setRol(rolCliente);
-            usuarioRepository.save(usuario);
-
-            logger.info("🔄 Registro antiguo encontrado, UID de Firebase asignado: {}", firebaseUid);
-            return usuario;
-        }
-
-        // 2. Crear nuevo registro en tabla USUARIOS
-        Usuario usuario = new Usuario();
-        usuario.setFirebaseUid(firebaseUid);
-        usuario.setEmail(email);
-        usuario.setActivo(true);
-        usuario.setPassword("");
-        usuario.setRol(rolCliente);
-
-        Usuario usuarioGuardado = usuarioRepository.save(usuario);
-
-        logger.info("✅ Nuevo usuario social sincronizado (Usuario/Cliente) ID: {}", usuarioGuardado.getIdUsuario());
-        return usuarioGuardado;
-    }
-
-    // =========================================================================
-    // OTROS MÉTODOS (Necesitan corrección de MAPPING)
-    // =========================================================================
-
-    /**
-     * Verificar si un token de Firebase es válido y recuperar los datos del
-     * usuario.
-     */
-    public AuthResponse verificarToken(String token) throws Exception {
         try {
-            logger.info("🔍 Verificando token de Firebase...");
+            // Validar refresh token
+            if (!jwtUtils.validateJwtToken(refreshToken)) {
+                throw new RuntimeException("Refresh token inválido o expirado");
+            }
 
-            FirebaseToken decodedToken = firebaseAuth.verifyIdToken(token);
-            String firebaseUid = decodedToken.getUid();
-            String email = decodedToken.getEmail();
-            Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado en la base de datos"));
-            if (!usuario.getActivo())
-                throw new IllegalArgumentException("Usuario inactivo");
+            // Obtener email del token
+            String email = jwtUtils.getUserEmailFromJwtToken(refreshToken);
 
+            // Buscar usuario
+            Usuario usuario = usuarioRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            // Verificar que el refresh token coincida
+            if (!refreshToken.equals(usuario.getRefreshToken())) {
+                throw new RuntimeException("Refresh token no coincide");
+            }
+
+            // Verificar expiración
+            if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("Refresh token expirado");
+            }
+
+            // Generar nuevo access token
+            String newAccessToken = jwtUtils.generateTokenFromUsername(usuario.getEmail());
+
+            logger.info("✅ Token renovado para: {}", email);
+
+            return construirAuthResponse(usuario, newAccessToken, refreshToken, "Token renovado exitosamente");
+
+        } catch (Exception e) {
+            logger.error("❌ Error al renovar token: {}", e.getMessage());
+            throw new RuntimeException("Error al renovar token: " + e.getMessage());
+        }
+    }
+
+    /**
+     * VERIFICAR TOKEN: Validar si un token es válido
+     */
+    @Transactional(readOnly = true)
+    public AuthResponse verificarToken(String token) {
+        try {
+            if (!jwtUtils.validateJwtToken(token)) {
+                throw new RuntimeException("Token inválido o expirado");
+            }
+
+            String email = jwtUtils.getUserEmailFromJwtToken(token);
+            Usuario usuario = usuarioRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            if (!usuario.getActivo()) {
+                throw new RuntimeException("Usuario inactivo");
+            }
 
             // Actualizar último acceso
             usuario.setUltimoAcceso(LocalDateTime.now());
             usuarioRepository.save(usuario);
 
-            // Construir respuesta
-            return AuthResponse.builder()
-                    .token(token)
-                    .idUsuario(usuario.getIdUsuario())
-                    .firebaseUid(firebaseUid)
-                    .email(email)
-                    .rol(usuario.getRol().getNombreRol())
-                    .isAdmin("ADMINISTRADOR".equals(usuario.getRol().getNombreRol()))
-                    .activo(usuario.getActivo())
-                    .fechaCreacion(usuario.getFechaCreacion())
-                    .ultimoAcceso(usuario.getUltimoAcceso())
-                    .mensaje("Token válido")
-                    .success(true)
-                    .build();
+            return construirAuthResponse(usuario, token, usuario.getRefreshToken(), "Token válido");
 
-        } catch (FirebaseAuthException e) {
+        } catch (Exception e) {
             logger.error("❌ Error al verificar token: {}", e.getMessage());
-            throw new Exception("Token inválido o expirado");
+            throw new RuntimeException("Token inválido o expirado");
         }
     }
 
     /**
-     * Refrescar token (genera nuevo Custom Token)
-     * Este método es útil para renovar la identidad en el backend o para servicios
-     * que usan Custom Tokens.
-     * * @param oldToken El token de Firebase que se quiere renovar.
-     * 
-     * @return AuthResponse con el nuevo Custom Token.
-     * @throws Exception Si el token es inválido.
+     * LOGOUT: Invalidar refresh token
      */
-    public AuthResponse refrescarToken(String oldToken) throws Exception {
+    public void logout(String email) {
         try {
-            logger.info("🔄 Refrescando token...");
+            Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+            if (usuarioOpt.isPresent()) {
+                Usuario usuario = usuarioOpt.get();
+                usuario.setRefreshToken(null);
+                usuario.setTokenExpiracion(null);
+                usuario.setUltimoAcceso(LocalDateTime.now());
+                usuarioRepository.save(usuario);
 
-            // Verificar el token actual
-            FirebaseToken decodedToken = firebaseAuth.verifyIdToken(oldToken);
-            String firebaseUid = decodedToken.getUid();
-
-            // Generar nuevo custom token
-            String newToken = firebaseAuth.createCustomToken(firebaseUid);
-
-            // Obtener datos del usuario
-            Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-            logger.info("✅ Token refrescado para UID: {}", firebaseUid);
-
-            return AuthResponse.builder()
-                    .token(newToken)
-                    .idUsuario(usuario.getIdUsuario())
-                    .firebaseUid(firebaseUid)
-                    .email(usuario.getEmail())
-                    .rol(usuario.getRol().getNombreRol())
-                    .isAdmin("ADMINISTRADOR".equals(usuario.getRol().getNombreRol()))
-                    .activo(usuario.getActivo())
-                    .mensaje("Token refrescado exitosamente")
-                    .success(true)
-                    .build();
-
-        } catch (FirebaseAuthException e) {
-            logger.error("❌ Error al refrescar token: {}", e.getMessage());
-            throw new Exception("Error al refrescar token");
+                logger.info("👋 Logout exitoso para: {}", email);
+            }
+        } catch (Exception e) {
+            logger.error("❌ Error en logout: {}", e.getMessage());
         }
     }
 
     /**
-     * Actualiza la marca de tiempo de último acceso del usuario en la BD.
-     * * @param firebaseUid El UID de Firebase del usuario.
-     */
-    public void actualizarUltimoAcceso(String firebaseUid) {
-        usuarioRepository.findByFirebaseUid(firebaseUid).ifPresent(usuario -> {
-            usuario.setUltimoAcceso(LocalDateTime.now());
-            usuarioRepository.save(usuario);
-            logger.info("✅ Último acceso actualizado para UID: {}", firebaseUid);
-        });
-    }
-
-    /**
-     * Verifica si un email está disponible en la BD.
-     * * @param email El email a verificar.
-     * 
-     * @return true si el email está disponible, false en caso contrario.
+     * VERIFICAR EMAIL DISPONIBLE
      */
     @Transactional(readOnly = true)
     public boolean verificarEmailDisponible(String email) {
         return !usuarioRepository.existsByEmail(email);
+    }
+
+    /**
+     * CONSTRUIR RESPUESTA AUTH
+     */
+    private AuthResponse construirAuthResponse(Usuario usuario, String accessToken, String refreshToken,
+            String mensaje) {
+        return AuthResponse.builder()
+                .token(accessToken)
+                .refreshToken(refreshToken)
+                .idUsuario(usuario.getIdUsuario())
+                .email(usuario.getEmail())
+                .rol(usuario.getRol())
+                .isAdmin("ADMINISTRADOR".equals(usuario.getRol()))
+                .activo(usuario.getActivo())
+                .fechaCreacion(usuario.getFechaCreacion())
+                .ultimoAcceso(usuario.getUltimoAcceso())
+                .mensaje(mensaje)
+                .success(true)
+                .build();
     }
 }
