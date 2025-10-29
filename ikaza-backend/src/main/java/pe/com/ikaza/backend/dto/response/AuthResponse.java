@@ -19,7 +19,6 @@ public class AuthResponse {
 
     // Información del usuario
     private Integer idUsuario;
-    private String firebaseUid;
     private String email;
     
     // Rol y permisos

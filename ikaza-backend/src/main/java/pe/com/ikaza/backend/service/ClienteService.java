@@ -49,21 +49,20 @@ public class ClienteService {
      * Crea el registro inicial en la tabla Cliente después del registro en
      * AuthService.
      * Solo debe ser llamado una vez por el frontend.
-     * 
-     * @param firebaseUid El UID de Firebase (obtenido del AuthResponse).
+     * @param email El email del usuario (obtenido del token JWT).
      * @return UsuarioResponse con los datos iniciales.
      */
-    public UsuarioResponse crearPerfilInicial(String firebaseUid) {
-        logger.info("📝 Creando perfil inicial Cliente para UID: {}", firebaseUid);
+    public UsuarioResponse crearPerfilInicial(String email) {
+        logger.info("📝 Creando perfil inicial Cliente para email: {}", email);
 
         // 1. Verificar si el Usuario existe en la tabla principal
-        Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con UID: " + firebaseUid));
+        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
 
         // 2. Verificar si el perfil Cliente ya fue creado
         Optional<Cliente> clienteOpt = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario());
         if (clienteOpt.isPresent()) {
-            logger.warn("⚠️ Perfil Cliente ya existe para UID: {}", firebaseUid);
+            logger.warn("⚠️ Perfil Cliente ya existe para email: {}", email);
             return convertirAResponse(usuario, clienteOpt.get());
         }
 
@@ -85,13 +84,13 @@ public class ClienteService {
     // ===============================================
 
     /**
-     * GET /api/clientes/perfil/{firebaseUid}
+     * GET /api/clientes/perfil/{email}
      * Obtener perfil del usuario autenticado (combinando Usuario y Cliente).
      */
     @Transactional(readOnly = true)
-    public UsuarioResponse obtenerPorFirebaseUid(String firebaseUid) {
-        Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con UID: " + firebaseUid));
+    public UsuarioResponse obtenerPorEmail(String email) { // FIX: Renombrado de obtenerPorFirebaseUid
+        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
 
         Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
                 .orElseThrow(() -> new RuntimeException("Datos de perfil Cliente no encontrados."));
@@ -100,11 +99,11 @@ public class ClienteService {
     }
 
     /**
-     * PUT /api/clientes/perfil/{firebaseUid}
+     * PUT /api/clientes/perfil/{email}
      * Actualizar perfil del usuario (solo campos de Cliente).
      */
-    public UsuarioResponse actualizarCliente(String firebaseUid, ActualizarUsuarioRequest request) {
-        Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
+    public UsuarioResponse actualizarCliente(String email, ActualizarUsuarioRequest request) { // FIX: Cambio de firma
+        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
@@ -120,11 +119,11 @@ public class ClienteService {
     }
 
     /**
-     * PUT /api/clientes/perfil/{firebaseUid}/verificar-telefono
+     * PUT /api/clientes/perfil/{email}/verificar-telefono
      * Marcar el campo 'telefonoVerificado' en la tabla Cliente como TRUE.
      */
-    public UsuarioResponse verificarTelefono(String firebaseUid) {
-        Usuario usuario = usuarioRepository.findByFirebaseUid(firebaseUid)
+    public UsuarioResponse verificarTelefono(String email) { // FIX: Cambio de firma
+        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
@@ -132,7 +131,7 @@ public class ClienteService {
 
         cliente.setTelefonoVerificado(true);
         Cliente actualizado = clienteRepository.save(cliente);
-        logger.info("✅ Teléfono verificado para UID: {}", firebaseUid);
+        logger.info("✅ Teléfono verificado para email: {}", email); // FIX: Mensaje de log actualizado
         return convertirAResponse(usuario, actualizado);
     }
 
@@ -259,12 +258,6 @@ public class ClienteService {
                 .filter(u -> u.getFechaCreacion().isAfter(mesInicio))
                 .count();
 
-        // 6. Usuarios por rol
-        Map<String, Long> usuariosPorRol = todosUsuarios.stream()
-                .collect(Collectors.groupingBy(
-                        u -> u.getRol().getNombreRol(),
-                        Collectors.counting()));
-
         // 7. Construir el mapa de respuesta
         Map<String, Object> stats = new HashMap<>();
 
@@ -274,7 +267,6 @@ public class ClienteService {
         stats.put("usuariosInactivos", inactivos);
         stats.put("usuariosRegistradosMes", registradosMes);
         stats.put("usuariosRegistradosHoy", registradosHoy);
-        stats.put("usuariosPorRol", usuariosPorRol);
 
         // Perfil y Demografía
         stats.put("clientesConDatosIncompletos", datosIncompletos);
@@ -352,14 +344,7 @@ public class ClienteService {
 
         // Datos de Usuario (Auth Core)
         response.setIdUsuario(usuario.getIdUsuario());
-        response.setFirebaseUid(usuario.getFirebaseUid());
         response.setEmail(usuario.getEmail());
-
-        // Rol
-        if (usuario.getRol() != null) {
-            response.setNombreRol(usuario.getRol().getNombreRol());
-            response.setIsAdmin("ADMINISTRADOR".equals(usuario.getRol().getNombreRol()));
-        }
 
         // Metadatos de Usuario
         response.setActivo(usuario.getActivo());

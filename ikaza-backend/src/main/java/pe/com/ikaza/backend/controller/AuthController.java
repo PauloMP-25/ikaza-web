@@ -6,16 +6,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.*;
-import pe.com.ikaza.backend.dto.request.LoginTokenRequest;
+import pe.com.ikaza.backend.dto.request.LoginRequest;
 import pe.com.ikaza.backend.dto.request.RegistroRequest;
 import pe.com.ikaza.backend.dto.response.AuthResponse;
 import pe.com.ikaza.backend.dto.response.MessageResponse;
 import pe.com.ikaza.backend.service.AuthService;
 
 /**
- * Controlador REST para autenticación (Registro, Login con Token, Verificación)
- * Maneja toda la lógica de autenticación y sincronización con Firebase.
+ * Controlador REST para autenticación sin Firebase
+ * Maneja registro, login, refresh y logout con JWT nativo
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -29,17 +31,17 @@ public class AuthController {
 
     /**
      * POST /api/auth/registro
-     * Registrar nuevo usuario con email/password en Firebase y sincronizar con PostgreSQL.
-     * * PÚBLICO - No requiere autenticación
+     * Registrar nuevo usuario con email/password
+     * PÚBLICO - No requiere autenticación
      */
     @PostMapping("/registro")
     public ResponseEntity<?> registrarUsuario(@Valid @RequestBody RegistroRequest request) {
         try {
-            logger.info("Intentando registrar usuario: {}", request.getEmail());
+            logger.info("📝 Intentando registrar usuario: {}", request.getEmail());
 
             AuthResponse response = authService.registrarUsuario(request);
 
-            logger.info("Usuario registrado exitosamente: {}", request.getEmail());
+            logger.info("✅ Usuario registrado exitosamente: {}", request.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (IllegalArgumentException e) {
@@ -52,43 +54,73 @@ public class AuthController {
             logger.error("❌ Error inesperado en registro: {}", e.getMessage(), e);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MessageResponse("Error al registrar usuario: " + e.getMessage(), false));
+                    .body(new MessageResponse("Error al registrar usuario", false));
         }
     }
 
     /**
-     * POST /api/auth/login-token
-     * Iniciar sesión/sincronizar con ID Token de Firebase. 
-     * Usado para: Login con Google/Sociales, Login tradicional después de autenticación exitosa en el cliente.
-     * * PÚBLICO - No requiere autenticación, usa el token para autenticar.
+     * POST /api/auth/login
+     * Iniciar sesión con email/password
+     * PÚBLICO - No requiere autenticación
      */
-    @PostMapping("/login-token")
-    public ResponseEntity<?> iniciarSesionConToken(@Valid @RequestBody LoginTokenRequest request) {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            logger.info("🔐 Intento de login con token (Social/Estandar)");
-            // La lógica en el servicio se encargará de verificar el token y de SINCRONIZAR el usuario si no existe (registro con Google)
-            AuthResponse response = authService.iniciarSesionConToken(request.getIdToken());
+            logger.info("🔐 Intento de login para: {}", request.getEmail());
 
-            logger.info("✅ Login/Sincronización exitosa para UID: {}", response.getFirebaseUid());
+            AuthResponse response = authService.login(request);
+
+            logger.info("✅ Login exitoso para: {}", request.getEmail());
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            logger.warn("⚠️ Token inválido o problema de sincronización: {}", e.getMessage());
+
+        } catch (BadCredentialsException e) {
+            logger.warn("⚠️ Credenciales inválidas: {}", request.getEmail());
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new MessageResponse(e.getMessage(), false));
+                    .body(new MessageResponse("Credenciales inválidas", false));
+
+        } catch (DisabledException e) {
+            logger.warn("⚠️ Usuario inactivo: {}", request.getEmail());
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new MessageResponse("Usuario inactivo. Contacte al administrador.", false));
+
         } catch (Exception e) {
-            logger.error("❌ Error inesperado en login con token: {}", e.getMessage(), e);
+            logger.error("❌ Error inesperado en login: {}", e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MessageResponse("Error al iniciar sesión: " + e.getMessage(), false));
+                    .body(new MessageResponse(e.getMessage(), false));
         }
     }
 
     /**
-    * POST /api/auth/verificar-token
-    * Verificar si un token de Firebase es válido.
-    * * PÚBLICO - Útil para validar tokens en el frontend (para sesiones activas).
-    */
+     * POST /api/auth/refresh
+     * Renovar access token usando refresh token
+     * PÚBLICO - Usa el refresh token para autenticar
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
+        try {
+            logger.info("🔄 Solicitando renovación de token");
+
+            AuthResponse response = authService.refreshToken(refreshToken);
+
+            logger.info("✅ Token renovado exitosamente");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("❌ Error al renovar token: {}", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResponse("Error al renovar token: " + e.getMessage(), false));
+        }
+    }
+
+    /**
+     * POST /api/auth/verificar-token
+     * Verificar si un token JWT es válido
+     * PÚBLICO - Útil para validar tokens en el frontend
+     */
     @PostMapping("/verificar-token")
     public ResponseEntity<?> verificarToken(@RequestHeader("Authorization") String authHeader) {
         try {
@@ -115,46 +147,16 @@ public class AuthController {
     }
 
     /**
-    * POST /api/auth/refresh
-    * Refrescar token de Firebase (genera nuevo custom token).
-    * * PÚBLICO - Permite renovar tokens expirados.
-    */
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refrescarToken(@RequestHeader("Authorization") String authHeader) {
-        try {
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(new MessageResponse("Token no proporcionado", false));
-            }
-
-            String refreshToken = authHeader.substring(7);
-            logger.info("🔄 Refrescando token...");
-
-            AuthResponse response = authService.refrescarToken(refreshToken);
-
-            logger.info("✅ Token refrescado exitosamente");
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            logger.error("❌ Error al refrescar token: {}", e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new MessageResponse("Error al refrescar token", false));
-        }
-    }
-
-    /**
-    * POST /api/auth/logout
-    * Cerrar sesión (opcional - maneja el lado del backend).
-    * * REQUIERE AUTENTICACIÓN
-    */
+     * POST /api/auth/logout
+     * Cerrar sesión (invalida refresh token)
+     * REQUIERE AUTENTICACIÓN
+     */
     @PostMapping("/logout")
-    public ResponseEntity<?> cerrarSesion(@RequestParam String firebaseUid) {
+    public ResponseEntity<?> logout(@RequestParam String email) {
         try {
-            logger.info("👋 Cerrando sesión para UID: {}", firebaseUid);
+            logger.info("👋 Cerrando sesión para: {}", email);
 
-            authService.actualizarUltimoAcceso(firebaseUid);
+            authService.logout(email);
 
             return ResponseEntity.ok(new MessageResponse("Sesión cerrada exitosamente", true));
 
@@ -167,10 +169,10 @@ public class AuthController {
     }
 
     /**
-    * GET /api/auth/verificar-email/{email}
-    * Verificar si un email ya está registrado en la BD.
-    * PÚBLICO - Útil para validación en tiempo real en formularios.
-    */
+     * GET /api/auth/verificar-email/{email}
+     * Verificar si un email ya está registrado
+     * PÚBLICO - Útil para validación en tiempo real
+     */
     @GetMapping("/verificar-email/{email}")
     public ResponseEntity<?> verificarEmailDisponible(@PathVariable String email) {
         try {
@@ -190,25 +192,35 @@ public class AuthController {
 
 /**
  * ============================================================
- * FLUJO DE AUTENTICACIÓN CENTRALIZADO EN FIREBASE ID TOKEN
+ * FLUJO DE AUTENTICACIÓN CON JWT NATIVO
  * ============================================================
- * * 1. REGISTRO (Email/Password):
+ * 
+ * 1. REGISTRO:
  * Frontend → POST /api/auth/registro
- * - Crea usuario en Firebase (email/password).
- * - Sincroniza el nuevo usuario en PostgreSQL.
- * - Retorna token personalizado y datos.
- * * 2. LOGIN (Email/Password o Social - Google/Facebook):
- * Frontend → Autentica en Firebase (obtiene ID Token).
- * Frontend → POST /api/auth/login-token
- * - Backend verifica el ID Token.
- * - Si es un nuevo usuario social, lo SINCRONIZA en PostgreSQL.
- * - Retorna los datos completos del usuario desde PostgreSQL.
- * * 3. VERIFICACIÓN DE SESIÓN:
+ * - Crea usuario en PostgreSQL
+ * - Encripta password con BCrypt
+ * - Genera access token y refresh token
+ * - Retorna tokens y datos del usuario
+ * 
+ * 2. LOGIN:
+ * Frontend → POST /api/auth/login
+ * - Valida credenciales con Spring Security
+ * - Genera access token (24h) y refresh token (7d)
+ * - Retorna tokens y datos del usuario
+ * 
+ * 3. VERIFICACIÓN DE TOKEN:
  * Frontend → POST /api/auth/verificar-token (con header Authorization)
- * - Valida token de Firebase.
- * - Retorna datos actualizados del usuario.
- * * 4. LOGOUT:
+ * - Valida token JWT
+ * - Retorna datos actualizados del usuario
+ * 
+ * 4. RENOVAR TOKEN:
+ * Frontend → POST /api/auth/refresh (con refresh token)
+ * - Valida refresh token
+ * - Genera nuevo access token
+ * - Retorna nuevo token
+ * 
+ * 5. LOGOUT:
  * Frontend → POST /api/auth/logout
- * - Actualiza el último acceso en BD.
- * - El cliente de Firebase maneja la revocación del token en el dispositivo.
+ * - Invalida refresh token en BD
+ * - Limpia sesión
  */

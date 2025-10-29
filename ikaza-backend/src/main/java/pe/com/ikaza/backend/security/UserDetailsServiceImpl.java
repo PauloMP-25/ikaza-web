@@ -14,55 +14,54 @@ import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
 import java.util.List;
 
 /**
- * Implementación personalizada de UserDetailsService
- * Spring Security usa esta clase para cargar usuarios durante la autenticación
+ * Implementación de UserDetailsService para autenticación JWT
+ * Sin dependencias de Firebase
  */
-@Service // Indica que esta clase es un servicio de Spring
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-        @Autowired // Inyección de dependencias automática
+        @Autowired
         private UsuarioRepository usuarioRepository;
 
         /**
-         * Método que Spring Security llama para cargar un usuario por su email
-         * 
-         * @param email - El email del usuario (username en este caso)
-         * @return UserDetails - Objeto que Spring Security entiende
-         * @throws UsernameNotFoundException si el usuario no existe
+         * Cargar usuario por email para autenticación
          */
         @Override
         @Transactional(readOnly = true)
-        // @Transactional: asegura que la operación se haga en una transacción de BD
-        // readOnly = true: optimización para operaciones de solo lectura
         public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-                // Busca el usuario en la base de datos
+                // Buscar usuario por email
                 Usuario usuario = usuarioRepository.findByEmail(email)
                                 .orElseThrow(() -> new UsernameNotFoundException(
                                                 "Usuario no encontrado con email: " + email));
 
-                // Verifica si el usuario está activo
+                // Verificar si está activo
                 if (!usuario.getActivo()) {
                         throw new UsernameNotFoundException("Usuario inactivo: " + email);
                 }
 
-                // Convierte el rol del usuario a GrantedAuthority (formato de Spring Security)
-                List<GrantedAuthority> authorities = List.of(
-                                new SimpleGrantedAuthority(usuario.getRol().getNombreRol()));
+                // Verificar si está bloqueado
+                if (usuario.estaBloqueado()) {
+                        throw new UsernameNotFoundException("Usuario bloqueado temporalmente: " + email);
+                }
 
-                // Retorna un UserDetails con la información del usuario
+                // Convertir rol a GrantedAuthority
+                List<GrantedAuthority> authorities = List.of(
+                                new SimpleGrantedAuthority(usuario.getRol()));
+
+                // Retornar UserDetails
                 return org.springframework.security.core.userdetails.User.builder()
-                                .username(usuario.getEmail()) // El "username" es el email
-                                .password(usuario.getPassword()) // Contraseña encriptada
-                                .authorities(authorities) // Lista de roles/permisos
+                                .username(usuario.getEmail())
+                                .password(usuario.getPassword())
+                                .authorities(authorities)
                                 .accountExpired(false)
-                                .accountLocked(false)
+                                .accountLocked(usuario.estaBloqueado())
                                 .credentialsExpired(false)
-                                .disabled(!usuario.getActivo()) // Si activo=false, disabled=true
+                                .disabled(!usuario.getActivo())
                                 .build();
         }
 
         /**
-         * Método adicional para cargar usuario por ID (útil para otras operaciones)
+         * Cargar usuario por ID
          */
         @Transactional(readOnly = true)
         public UserDetails loadUserById(Integer id) {
@@ -71,29 +70,25 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                                 "Usuario no encontrado con id: " + id));
 
                 List<GrantedAuthority> authorities = List.of(
-                                new SimpleGrantedAuthority(usuario.getRol().getNombreRol()));
+                                new SimpleGrantedAuthority(usuario.getRol()));
 
                 return org.springframework.security.core.userdetails.User.builder()
                                 .username(usuario.getEmail())
                                 .password(usuario.getPassword())
                                 .authorities(authorities)
                                 .disabled(!usuario.getActivo())
+                                .accountLocked(usuario.estaBloqueado())
                                 .build();
         }
 
         /**
-         *          * NUEVO MÉTODO: Obtiene el ID del usuario a partir de su email
-         * (username).
-         *          * @param email - El email del usuario autenticado.
-         *          * @return Long - El ID (Long) del usuario en la base de datos.
-         *          
+         * Obtener ID de usuario por email
          */
         @Transactional(readOnly = true)
         public Integer getUserIdByEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(
-                        "Usuario no encontrado con email: " + email));
-                // Asumimos que el ID de Usuario es de tipo Long, ya que así lo espera el controller.
-                return usuario.getIdUsuario(); 
+                Usuario usuario = usuarioRepository.findByEmail(email)
+                                .orElseThrow(() -> new UsernameNotFoundException(
+                                                "Usuario no encontrado con email: " + email));
+                return usuario.getIdUsuario();
         }
 }
