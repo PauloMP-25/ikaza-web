@@ -57,7 +57,7 @@ export const checkoutGuard: CanActivateFn = (route, state) => {
             // ============================================================
             // Verificar email verificado (warning, no bloquea)
             // ============================================================
-            if (!currentUser.emailVerified) {
+            if (!currentUser.activo) {
                 console.warn('Checkout Guard: Email no verificado. Continuará con advertencia.');
                 localStorage.setItem(
                     'checkoutWarning',
@@ -68,7 +68,7 @@ export const checkoutGuard: CanActivateFn = (route, state) => {
             // ============================================================
             // Verificar perfil del cliente
             // ============================================================
-            return clienteService.obtenerPerfil(currentUser.uid).pipe(
+            return clienteService.obtenerPerfil(currentUser.email).pipe(
                 map(() => {
                     console.log('Checkout Guard: Perfil del cliente verificado. Acceso permitido.');
                     return true;

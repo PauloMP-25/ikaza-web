@@ -4,6 +4,7 @@ export const environment = {
     apiUrlN: 'http://localhost:3000', // URL para backend mock (si usas Opción 2)
     apiUrl: 'http://localhost:8080',
     cloudName: 'dksaacsiw',
+    enableAuthLogs: false,
     // Si usas solo mock en servicio, esta URL no se usa
     mercadoPagoPublicKey: 'APP_USR-472a9a4e-9afb-49e3-93bc-cfad3c1d0cc8',
     culquiPagoPublicKey: 'APP_USR-449486404366979-091720-fead70c56951f04e2f908b91b607d7e0-2694108405',

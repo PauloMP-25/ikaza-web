@@ -14,254 +14,254 @@ import { ModalEditar } from './modal-editar/modal-editar';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-productos',
-  templateUrl: './productos.html',
-  styleUrl: './productos.scss',
-  standalone: true,
-  imports: [CommonModule, ModalAgregar, FormsModule, ModalEditar]
+    selector: 'app-productos',
+    templateUrl: './productos.html',
+    styleUrl: './productos.scss',
+    standalone: true,
+    imports: [CommonModule, ModalAgregar, FormsModule, ModalEditar]
 })
 export class Productos implements OnInit, OnDestroy { // Implementado OnDestroy
 
-  private managementService = inject(ProductoManagementService);
-  private productService = inject(ProductoService);
-  private categoriaService = inject(CategoriaService); // <-- NUEVA INYECCIÓN
+    private managementService = inject(ProductoManagementService);
+    private productService = inject(ProductoService);
+    private categoriaService = inject(CategoriaService); // <-- NUEVA INYECCIÓN
 
-  productoAEditar: Producto | null = null;
-  productos: ProductoDetalle[] = [];
-  productosFiltrados: ProductoDetalle[] = [];
+    productoAEditar: Producto | null = null;
+    productos: ProductoDetalle[] = [];
+    productosFiltrados: ProductoDetalle[] = [];
 
-  // CAMBIO: Usaremos la lista completa de objetos Categoria para el filtro
-  categoriasMaestras: Categoria[] = []; // <-- Variable para el filtro de la API
+    // CAMBIO: Usaremos la lista completa de objetos Categoria para el filtro
+    categoriasMaestras: Categoria[] = []; // <-- Variable para el filtro de la API
 
-  filtro: string = '';
-  categoriaSeleccionada: string = '';
+    filtro: string = '';
+    categoriaSeleccionada: string = '';
 
-  // Paginación frontend (para los productos filtrados)
-  currentPage: number = 1;
-  itemsPerPage: number = 8;
-  totalPages: number = 1;
+    // Paginación frontend (para los productos filtrados)
+    currentPage: number = 1;
+    itemsPerPage: number = 8;
+    totalPages: number = 1;
 
-  // Estados de carga y error
-  isLoading: boolean = false;
-  errorMessage: string = '';
-  private productsSubscription?: Subscription;
-  private categoriesSubscription?: Subscription; // <-- NUEVA SUSCRIPCIÓN
+    // Estados de carga y error
+    isLoading: boolean = false;
+    errorMessage: string = '';
+    private productsSubscription?: Subscription;
+    private categoriesSubscription?: Subscription; // <-- NUEVA SUSCRIPCIÓN
 
-  constructor() { }
+    constructor() { }
 
-  ngOnInit(): void {
-    this.cargarProductos();
-    this.cargarCategoriasMaestras(); // <-- NUEVA LLAMADA
-  }
+    ngOnInit(): void {
+        this.cargarProductos();
+        this.cargarCategoriasMaestras(); // <-- NUEVA LLAMADA
+    }
 
-  /**
-   * Limpiar suscripciones al destruir el componente
-   */
-  ngOnDestroy(): void {
-    console.log('🧹 Productos Component: Destruyendo componente y limpiando suscripciones');
-    this.productsSubscription?.unsubscribe();
-    this.categoriesSubscription?.unsubscribe(); // <-- Limpiar la nueva suscripción
-  }
+    /**
+     * Limpiar suscripciones al destruir el componente
+     */
+    ngOnDestroy(): void {
+        console.log('🧹 Productos Component: Destruyendo componente y limpiando suscripciones');
+        this.productsSubscription?.unsubscribe();
+        this.categoriesSubscription?.unsubscribe(); // <-- Limpiar la nueva suscripción
+    }
 
-  /**
-   * Cargar productos con paginación desde el servicio real
-   */
-  cargarProductos() {
-    console.log('📦 Iniciando carga de productos para administración...');
-    this.isLoading = true;
-    this.errorMessage = '';
+    /**
+     * Cargar productos con paginación desde el servicio real
+     */
+    cargarProductos() {
+        console.log('📦 Iniciando carga de productos para administración...');
+        this.isLoading = true;
+        this.errorMessage = '';
 
-    this.productsSubscription = this.productService.obtenerProductos(
-  
-      0, // Página 0 del backend
-      1000, // Tamaño grande para obtener todos los productos
-      'nombreProducto',
-      'ASC'
-    ).subscribe({
-      next: (response: PageResponse<ProductoDetalle>) => {
-        console.log('✅ Productos recibidos del backend:', response)
-console.log('Imagen del producto:', );
-;
+        this.productsSubscription = this.productService.obtenerProductos(
 
-        this.productos = response.content;
-        this.productosFiltrados = [...this.productos];
-        // this.actualizarCategoriasUnicas(); <--- Eliminado/Reemplazado
+            0, // Página 0 del backend
+            1000, // Tamaño grande para obtener todos los productos
+            'nombreProducto',
+            'ASC'
+        ).subscribe({
+            next: (response: PageResponse<ProductoDetalle>) => {
+                console.log('✅ Productos recibidos del backend:', response)
+                console.log('Imagen del producto:',);
+                ;
 
-        this.calcularTotalPages();
-        this.currentPage = 1;
-        this.isLoading = false;
+                this.productos = response.content;
+                this.productosFiltrados = [...this.productos];
+                // this.actualizarCategoriasUnicas(); <--- Eliminado/Reemplazado
 
-        console.log('📊 Productos cargados:', this.productos.length);
-      },
-      error: (error) => {
-        console.error('❌ Error al cargar productos:', error);
-        this.errorMessage = 'Error al cargar los productos. Por favor, intenta nuevamente.';
-        this.isLoading = false;
-      }
-    });
-  }
+                this.calcularTotalPages();
+                this.currentPage = 1;
+                this.isLoading = false;
 
-  /**
-   * NUEVA FUNCIÓN: Cargar la lista completa de categorías desde el backend.
-   * Esta lista se usa para el filtro.
-   */
-  cargarCategoriasMaestras(): void {
-    console.log('📂 Cargando lista maestra de categorías para el filtro...');
+                console.log('📊 Productos cargados:', this.productos.length);
+            },
+            error: (error) => {
+                console.error('❌ Error al cargar productos:', error);
+                this.errorMessage = 'Error al cargar los productos. Por favor, intenta nuevamente.';
+                this.isLoading = false;
+            }
+        });
+    }
 
-    this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
-      next: (categorias: Categoria[]) => {
-        // Asegura que las categorías estén ordenadas (opcional)
-        this.categoriasMaestras = categorias.sort((a, b) => a.nombreCategoria.localeCompare(b.nombreCategoria));
-        console.log('✅ Filtros de categorías cargados:', this.categoriasMaestras.length);
-      },
-      error: (error) => {
-        console.error('❌ Error al cargar filtros de categorías:', error);
-        // Manejo de errores si es necesario
-      }
-    });
-  }
+    /**
+     * NUEVA FUNCIÓN: Cargar la lista completa de categorías desde el backend.
+     * Esta lista se usa para el filtro.
+     */
+    cargarCategoriasMaestras(): void {
+        console.log('📂 Cargando lista maestra de categorías para el filtro...');
 
-  /*
-   * ESTA FUNCIÓN FUE REEMPLAZADA Y ELIMINADA.
-   * private actualizarCategoriasUnicas(): void { ... }
-  */
+        this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
+            next: (categorias: Categoria[]) => {
+                // Asegura que las categorías estén ordenadas (opcional)
+                this.categoriasMaestras = categorias.sort((a, b) => a.nombreCategoria.localeCompare(b.nombreCategoria));
+                console.log('✅ Filtros de categorías cargados:', this.categoriasMaestras.length);
+            },
+            error: (error) => {
+                console.error('❌ Error al cargar filtros de categorías:', error);
+                // Manejo de errores si es necesario
+            }
+        });
+    }
 
-  /**
-   * Obtener productos paginados para la vista actual
-   */
-  get productosPaginados(): ProductoDetalle[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    return this.productosFiltrados.slice(startIndex, endIndex);
-  }
+    /*
+     * ESTA FUNCIÓN FUE REEMPLAZADA Y ELIMINADA.
+     * private actualizarCategoriasUnicas(): void { ... }
+    */
 
-  /**
-   * Calcular total de páginas
-   */
-  private calcularTotalPages(): void {
-    this.totalPages = Math.ceil(this.productosFiltrados.length / this.itemsPerPage);
-    if (this.totalPages === 0) this.totalPages = 1;
-  }
+    /**
+     * Obtener productos paginados para la vista actual
+     */
+    get productosPaginados(): ProductoDetalle[] {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        return this.productosFiltrados.slice(startIndex, endIndex);
+    }
 
-  /**
-   * Obtener índice final para mostrar en la paginación
-   */
-  getEndIndex(): number {
-    const endIndex = this.currentPage * this.itemsPerPage;
-    return endIndex > this.productosFiltrados.length ? this.productosFiltrados.length : endIndex;
-  }
+    /**
+     * Calcular total de páginas
+     */
+    private calcularTotalPages(): void {
+        this.totalPages = Math.ceil(this.productosFiltrados.length / this.itemsPerPage);
+        if (this.totalPages === 0) this.totalPages = 1;
+    }
 
-  /**
-   * Obtener páginas intermedias para la paginación
-   */
-  getIntermediatePages(): number[] {
-    const pages = [];
-    const start = Math.max(2, this.currentPage - 1);
-    const end = Math.min(this.totalPages - 1, this.currentPage + 1);
+    /**
+     * Obtener índice final para mostrar en la paginación
+     */
+    getEndIndex(): number {
+        const endIndex = this.currentPage * this.itemsPerPage;
+        return endIndex > this.productosFiltrados.length ? this.productosFiltrados.length : endIndex;
+    }
 
-    for (let i = start; i <= end; i++) {
-      if (i > 1 && i < this.totalPages) {
-        pages.push(i);
-      }
-    }
-    return pages;
-  }
+    /**
+     * Obtener páginas intermedias para la paginación
+     */
+    getIntermediatePages(): number[] {
+        const pages = [];
+        const start = Math.max(2, this.currentPage - 1);
+        const end = Math.min(this.totalPages - 1, this.currentPage + 1);
 
-  /**
-   * Cambiar página
-   */
-  changePage(page: number): void {
-    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.currentPage = page;
-      console.log(`📄 Cambiando a página: ${page}`);
-    }
-  }
+        for (let i = start; i <= end; i++) {
+            if (i > 1 && i < this.totalPages) {
+                pages.push(i);
+            }
+        }
+        return pages;
+    }
 
-  /**
-   * Manejar cambio de items por página
-   */
-  onItemsPerPageChange(): void {
-    this.calcularTotalPages();
-    this.currentPage = 1; // Volver a la primera página
-  }
+    /**
+     * Cambiar página
+     */
+    changePage(page: number): void {
+        if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+            this.currentPage = page;
+            console.log(`📄 Cambiando a página: ${page}`);
+        }
+    }
 
-  /**
-     * Evento emitido desde el modal para agregar un nuevo producto.
-     */
-  onProductoAgregado(nuevoProducto: ProductoDetalle) {
-    console.log('Producto agregado:', nuevoProducto);
-    this.productos.unshift(nuevoProducto); // Agregar al inicio
-    this.filtrarProductos();
-  }
+    /**
+     * Manejar cambio de items por página
+     */
+    onItemsPerPageChange(): void {
+        this.calcularTotalPages();
+        this.currentPage = 1; // Volver a la primera página
+    }
 
-  /**
-  * Filtrado por texto (nombre, SKU o categoría) y por categoría seleccionada.
-  */
-  filtrarProductos() {
-    const texto = (this.filtro || '').toLowerCase().trim();
-    const categoria = (this.categoriaSeleccionada || '').toLowerCase();
+    /**
+       * Evento emitido desde el modal para agregar un nuevo producto.
+       */
+    onProductoAgregado(nuevoProducto: ProductoDetalle) {
+        console.log('Producto agregado:', nuevoProducto);
+        this.productos.unshift(nuevoProducto); // Agregar al inicio
+        this.filtrarProductos();
+    }
 
-    this.productosFiltrados = this.productos.filter(prod => {
-      const nombre = String(prod.nombreProducto || '').toLowerCase();
-      const sku = String(prod.codigo || '').toLowerCase();
-      const cat = String(prod.nombreCategoria || '').toLowerCase();
-      const descripcion = String(prod.nombreProducto || '').toLowerCase();
-      const marca = String(prod.marca || '').toLowerCase();
+    /**
+    * Filtrado por texto (nombre, SKU o categoría) y por categoría seleccionada.
+    */
+    filtrarProductos() {
+        const texto = (this.filtro || '').toLowerCase().trim();
+        const categoria = (this.categoriaSeleccionada || '').toLowerCase();
 
-      const coincideTexto =
-        nombre.includes(texto) ||
-        sku.includes(texto) ||
-        cat.includes(texto) ||
-        descripcion.includes(texto) ||
-        marca.includes(texto);
+        this.productosFiltrados = this.productos.filter(prod => {
+            const nombre = String(prod.nombreProducto || '').toLowerCase();
+            const sku = String(prod.codigo || '').toLowerCase();
+            const cat = String(prod.nombreCategoria || '').toLowerCase();
+            const descripcion = String(prod.nombreProducto || '').toLowerCase();
+            const marca = String(prod.marca || '').toLowerCase();
 
-      const coincideCategoria =
-        categoria === '' || cat === categoria;
+            const coincideTexto =
+                nombre.includes(texto) ||
+                sku.includes(texto) ||
+                cat.includes(texto) ||
+                descripcion.includes(texto) ||
+                marca.includes(texto);
 
-      return coincideTexto && coincideCategoria;
-    });
+            const coincideCategoria =
+                categoria === '' || cat === categoria;
 
-    this.calcularTotalPages();
-    this.currentPage = 1;
-    console.log(`🔍 Filtro aplicado: "${texto}" | Categoría: "${categoria}"`);
-    console.log(`📊 Resultados: ${this.productosFiltrados.length} de ${this.productos.length} productos`);
-  }
+            return coincideTexto && coincideCategoria;
+        });
 
-  /**
-   * Elimina un producto usando el servicio de administración.
-   */
-  eliminarProducto(prod: ProductoDetalle) {
-    if (confirm(`¿Estás seguro de que quieres eliminar el producto "${prod.nombreProducto}"?`)) {
-      console.log('🗑️ Eliminando producto:', prod.nombreProducto);
+        this.calcularTotalPages();
+        this.currentPage = 1;
+        console.log(`🔍 Filtro aplicado: "${texto}" | Categoría: "${categoria}"`);
+        console.log(`📊 Resultados: ${this.productosFiltrados.length} de ${this.productos.length} productos`);
+    }
 
-      this.productService.eliminarProducto(prod.idProducto).subscribe({
-        next: () => {
-          console.log('✅ Producto eliminado exitosamente');
-          this.productos = this.productos.filter(p => p.idProducto !== prod.idProducto);
-          this.filtrarProductos();
-        },
-        error: (err) => {
-          console.error('❌ Error al eliminar producto:', err);
-          alert('Error al eliminar el producto. Inténtalo de nuevo.');
-        }
-      });
-    }
-  }
+    /**
+     * Elimina un producto usando el servicio de administración.
+     */
+    eliminarProducto(prod: ProductoDetalle) {
+        if (confirm(`¿Estás seguro de que quieres eliminar el producto "${prod.nombreProducto}"?`)) {
+            console.log('🗑️ Eliminando producto:', prod.nombreProducto);
 
-  // Selecciona un producto para edición y abre el modal correspondiente.
-  editarProducto(prod: ProductoDetalle) {
-    this.productoAEditar = prod;
-  }
+            this.productService.eliminarProducto(prod.idProducto).subscribe({
+                next: () => {
+                    console.log('✅ Producto eliminado exitosamente');
+                    this.productos = this.productos.filter(p => p.idProducto !== prod.idProducto);
+                    this.filtrarProductos();
+                },
+                error: (err) => {
+                    console.error('❌ Error al eliminar producto:', err);
+                    alert('Error al eliminar el producto. Inténtalo de nuevo.');
+                }
+            });
+        }
+    }
 
-  /**
-   * Actualiza el producto editado dentro de la lista.
-   */
-  onProductoEditado(productoEditado: ProductoDetalle) {
-    console.log('✅ Producto editado:', productoEditado);
-    const index = this.productos.findIndex(p => p.idProducto === productoEditado.idProducto);
-    if (index !== -1) {
-      this.productos[index] = productoEditado;
-      this.filtrarProductos();
-    }
-  }
+    // Selecciona un producto para edición y abre el modal correspondiente.
+    editarProducto(prod: ProductoDetalle) {
+        this.productoAEditar = prod;
+    }
+
+    /**
+     * Actualiza el producto editado dentro de la lista.
+     */
+    onProductoEditado(productoEditado: ProductoDetalle) {
+        console.log('✅ Producto editado:', productoEditado);
+        const index = this.productos.findIndex(p => p.idProducto === productoEditado.idProducto);
+        if (index !== -1) {
+            this.productos[index] = productoEditado;
+            this.filtrarProductos();
+        }
+    }
 }

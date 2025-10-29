@@ -50,14 +50,6 @@
             </button>
             <button type="button" class="ghost" (click)="toggleSignUp(false)">Login</button>
           </div>
-
-          <!-- Login con Google -->
-          <div class="social-media">
-            <button type="button" class="social-btn google-btn" (click)="onGoogleLogin()" [disabled]="isLoading">
-              <span *ngIf="!isLoading">📧 Google</span>
-              <span *ngIf="isLoading">Cargando...</span>
-            </button>
-          </div>
         </form>
       </div>
 
@@ -91,14 +83,6 @@
               <span *ngIf="!isLoading || isSignUp">Login</span>
             </button>
             <button type="button" class="ghost" (click)="toggleSignUp(true)">Sign Up</button>
-          </div>
-
-          <!-- Login con Google -->
-          <div class="social-media">
-            <button type="button" class="social-btn google-btn" (click)="onGoogleLogin()" [disabled]="isLoading">
-              <span *ngIf="!isLoading">📧 Continuar con Google</span>
-              <span *ngIf="isLoading">Cargando...</span>
-            </button>
           </div>
         </form>
       </div>

@@ -19,27 +19,28 @@ declare var bootstrap: any;
   styleUrls: ['./modal-editar.scss']
 })
 export class ModalEditar implements OnChanges {
-
   private managementService = inject(ProductoManagementService);
   private categoriaService = inject(CategoriaService);
 
   @Input() producto!: ProductoDetalle;
   @Output() productoEditado = new EventEmitter<Producto>();
 
-  formData: ProductoFormData = {} as ProductoFormData;
   categorias: Categoria[] = [];
-  errorMessage: string = '';
+  formData: ProductoFormData = {} as ProductoFormData;
+
+  private categoriesSubscription?: Subscription;
 
   tallasInput: string = '';
   coloresInput: string = '';
+  errorMessage: string = '';
   isLoading: boolean = false;
-
-  private categoriesSubscription?: Subscription;
-  constructor() { }
-
 
   ngOnInit(): void {
     this.loadCategories();
+  }
+
+  ngOnDestroy(): void {
+    this.categoriesSubscription?.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -50,14 +51,11 @@ export class ModalEditar implements OnChanges {
     }
   }
 
-  /*
-  Cargar todas las categorias
-*/
   loadCategories(): void {
     this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
       next: (categorias: Categoria[]) => {
         this.categorias = categorias;
-        console.log('Categorías cargadas:', this.categorias.length);
+        console.log('✅ Categorías cargadas:', this.categorias.length);
       },
       error: (error) => {
         console.error('❌ Error al cargar categorías:', error);
