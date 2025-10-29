@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <!-- Sección 2: Información Personal -->
+    <!-- Sección 2: Información Personal (Nombre de Cuenta) -->
     <div class="card mb-4">
         <div class="card-header">
             <h5 class="card-title mb-0">
@@ -104,6 +104,7 @@
         </div>
     </div>
 
+    <!-- Sección 3: Verificación de Correo -->
     <div class="card mb-4">
         <div class="card-header">
             <h5 class="card-title mb-0">
@@ -112,7 +113,7 @@
             </h5>
         </div>
         <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center justify-content-between mb-3">
                 <p class="mb-0">
                     Estado:
                     <span class="badge" [class.bg-success]="isEmailVerified" [class.bg-danger]="!isEmailVerified">
@@ -122,53 +123,81 @@
 
                 <ng-container *ngIf="!isEmailVerified">
                     <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
-                        (click)="sendEmailVerification()" [disabled]="isSendingEmail">
-                        <span *ngIf="isSendingEmail" class="spinner-border spinner-border-sm me-2"></span>
-                        {{ isSendingEmail ? 'Enviando...' : 'Reenviar Correo' }}
+                        (click)="sendEmailVerificationCode()" [disabled]="isSendingEmailCode">
+                        <span *ngIf="isSendingEmailCode" class="spinner-border spinner-border-sm me-2"></span>
+                        {{ isSendingEmailCode ? 'Enviando...' : 'Enviar Código' }}
                     </button>
-                    <small *ngIf="isSendingEmail" class="text-muted ms-3">Revisa tu bandeja y spam.</small>
                 </ng-container>
             </div>
+
+            <!-- Formulario de verificación de código de email -->
+            <ng-container *ngIf="!isEmailVerified && emailCodeSent">
+                <form [formGroup]="emailVerificationForm" (ngSubmit)="verifyEmailCode()" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" formControlName="verificationCode" class="form-control"
+                            placeholder="Ingresa el código (6 dígitos)"
+                            [class.is-invalid]="isFieldInvalid(emailVerificationForm, 'verificationCode')">
+                        <div class="invalid-feedback" *ngIf="isFieldInvalid(emailVerificationForm, 'verificationCode')">
+                            {{ getFieldError(emailVerificationForm, 'verificationCode') }}
+                        </div>
+                        <small class="form-text text-muted">Revisa tu bandeja de entrada y spam.</small>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-success w-100"
+                            [disabled]="emailVerificationForm.invalid || isVerifyingEmail">
+                            <span *ngIf="isVerifyingEmail" class="spinner-border spinner-border-sm me-2"></span>
+                            {{ isVerifyingEmail ? 'Verificando...' : 'Verificar Email' }}
+                        </button>
+                    </div>
+                </form>
+            </ng-container>
         </div>
     </div>
 
     <!-- Sección 4: Verificacion de telefono -->
-    <div id="recaptcha-container"></div>
     <div class="card mb-4">
-        <div class="card-header">Verificación de Teléfono</div>
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-phone me-2"></i>
+                Verificación de Teléfono
+            </h5>
+        </div>
         <div class="card-body">
             <div class="mb-3">
                 <label class="form-label">Número guardado</label>
-                <input type="text" formControlName="telefonoCompleto" [formGroup]="phoneVerificationForm"
-                    class="form-control" aria-label="Verificar telefono" [attr.disabled]="true">
+                <!-- Mostrar el teléfono completo del formulario, que se actualizó en loadUserData -->
+                <input type="text" [value]="userPhone" class="form-control" aria-label="Verificar telefono" disabled>
             </div>
 
             <ng-container *ngIf="!isPhoneVerified">
-                <button *ngIf="!verificationCodeSent" class="btn btn-warning mb-3" (click)="requestVerificationCode()"
-                    [disabled]="isSendingVerificationCode">
-                    <span *ngIf="isSendingVerificationCode">Enviando código...</span>
-                    <span *ngIf="!isSendingVerificationCode">Enviar Código SMS</span>
+                <button *ngIf="!phoneCodeSent" class="btn btn-warning mb-3 fw-bold"
+                    (click)="sendPhoneVerificationCode()" [disabled]="isSendingPhoneCode">
+                    <span *ngIf="isSendingPhoneCode" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ isSendingPhoneCode ? 'Enviando código...' : 'Enviar Código SMS' }}
                 </button>
 
-                <div *ngIf="verificationCodeSent" [formGroup]="phoneVerificationForm">
+                <div *ngIf="phoneCodeSent" [formGroup]="phoneVerificationForm">
                     <div class="mb-3">
-                        <label for="verificationCode" class="form-label">Código SMS (6 dígitos)</label>
-                        <input type="text" formControlName="verificationCode" id="verificationCode" class="form-control"
-                            placeholder="Ingresa el código">
+                        <label for="phoneVerificationCode" class="form-label">Código SMS (6 dígitos)</label>
+                        <input type="text" formControlName="verificationCode" id="phoneVerificationCode"
+                            class="form-control" placeholder="Ingresa el código">
                     </div>
-                    <button class="btn btn-success" (click)="verifyPhoneNumber()" [disabled]="isLoadingVerification">
-                        <span *ngIf="isLoadingVerification">Verificando...</span>
-                        <span *ngIf="!isLoadingVerification">Verificar Teléfono</span>
+                    <button class="btn btn-success fw-bold" (click)="verifyPhoneCode()" [disabled]="isVerifyingPhone">
+                        <span *ngIf="isVerifyingPhone" class="spinner-border spinner-border-sm me-2"></span>
+                        {{ isVerifyingPhone ? 'Verificando...' : 'Verificar Teléfono' }}
                     </button>
                 </div>
             </ng-container>
-            <div *ngIf="isPhoneVerified" class="alert alert-success">
-                ✅ Teléfono verificado.
+            <div *ngIf="isPhoneVerified" class="alert alert-success mt-3">
+                <i class="bi bi-check-circle-fill"></i> Teléfono verificado.
             </div>
+            <small class="form-text text-muted d-block mt-2">
+                Asegúrate de haber guardado tu teléfono en la sección "Datos Personales" para poder verificarlo.
+            </small>
         </div>
     </div>
 
-    <!-- Sección 3: Cambio de Contraseña -->
+    <!-- Sección 5: Cambio de Contraseña -->
     <div class="card">
         <div class="card-header">
             <h5 class="card-title mb-0">

@@ -1,43 +1,39 @@
+// src/app/core/guards/auth.guards.ts
+import { inject } from '@angular/core';
+import { Router, CanActivateFn } from '@angular/router';
+import { AuthService } from '@core/services/auth/auth';
+import { TokenService } from '@core/services/auth/token.service';
+import { map, take } from 'rxjs';
+
 /**
  * ============================================================================
- * AuthGuard - Protege rutas que requieren autenticación
- * ============================================================================
- * - Verifica si el usuario está autenticado
- * - Si no lo está, guarda la URL solicitada
- * - Redirige al login con mensaje
+ * AUTH GUARD - Protege rutas que requieren autenticación
  * ============================================================================
  */
-
-import { inject } from '@angular/core';
-import { Router, CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { AuthService } from '@core/services/auth/auth';
-import { map } from 'rxjs';
-
-export const AuthGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => {
+export const AuthGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
+  const tokenService = inject(TokenService);
   const router = inject(Router);
 
   return authService.isAuthenticated$().pipe(
+    take(1),
     map(isAuthenticated => {
       if (isAuthenticated) {
-        console.log('Auth Guard: Usuario autenticado, acceso permitido');
-        return true;
+        // Verificar que el token no esté expirado
+        const token = tokenService.getToken();
+        if (token && !tokenService.isTokenExpired(token)) {
+          console.log('✅ Auth Guard: Acceso permitido');
+          return true;
+        }
       }
 
-      console.warn('Auth Guard: Usuario no autenticado, redirigiendo al login...');
-      console.log('URL solicitada:', state.url);
-
-      const returnUrl = state.url.startsWith('/') ? state.url.substring(1) : state.url;
-      authService.setRedirectUrl(returnUrl);
+      console.warn('⚠️ Auth Guard: No autenticado, redirigiendo al login');
+      authService.setRedirectUrl(state.url);
 
       router.navigate(['/login'], {
         queryParams: {
           returnUrl: state.url,
-          message: 'Primero debes iniciar sesión para continuar',
-          display: 'modal'
+          message: 'Debes iniciar sesión para continuar'
         }
       });
 

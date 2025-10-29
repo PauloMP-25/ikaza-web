@@ -9,7 +9,7 @@ import { TarjetaService } from '@core/services/tarjetas/tarjeta.service';
 import { PedidoService } from '@core/services/pedidos/pedido.service';
 import { ClienteService } from '@core/services/clientes/cliente.service';
 import { AuthService } from '@core/services/auth/auth';
-import { ClienteResponse } from '@core/models/usuarios/usuario-model';
+import { ClienteResponse } from '@core/models/cliente/cliente.models';
 import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-detalle-pedido-modal',
@@ -100,7 +100,7 @@ export class DetallePedidoModal implements OnChanges {
     this.authService.getCurrentUser$().pipe(
       takeUntil(this.destroy$),
       tap(currentUser => {
-        if (!currentUser || !currentUser.uid) {
+        if (!currentUser || !currentUser.email) {
           console.warn('Usuario no autenticado o UID faltante.');
           throw new Error('Usuario no autenticado');
         }
@@ -108,7 +108,7 @@ export class DetallePedidoModal implements OnChanges {
       }),
       //switchMap: Encadena la llamada al backend sin anidar subscriptions
       switchMap(currentUser =>
-        this.clienteService.obtenerPerfil(currentUser!.uid).pipe(
+        this.clienteService.obtenerPerfil(currentUser!.email).pipe(
           tap(perfil => {
             console.log('Perfil del cliente obtenido:', perfil);
             this.datosCliente = perfil;

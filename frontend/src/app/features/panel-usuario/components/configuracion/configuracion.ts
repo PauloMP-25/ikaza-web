@@ -1,23 +1,24 @@
-import { Component, OnInit, inject } from '@angular/core';
+// src/app/features/configuracion/configuracion.component.ts
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { finalize, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { Subject, finalize, switchMap, takeUntil, tap } from 'rxjs';
+
+// Servicios
 import { AuthService } from '@core/services/auth/auth';
 import { ProfileService } from '@core/services/clientes/servicio-perfil.service';
-import { PasswordService } from '@core/services/auth/service-password';
-import { ProfileUpdateData } from '@core/models/auth-firebase/profile-update-data';
+import { PasswordService } from '@core/services/auth/password.service';
+import { VerificationService } from '@core/services/auth/verificacion.service';
 import { ClienteService } from '@core/services/clientes/cliente.service';
-import { RecaptchaVerifier, Auth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-configuracion',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './configuracion.html',
-  styleUrl: './configuracion.scss'
+  styleUrls: ['./configuracion.scss']
 })
-export class ConfiguracionComponent implements OnInit {
-
+export class ConfiguracionComponent implements OnInit, OnDestroy {
   // ============================================================================
   // INYECCIÓN DE DEPENDENCIAS
   // ============================================================================
@@ -25,25 +26,24 @@ export class ConfiguracionComponent implements OnInit {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
   private passwordService = inject(PasswordService);
+  private verificationService = inject(VerificationService);
   private clienteService = inject(ClienteService);
-  private firebaseAuthInstance = inject(Auth);
 
   // ============================================================================
   // FORMULARIOS
   // ============================================================================
   perfilForm!: FormGroup;
   passwordForm!: FormGroup;
+  emailVerificationForm!: FormGroup;
   phoneVerificationForm!: FormGroup;
 
   // ============================================================================
   // ESTADO DE VERIFICACIONES
   // ============================================================================
-  isEmailVerified: boolean = true;
+  isEmailVerified: boolean = false;
   isPhoneVerified: boolean = false;
-  isSendingVerificationCode: boolean = false;
-  verificationCodeSent: boolean = false;
-  isSendingEmail: boolean = false;
-  isLoadingVerification: boolean = false;
+  emailCodeSent: boolean = false;
+  phoneCodeSent: boolean = false;
 
   // ============================================================================
   // ESTADO DE CARGA
@@ -51,6 +51,10 @@ export class ConfiguracionComponent implements OnInit {
   isLoadingPassword: boolean = false;
   isLoadingProfile: boolean = false;
   isLoadingAvatar: boolean = false;
+  isSendingEmailCode: boolean = false;
+  isSendingPhoneCode: boolean = false;
+  isVerifyingEmail: boolean = false;
+  isVerifyingPhone: boolean = false;
 
   // ============================================================================
   // ESTADO DEL AVATAR
@@ -60,13 +64,12 @@ export class ConfiguracionComponent implements OnInit {
   private originalIcon: string = 'bi-person-circle';
   private originalImage: string | null = null;
   private originalDisplayName: string = '';
-  private firebaseUid: string = '';
 
   // ============================================================================
-  // RECAPTCHA
+  // DATOS DEL USUARIO
   // ============================================================================
-  windowRef: any;
-  recaptchaVerifier!: RecaptchaVerifier;
+  private userEmail: string = '';
+  public userPhone: string = '';
 
   // ============================================================================
   // ICONOS DISPONIBLES
@@ -92,25 +95,17 @@ export class ConfiguracionComponent implements OnInit {
   private destroy$ = new Subject<void>();
 
   // ============================================================================
-  // CONSTRUCTOR
+  // LIFECYCLE HOOKS
   // ============================================================================
+
   constructor() {
     this.initializeForms();
   }
 
-  // ============================================================================
-  // LIFECYCLE HOOKS
-  // ============================================================================
-
-  ngOnInit() {
-    this.windowRef = (window as any);
-    this.setupRecaptcha();
+  ngOnInit(): void {
     this.loadUserData();
   }
 
-  /**
-   * Limpiar subscriptions al destruir el componente
-   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -121,7 +116,7 @@ export class ConfiguracionComponent implements OnInit {
   // ============================================================================
 
   /**
-   * Inicializar todos los formularios
+   * Inicializar formularios
    */
   private initializeForms(): void {
     // Formulario de perfil
@@ -136,6 +131,11 @@ export class ConfiguracionComponent implements OnInit {
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
 
+    // Formulario de verificación de email
+    this.emailVerificationForm = this.fb.group({
+      verificationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+    });
+
     // Formulario de verificación de teléfono
     this.phoneVerificationForm = this.fb.group({
       telefonoCompleto: [{ value: '', disabled: true }],
@@ -143,28 +143,12 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
-  /**
-   * Configura el reCAPTCHA invisible (requerido por Firebase Phone Auth)
-   */
-  private setupRecaptcha(): void {
-    this.recaptchaVerifier = new RecaptchaVerifier(
-      this.firebaseAuthInstance,
-      'recaptcha-container',
-      { size: 'invisible' }
-    );
-    this.recaptchaVerifier.render();
-  }
-
-  // ===============================
+  // ============================================================================
   // CARGA DE DATOS
-  // ===============================
+  // ============================================================================
 
   /**
-   * Cargar datos del usuario de forma REACTIVA
-   * - Un solo flujo reactivo que carga todo
-   * - Se actualiza automáticamente si el usuario cambia
-   * - Manejo robusto de errores
-   * - Sin memory leaks
+   * Cargar datos del usuario
    */
   private loadUserData(): void {
     this.authService.getCurrentUser$().pipe(
@@ -176,13 +160,10 @@ export class ConfiguracionComponent implements OnInit {
         }
 
         console.log('Usuario cargado:', currentUser);
-        this.firebaseUid = currentUser.uid;
+        this.userEmail = currentUser.email;
 
-        // Cargar estado de verificación de email
-        this.isEmailVerified = currentUser.emailVerified;
-
-        // Cargar displayName
-        const displayName = currentUser.displayName || '';
+        // Cargar displayName del email
+        const displayName = currentUser.email.split('@')[0];
         this.perfilForm.patchValue({ displayName });
         this.originalDisplayName = displayName;
 
@@ -196,16 +177,25 @@ export class ConfiguracionComponent implements OnInit {
           this.originalIcon = currentUser.customIcon;
         }
       }),
-      // Cargar estado del teléfono desde el backend
+      // Cargar datos del cliente desde el backend
       switchMap(currentUser => {
         if (!currentUser) {
           throw new Error('No hay usuario autenticado');
         }
-        return this.cargarEstadoTelefono(currentUser.uid);
+        return this.clienteService.obtenerPerfil(currentUser.email);
       })
     ).subscribe({
-      next: () => {
-        console.log('Datos del usuario cargados completamente');
+      next: (cliente) => {
+        console.log('Datos del cliente cargados:', cliente);
+
+        // Cargar estado de verificaciones
+        this.isEmailVerified = cliente.activo; // Asumiendo que activo implica email verificado
+        this.isPhoneVerified = cliente.telefonoVerificado;
+
+        // Cargar teléfono
+        const telefonoCompleto = `${cliente.prefijoTelefono || ''}${cliente.telefono || ''}`;
+        this.userPhone = telefonoCompleto;
+        this.phoneVerificationForm.patchValue({ telefonoCompleto });
       },
       error: (error) => {
         console.error('Error cargando datos del usuario:', error);
@@ -213,119 +203,124 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
+  // ============================================================================
+  // VERIFICACIÓN DE EMAIL
+  // ============================================================================
+
   /**
-   * Cargar estado del teléfono
-   * - Retorna Observable para integrarse con el flujo reactivo
-   * - Usa tap() para efectos secundarios
-   * - Maneja error 404 sin romper el flujo
+   * Enviar código de verificación por email
    */
-  private cargarEstadoTelefono(firebaseUid: string) {
-    return this.clienteService.obtenerPerfil(firebaseUid).pipe(
-      tap(cliente => {
-        console.log('Estado del teléfono cargado:', cliente.telefonoVerificado);
-        this.isPhoneVerified = cliente.telefonoVerificado;
-        const telefonoCompleto = `${cliente.prefijoTelefono || ''}${cliente.telefono || ''}`;
-        this.phoneVerificationForm.patchValue({ telefonoCompleto });
-      }),
-      // No propagar error 404 porque es normal si no hay teléfono
-      finalize(() => { })
-    );
+  sendEmailVerificationCode(): void {
+    this.isSendingEmailCode = true;
+    this.emailCodeSent = false;
+
+    this.verificationService.sendEmailVerificationCode(this.userEmail)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isSendingEmailCode = false)
+      )
+      .subscribe({
+        next: (response) => {
+          this.emailCodeSent = true;
+          alert('Código de verificación enviado a tu email. Revisa tu bandeja de entrada.');
+        },
+        error: (error) => {
+          alert(error.message);
+        }
+      });
   }
 
+  /**
+   * Verificar código de email
+   */
+  verifyEmailCode(): void {
+    if (this.emailVerificationForm.invalid || !this.emailCodeSent) {
+      alert('Por favor, ingresa el código de 6 dígitos.');
+      return;
+    }
 
+    const code = this.emailVerificationForm.get('verificationCode')?.value;
+    this.isVerifyingEmail = true;
+
+    this.verificationService.verifyEmailCode(this.userEmail, code)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.isVerifyingEmail = false)
+      )
+      .subscribe({
+        next: () => {
+          this.isEmailVerified = true;
+          this.emailCodeSent = false;
+          this.emailVerificationForm.reset();
+          alert('¡Email verificado correctamente!');
+        },
+        error: (error) => {
+          alert(error.message);
+        }
+      });
+  }
 
   // ============================================================================
   // VERIFICACIÓN DE TELÉFONO
   // ============================================================================
 
   /**
-   * PASO 1: Envía el código SMS usando Firebase Phone Auth
+   * Enviar código de verificación por SMS
    */
-  requestVerificationCode(): void {
+  sendPhoneVerificationCode(): void {
     const telefonoInfo = this.phoneVerificationForm.getRawValue();
-    const telefonoGuardado = telefonoInfo.telefonoCompleto;
+    const telefono = telefonoInfo.telefonoCompleto;
 
-    if (!telefonoGuardado || telefonoGuardado.length < 10) {
+    if (!telefono || telefono.length < 10) {
       alert('Error: El número de teléfono no ha sido guardado en "Datos Personales".');
       return;
     }
 
-    this.isSendingVerificationCode = true;
-    this.verificationCodeSent = false;
+    this.isSendingPhoneCode = true;
+    this.phoneCodeSent = false;
 
-    this.authService.sendSmsCode(telefonoGuardado, this.recaptchaVerifier)
+    this.verificationService.sendPhoneVerificationCode(telefono)
       .pipe(
-        takeUntil(this.destroy$), //Limpiar si el componente se destruye
-        finalize(() => this.isSendingVerificationCode = false)
+        takeUntil(this.destroy$),
+        finalize(() => this.isSendingPhoneCode = false)
       )
       .subscribe({
-        next: () => {
-          this.verificationCodeSent = true;
+        next: (response) => {
+          this.phoneCodeSent = true;
           alert('Código SMS enviado. Revisa tu teléfono.');
         },
         error: (error) => {
-          console.error('❌ Error enviando SMS:', error);
-          alert(`Error al enviar el código: ${error.message || 'Intenta de nuevo.'}`);
-          this.verificationCodeSent = false;
+          alert(error.message);
         }
       });
   }
 
   /**
-   * PASO 2: Valida el código con Firebase y actualiza el backend
+   * Verificar código de teléfono
    */
-  verifyPhoneNumber(): void {
-    if (this.phoneVerificationForm.invalid || !this.verificationCodeSent) {
+  verifyPhoneCode(): void {
+    if (this.phoneVerificationForm.invalid || !this.phoneCodeSent) {
       alert('Por favor, ingresa el código de 6 dígitos.');
       return;
     }
 
-    const codigo = this.phoneVerificationForm.get('verificationCode')?.value;
-    this.isLoadingVerification = true;
+    const code = this.phoneVerificationForm.get('verificationCode')?.value;
+    this.isVerifyingPhone = true;
 
-    this.authService.verifySmsCode(codigo)
+    this.verificationService.verifyPhoneCode(this.userEmail, this.userPhone, code)
       .pipe(
-        takeUntil(this.destroy$), //Limpiar si el componente se destruye
-        switchMap(() => this.clienteService.verificarTelefono(this.firebaseUid)),
-        finalize(() => this.isLoadingVerification = false)
-      )
-      .subscribe({
-        next: (cliente) => {
-          this.isPhoneVerified = true;
-          alert('¡Teléfono verificado correctamente!');
-          // Refrescar usuario
-          this.authService.refreshUser()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe();
-        },
-        error: (error) => {
-          console.error('Error en verificación/backend:', error);
-          alert(`Error de verificación: ${error.message || 'Código incorrecto o expirado.'}`);
-        }
-      });
-  }
-
-  // ============================================================================
-  // VERIFICACIÓN DE EMAIL
-  // ============================================================================
-
-  /**
-   * Envía el correo de verificación
-   */
-  sendEmailVerification(): void {
-    this.isSendingEmail = true;
-
-    this.authService.sendVerificationEmail()
-      .pipe(
-        takeUntil(this.destroy$), //Limpiar si el componente se destruye
-        finalize(() => this.isSendingEmail = false)
+        takeUntil(this.destroy$),
+        finalize(() => this.isVerifyingPhone = false)
       )
       .subscribe({
         next: () => {
-          alert('Correo de verificación enviado exitosamente. Revisa tu bandeja de entrada.');
+          this.isPhoneVerified = true;
+          this.phoneCodeSent = false;
+          this.phoneVerificationForm.get('verificationCode')?.reset();
+          alert('¡Teléfono verificado correctamente!');
         },
         error: (error) => {
-          alert(`Error: ${error.message}`);
+          alert(error.message);
         }
       });
   }
@@ -348,13 +343,11 @@ export class ConfiguracionComponent implements OnInit {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validar tipo de archivo
     if (!file.type.match(/image\/(jpg|jpeg|png|gif)/)) {
       alert('Por favor selecciona una imagen válida (JPG, PNG, GIF)');
       return;
     }
 
-    // Validar tamaño (máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('La imagen no puede ser mayor a 5MB');
       return;
@@ -379,7 +372,7 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   /**
-   * Verificar si hay cambios en el avatar
+   * Verificar cambios en el avatar
    */
   hasAvatarChanges(): boolean {
     const imageChanged = this.profileImage !== this.originalImage;
@@ -397,13 +390,12 @@ export class ConfiguracionComponent implements OnInit {
 
     this.isLoadingAvatar = true;
 
-    this.profileService.updateProfile({
+    this.profileService.updateProfile(this.userEmail, {
       photoURL: this.profileImage,
       customIcon: this.profileImage ? null : this.selectedIcon
-    } as ProfileUpdateData)
+    })
       .pipe(
-        takeUntil(this.destroy$), //Limpiar si el componente se destruye
-        switchMap(() => this.authService.refreshUser()), //Refrescar estado
+        takeUntil(this.destroy$),
         finalize(() => this.isLoadingAvatar = false)
       )
       .subscribe({
@@ -431,21 +423,20 @@ export class ConfiguracionComponent implements OnInit {
       return;
     }
 
-    this.isLoadingProfile = true;
     const formData = this.perfilForm.value;
-
-    // Verificar si el displayName cambió
     const displayNameChanged = formData.displayName !== this.originalDisplayName;
+
     if (!displayNameChanged) {
-      this.isLoadingProfile = false;
       return;
     }
 
-    this.profileService.updateProfile({
+    this.isLoadingProfile = true;
+
+    this.profileService.updateProfile(this.userEmail, {
       displayName: formData.displayName
-    } as ProfileUpdateData)
+    })
       .pipe(
-        takeUntil(this.destroy$), //Limpiar si el componente se destruye
+        takeUntil(this.destroy$),
         finalize(() => this.isLoadingProfile = false)
       )
       .subscribe({
@@ -465,7 +456,7 @@ export class ConfiguracionComponent implements OnInit {
   // ============================================================================
 
   /**
-   * Cambiar contraseña (ahora usa subscribe correctamente)
+   * Cambiar contraseña
    */
   cambiarPassword(): void {
     if (!this.passwordForm.valid) {
@@ -480,7 +471,7 @@ export class ConfiguracionComponent implements OnInit {
       formData.newPassword
     )
       .pipe(
-        takeUntil(this.destroy$), //Limpiar si el componente se destruye
+        takeUntil(this.destroy$),
         finalize(() => this.isLoadingPassword = false)
       )
       .subscribe({
@@ -488,20 +479,8 @@ export class ConfiguracionComponent implements OnInit {
           alert('Contraseña cambiada correctamente');
           this.passwordForm.reset();
         },
-        error: (error: any) => {
-          console.error('Error al cambiar contraseña:', error);
-
-          let errorMessage = 'Error al cambiar la contraseña. Por favor intenta nuevamente.';
-
-          if (error.code === 'auth/wrong-password') {
-            errorMessage = 'La contraseña actual es incorrecta.';
-          } else if (error.code === 'auth/weak-password') {
-            errorMessage = 'La nueva contraseña es muy débil.';
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
-
-          alert(errorMessage);
+        error: (error) => {
+          alert(error.message);
         }
       });
   }
@@ -511,9 +490,9 @@ export class ConfiguracionComponent implements OnInit {
   // ============================================================================
 
   /**
-   * Validador personalizado para confirmar contraseña
+   * Validador de contraseñas coincidentes
    */
-  passwordMatchValidator(group: FormGroup) {
+  passwordMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
     const newPassword = group.get('newPassword');
     const confirmPassword = group.get('confirmPassword');
 
@@ -526,7 +505,7 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   // ============================================================================
-  // HELPERS PARA EL TEMPLATE
+  // HELPERS PARA TEMPLATE
   // ============================================================================
 
   /**

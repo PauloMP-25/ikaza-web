@@ -43,13 +43,14 @@ public class ClienteController {
     /**
      * POST /api/clientes/crear-perfil
      * Crea el registro inicial Cliente después del registro/login minimalista.
-     * REQUIERE AUTENTICACIÓN (token de Firebase válido en el header)
+     * REQUIERE AUTENTICACIÓN (token JWT válido en el header)
+     * FIX: Reemplaza {firebaseUid} por {email}
      */
-    @PostMapping("/crear-perfil/{firebaseUid}")
-    public ResponseEntity<?> crearPerfilInicial(@PathVariable String firebaseUid) {
+    @PostMapping("/crear-perfil/{email}")
+    public ResponseEntity<?> crearPerfilInicial(@PathVariable String email) {
         try {
-            logger.info("📝 Recibiendo petición para crear perfil inicial Cliente para UID: {}", firebaseUid);
-            UsuarioResponse response = clienteService.crearPerfilInicial(firebaseUid);
+            logger.info("📝 Recibiendo petición para crear perfil inicial Cliente para email: {}", email);
+            UsuarioResponse response = clienteService.crearPerfilInicial(email);
             logger.info("✅ Perfil Cliente inicial creado/obtenido exitosamente.");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
@@ -61,18 +62,19 @@ public class ClienteController {
     }
 
     /**
-     * GET /api/clientes/perfil/{firebaseUid}
+     * GET /api/clientes/perfil/{email}
      * Obtener perfil del usuario autenticado.
      * REQUIERE AUTENTICACIÓN
+     * FIX: Reemplaza {firebaseUid} por {email} y llama a obtenerPorEmail
      */
-    @GetMapping("/perfil/{firebaseUid}")
-    public ResponseEntity<?> obtenerPerfil(@PathVariable String firebaseUid) {
+    @GetMapping("/perfil/{email}")
+    public ResponseEntity<?> obtenerPerfil(@PathVariable String email) {
         try {
-            logger.info("👤 Obteniendo perfil para UID: {}", firebaseUid);
-            UsuarioResponse cliente = clienteService.obtenerPorFirebaseUid(firebaseUid);
+            logger.info("👤 Obteniendo perfil para email: {}", email);
+            UsuarioResponse cliente = clienteService.obtenerPorEmail(email); // FIX: Llama al método actualizado
             return ResponseEntity.ok(cliente);
         } catch (RuntimeException e) {
-            logger.warn("⚠️ Cliente no encontrado: {}", firebaseUid);
+            logger.warn("⚠️ Cliente no encontrado: {}", email);
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(new MessageResponse(e.getMessage(), false));
@@ -80,17 +82,18 @@ public class ClienteController {
     }
 
     /**
-     * PUT /api/clientes/perfil/{firebaseUid}
+     * PUT /api/clientes/perfil/{email}
      * Actualizar perfil del usuario autenticado.
      * REQUIERE AUTENTICACIÓN
+     * FIX: Reemplaza {firebaseUid} por {email}
      */
-    @PutMapping("/perfil/{firebaseUid}")
+    @PutMapping("/perfil/{email}")
     public ResponseEntity<?> actualizarPerfil(
-            @PathVariable String firebaseUid,
+            @PathVariable String email, // FIX: Cambio de firebaseUid a email
             @Valid @RequestBody ActualizarUsuarioRequest request) {
         try {
-            logger.info("✏️ Actualizando perfil para UID: {}", firebaseUid);
-            UsuarioResponse cliente = clienteService.actualizarCliente(firebaseUid, request);
+            logger.info("✏️ Actualizando perfil para email: {}", email);
+            UsuarioResponse cliente = clienteService.actualizarCliente(email, request); // FIX: Llama al método actualizado
             logger.info("✅ Perfil actualizado exitosamente");
             return ResponseEntity.ok(cliente);
         } catch (RuntimeException e) {
@@ -102,17 +105,18 @@ public class ClienteController {
     }
 
     /**
-     * PUT /api/usuarios/perfil/{firebaseUid}/verificar-telefono
+     * PUT /api/clientes/perfil/{email}/verificar-telefono
      * Marcar teléfono como verificado
-     * 
+     *
      * AUTENTICADO - Después de verificar código SMS
+     * FIX: Reemplaza {firebaseUid} por {email}
      */
-    @PutMapping("/perfil/{firebaseUid}/verificar-telefono")
-    public ResponseEntity<?> verificarTelefono(@PathVariable String firebaseUid) {
+    @PutMapping("/perfil/{email}/verificar-telefono")
+    public ResponseEntity<?> verificarTelefono(@PathVariable String email) { // FIX: Cambio de firebaseUid a email
         try {
-            logger.info("📱 Verificando teléfono para UID: {}", firebaseUid);
+            logger.info("📱 Verificando teléfono para email: {}", email);
 
-            UsuarioResponse usuario = clienteService.verificarTelefono(firebaseUid);
+            UsuarioResponse usuario = clienteService.verificarTelefono(email); // FIX: Llama al método actualizado
             return ResponseEntity.ok(usuario);
 
         } catch (RuntimeException e) {
@@ -122,10 +126,6 @@ public class ClienteController {
                     .body(new MessageResponse(e.getMessage(), false));
         }
     }
-
-    // ===============================================
-    // ENDPOINTS ADMINISTRATIVOS (Solo ADMINISTRADOR)
-    // ===============================================
 
     // ===============================================
     // ENDPOINTS ADMINISTRATIVOS (Solo ADMINISTRADOR)
@@ -255,86 +255,3 @@ public class ClienteController {
         }
     }
 }
-
-/**
- * ============================================================
- * SEPARACIÓN DE RESPONSABILIDADES - ENDPOINTS POR CONTROLADOR
- * ============================================================
- * 
- * 🔐 AuthController (/api/auth):
- * --------------------------------
- * POST /api/auth/registro → Registrar nuevo usuario
- * POST /api/auth/login → Iniciar sesión
- * POST /api/auth/verificar-token → Validar token
- * POST /api/auth/refresh → Refrescar token
- * POST /api/auth/logout → Cerrar sesión
- * GET /api/auth/verificar-email/{email} → Verificar disponibilidad
- * 
- * 👤 UsuarioController (/api/usuarios):
- * --------------------------------
- * PERFIL (Usuario autenticado):
- * GET /api/usuarios/perfil/{uid} → Ver perfil propio
- * PUT /api/usuarios/perfil/{uid} → Editar perfil propio
- * PUT /api/usuarios/perfil/{uid}/verificar-telefono → Verificar teléfono
- * 
- * ADMINISTRACIÓN (Solo ADMINISTRADOR):
- * GET /api/usuarios → Listar usuarios (paginado)
- * GET /api/usuarios/{id} → Ver usuario por ID
- * GET /api/usuarios/buscar → Buscar con filtros
- * GET /api/usuarios/incompletos → Usuarios con datos incompletos
- * GET /api/usuarios/estadisticas → Estadísticas de usuarios
- * PUT /api/usuarios/{id} → Actualizar usuario
- * PUT /api/usuarios/{id}/activar → Activar usuario
- * PUT /api/usuarios/{id}/desactivar → Desactivar usuario
- * PUT /api/usuarios/{id}/cambiar-rol → Cambiar rol
- * DELETE /api/usuarios/{id} → Eliminar usuario (lógico)
- * 
- * ============================================================
- * FLUJO DE USO DESDE ANGULAR
- * ============================================================
- * 
- * 1. REGISTRO:
- * Frontend → POST /api/auth/registro
- * AuthService → Crear usuario en Firebase
- * AuthService → Sincronizar con PostgreSQL
- * Respuesta → Token + datos completos del usuario
- * 
- * 2. LOGIN:
- * Frontend → Firebase Authentication (cliente)
- * Frontend → Obtener idToken
- * Frontend → POST /api/auth/verificar-token
- * Respuesta → Datos completos del usuario desde PostgreSQL
- * 
- * 3. VER/EDITAR PERFIL:
- * Usuario → GET /api/usuarios/perfil/{uid}
- * Usuario → PUT /api/usuarios/perfil/{uid}
- * 
- * 4. ADMINISTRACIÓN:
- * Admin → GET /api/usuarios?page=0&size=10
- * Admin → GET /api/usuarios/buscar?email=test
- * Admin → PUT /api/usuarios/1/cambiar-rol?nuevoRol=ADMINISTRADOR
- * 
- * ============================================================
- * NOTAS IMPORTANTES
- * ============================================================
- * 
- * ✅ ENDPOINTS ELIMINADOS (ahora en AuthController):
- * - POST /api/usuarios/sincronizar
- * - GET /api/usuarios/firebase/{uid}
- * - GET /api/usuarios/verificar/{uid}
- * - PUT /api/usuarios/firebase/{uid}/datos-extendidos
- * - PUT /api/usuarios/firebase/{uid}/ultimo-acceso
- * 
- * ✅ NUEVOS ENDPOINTS:
- * - GET /api/usuarios/perfil/{uid}
- * - PUT /api/usuarios/perfil/{uid}
- * - GET /api/usuarios (con paginación)
- * - GET /api/usuarios/buscar (con filtros)
- * - GET /api/usuarios/estadisticas
- * - PUT /api/usuarios/{id}/cambiar-rol
- * 
- * ✅ SEGURIDAD:
- * - Perfil: Requiere autenticación (cualquier usuario)
- * - Administración: Requiere rol ADMINISTRADOR
- * - Tokens validados por FirebaseAuthTokenFilter
- */

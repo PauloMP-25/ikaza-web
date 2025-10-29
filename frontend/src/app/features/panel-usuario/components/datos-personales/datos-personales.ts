@@ -1,11 +1,10 @@
-// src/app/components/panel-usuario/datos-personales/datos-personales.component.ts
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '@core/services/auth/auth';
 import { ClienteService } from '@core/services/clientes/cliente.service';
-import { ActualizarClienteRequest } from '@core/models/usuarios/usuario-model';
-import { finalize } from 'rxjs';
+import { ActualizarClienteRequest } from '@core/models/cliente/cliente.models';
+import { finalize, Observable } from 'rxjs';
 import { takeUntil, tap, switchMap, Subject } from 'rxjs';
 
 @Component({
@@ -29,13 +28,13 @@ export class DatosPersonalesComponent implements OnInit, OnDestroy {
   datosForm!: FormGroup;
   isPhoneVerified: boolean = false;
   isLoading: boolean = false;
-  firebaseUid: string = '';
+  // La propiedad firebaseUid ha sido eliminada. El email se obtiene del formulario.
 
   // Lista de géneros
   generos = ['HOMBRE', 'MUJER', 'OTRO'];
 
   // ============================================================================
-  //  SUBJECT PARA LIMPIAR SUBSCRIPTIONS (Prevenir Memory Leaks)
+  //  SUBJECT PARA LIMPIAR SUBSCRIPTIONS (Prevenir Memory Leaks)
   // ============================================================================
   private destroy$ = new Subject<void>();
 
@@ -82,41 +81,41 @@ export class DatosPersonalesComponent implements OnInit, OnDestroy {
   // ============================================================================
   private loadUserData(): void {
     this.authService.getCurrentUser$().pipe(
-      //Limpiar automáticamente cuando el componente se destruya
+      // Limpiar automáticamente cuando el componente se destruya
       takeUntil(this.destroy$),
 
-      //Procesar datos del usuario
+      // Procesar datos del usuario
       tap(currentUser => {
-        if (!currentUser) {
-          console.error('No hay usuario autenticado');
+        if (!currentUser || !currentUser.email) {
+          console.error('No hay usuario autenticado o email no disponible');
           return;
         }
 
         console.log('Usuario cargado:', currentUser);
-        this.firebaseUid = currentUser.uid;
+        // El email es el nuevo identificador, se usa directamente.
 
-        // Cargar datos básicos de Firebase Auth
-        const firebaseDisplayName = currentUser.displayName ||
-          currentUser.email?.split('@')[0] ||
-          'Usuario';
+        // Cargar datos básicos de Auth
+        const authEmail = currentUser.email;
+        const displayUsername = authEmail.split('@')[0] || 'Usuario';
 
         this.datosForm.patchValue({
-          email: currentUser.email,
-          nombreUsuario: firebaseDisplayName
+          email: authEmail,
+          nombreUsuario: displayUsername
         });
       }),
 
       // Cargar datos del backend en cascada
       switchMap(currentUser => {
-        if (!currentUser) {
-          throw new Error('No hay usuario autenticado');
+        if (!currentUser || !currentUser.email) {
+          // Si el email no está disponible, se lanza un error en la cadena del observable
+          return new Observable<any>(observer => observer.error(new Error('Email de usuario no autenticado para cargar datos.')));
         }
 
-        const firebaseDisplayName = currentUser.displayName ||
-          currentUser.email?.split('@')[0] ||
-          'Usuario';
+        // FIX: Ahora pasamos el email en lugar del UID
+        const authEmail = currentUser.email;
+        const firebaseDisplayName = authEmail.split('@')[0] || 'Usuario';
 
-        return this.cargarDatosDelBackend(currentUser.uid, firebaseDisplayName);
+        return this.cargarDatosDelBackend(authEmail, firebaseDisplayName);
       })
     ).subscribe({
       next: () => {
@@ -131,12 +130,11 @@ export class DatosPersonalesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * - Retorna Observable para integrarse con el flujo reactivo
-   * - Usa tap() para efectos secundarios (patchValue)
-   * - Maneja error 404 sin romper el flujo
+   * Carga los datos extendidos del perfil desde el backend usando el email.
    */
-  private cargarDatosDelBackend(firebaseUid: string, firebaseDisplayName: string) {
-    return this.clienteService.obtenerPerfil(firebaseUid).pipe(
+  private cargarDatosDelBackend(email: string, firebaseDisplayName: string) {
+    // FIX: Se llama al método con el nombre refactorizado y se pasa el email
+    return this.clienteService.obtenerPerfil(email).pipe(
       tap(clienteBackend => {
         console.log('Datos del backend cargados:', clienteBackend);
 
@@ -156,7 +154,6 @@ export class DatosPersonalesComponent implements OnInit, OnDestroy {
 
         this.isPhoneVerified = clienteBackend.telefonoVerificado;
       }),
-      //Manejo de errores específico para 404
       finalize(() => {
         // Este bloque se ejecuta siempre, haya éxito o error
       })
@@ -201,8 +198,16 @@ export class DatosPersonalesComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
 
-    // Obtener valores del formulario (incluyendo los deshabilitados)
+    // Obtener valores del formulario (incluyendo los deshabilitados como el email)
     const formData = this.datosForm.getRawValue();
+    const userEmail = formData.email; // Obtener el email del formulario
+
+    if (!userEmail) {
+      console.error('Email de usuario no disponible para guardar cambios.');
+      this.isLoading = false;
+      alert('Error de autenticación. Intenta recargar la página.');
+      return;
+    }
 
     // Determinar el estado de verificación a enviar al backend
     const currentTelefono = formData.telefono;
@@ -221,10 +226,11 @@ export class DatosPersonalesComponent implements OnInit, OnDestroy {
       genero: formData.genero
     };
 
-    // Guardar usando el endpoint PUT /api/usuarios/perfil/{uid}
-    this.clienteService.actualizarPerfil(this.firebaseUid, request)
+    // Guardar usando el endpoint PUT /api/clientes/perfil/{email}
+    // FIX: Se pasa userEmail y se llama al método refactorizado
+    this.clienteService.actualizarPerfil(userEmail, request)
       .pipe(
-        takeUntil(this.destroy$), //Limpiar si el componente se destruye
+        takeUntil(this.destroy$), // Limpiar si el componente se destruye
         finalize(() => this.isLoading = false)
       )
       .subscribe({

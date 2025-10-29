@@ -18,7 +18,6 @@ public class UsuarioResponse {
 
     // Datos de Usuario (Auth Core)
     private Integer idUsuario;
-    private String firebaseUid;
     private String email;
     
     // Datos de Cliente (Perfil)
