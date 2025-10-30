@@ -1,109 +1,155 @@
-/* best-selling-product.component.css */
-.text-sucesivo{
-    cursor:pointer;
+/* best-selling-product.component.scss - Versión INNOVADORA */
+
+/* Variables de Color */
+$primary-accent: #007bff; // Un azul moderno o un color vibrante para contraste
+$success-product: #198754; // Manteniendo el verde para la acción final
+$secondary: #6c757d;
+$dark: #212529;
+$white: #fff;
+$light-grey: #f8f9fa;
+$shadow-color-subtle: rgba(0, 0, 0, 0.05);
+
+
+.product-featured-section {
+    /* Título principal con acento */
+    .h2 {
+        color: $dark !important; /* Título negro o gris oscuro para elegancia */
+        font-size: 2.5rem; /* Más grande */
+        font-weight: 800 !important;
+        letter-spacing: -0.5px; /* Más compacto */
+    }
 }
 
-.imagen-navegable{
-    cursor:pointer
-}
-/* Row: Refuerza padding mínimo */
-.row {
-    padding-left: 0.5rem !important;  //Mínimo horizontal total
-    padding-right: 0.5rem !important;
-    padding-top: 1rem !important;  //Moderado vertical
-    padding-bottom: 1rem !important;
-
-    // En desktop:
-    @media (min-width: 992px) {
-        .col-lg-6:last-child {  //(derecha en desktop)
-            padding-left: 0.25rem !important;  //Separación ultra-mínima con imagen
-            padding-right: 0 !important;
-        }
-
-        .col-lg-6:first-child {  //(izquierda en desktop)
-            padding-right: 0 !important;
-        }
+/* === 1. Contenedor Principal: Diseño de Tarjeta Limpia === */
+.product-highlight-box {
+    border-radius: 16px;
+    background-color: $light-grey; /* Fondo ligeramente gris para destacar */
+    border: 1px solid #e9ecef !important; /* Borde muy sutil en lugar de sombra */
+    box-shadow: 0 4px 15px $shadow-color-subtle !important; /* Sombra mínima */
+    transition: transform 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-5px); /* Elevación sutil en el hover */
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
     }
 
-    // En móvil: detalles arriba, imagen abajo
     @media (max-width: 991.98px) {
-        padding: 1rem !important;
-        .col-12 {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+        border-radius: 8px;
+    }
+}
+
+/* === 2. Columna de Imagen (Estilo Gráfico) === */
+.imagen-navegable {
+    cursor: pointer;
+    overflow: hidden;
+    /* Invertimos el radio en desktop para que la imagen quede a la izquierda visualmente */
+    border-radius: 16px 0 0 16px; 
+    
+    @media (max-width: 991.98px) {
+        order: 1 !important; /* Aseguramos que la imagen esté arriba en móvil */
+        border-radius: 8px 8px 0 0; 
+    }
+}
+
+.product-image-featured {
+    width: 100%;
+    height: 500px; /* Aún más alto para un look premium */
+    object-fit: cover;
+    display: block;
+    filter: grayscale(100%); /* Efecto blanco y negro por defecto */
+    transition: all 0.6s ease-in-out;
+
+    /* Aplica color y un poco de zoom al hacer hover en la imagen */
+    .imagen-navegable:hover & {
+        filter: grayscale(0%); 
+        transform: scale(1.03); 
+    }
+    
+    @media (max-width: 991.98px) {
+        height: 350px;
+        filter: grayscale(0%); /* Mantenemos color en móvil */
+    }
+}
+
+/* === 3. Columna de Detalles (Tipografía Audaz y Limpia) === */
+.product-details-col {
+    padding-left: 3rem !important; /* Mayor espacio interno */
+    padding-right: 3rem !important;
+    
+    /* El nombre del producto es el titular principal */
+    .h3 {
+        color: $dark !important;
+        font-size: 2.5rem; 
+        font-weight: 900 !important;
+        line-height: 1.1;
+        transition: color 0.2s;
+        &:hover {
+            color: $success-product !important;
         }
     }
+    
+    .text-secondary {
+        font-size: 1.1rem; /* Descripción más prominente */
+        color: lighten($secondary, 10%) !important;
+    }
+    
+    /* Precio con estilo moderno */
+    .display-5 {
+        color: $dark !important; /* Precio en color oscuro para contraste con el fondo claro */
+        font-size: 3.5rem; /* Muy grande */
+        font-weight: 900 !important;
+        span {
+            font-size: 1.5rem;
+            color: $success-product; /* Moneda en color de acento */
+        }
+    }
+    
+    @media (max-width: 991.98px) {
+        order: 2 !important;
+        padding: 2rem 1.5rem !important;
+        .h3 { font-size: 1.8rem; }
+        .display-5 { font-size: 2.5rem; }
+    }
 }
 
-.product-image {
-    width:500px;  //tamaño original en desktop
-    height: 400px;
-    object-fit: cover; 
-    margin: 0 !important;  
-    display: block;
-
-    // En móvil:
-    @media (max-width: 768px) {
-        width: 100%;
-        height: 300px;
-        padding-top: 15px;
-    }
-
-    // Refuerzo para desktop
-    @media (min-width: 992px) {
-        max-width: 100%;
-        padding-top: 15px;
-    }
-}
-
+/* === 4. Selectores de Variantes === */
 .color-option {
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-.color-option.selected {
-    border-color: #28a745 !important;
-    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
-    border-width: 3px !important;
+    width: 35px;
+    height: 35px;
+    border: 3px solid #ccc !important;
+    
+    &.selected {
+        border-color: $success-product !important;
+        box-shadow: 0 0 0 0.3rem rgba($success-product, 0.2);
+        border-width: 4px !important;
+    }
 }
 
 .size-option {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #6c757d;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-.size-option.selected {
-    background-color: #28a745;
-    color: white;
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
-}
-
-.size-option:hover,
-.color-option:hover {
-    transform: scale(1.1);
-}
-.comentarios {
-  .comentario {
-    background-color: #fff;
-  }
-  .rating {
-    font-size: 1.5rem;
-    .star {
-      cursor: pointer;
-      color: #ccc;
-      &.selected {
-        color: #ffc107;
-      }
+    width: 50px; /* Más grande para un mejor toque */
+    height: 50px;
+    font-size: 1.1rem;
+    border: 2px solid #dee2e6 !important;
+    
+    &.selected {
+        background-color: $success-product;
+        border-color: $success-product;
+        box-shadow: 0 0 0 0.25rem rgba($success-product, 0.3);
     }
-  }
+}
+
+/* === 5. Botón de Compra Destacado (Más limpio) === */
+.btn-primary-product {
+    background-color: $primary-accent; /* Usamos el color de acento para el botón */
+    border-color: $primary-accent;
+    color: $white;
+    border-radius: 8px; /* Bordes menos redondeados para un look más moderno */
+    box-shadow: 0 4px 15px rgba($primary-accent, 0.4);
+    
+    &:hover {
+        background-color: darken($primary-accent, 8%);
+        border-color: darken($primary-accent, 8%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba($primary-accent, 0.6);
+    }
 }

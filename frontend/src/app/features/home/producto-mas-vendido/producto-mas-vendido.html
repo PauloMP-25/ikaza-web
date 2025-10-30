@@ -1,20 +1,20 @@
-<section class="mb-5">
-    <h2 class="h2 fw-bold text-success mb-4"> Producto Más Vendido </h2>
-    <div class="row g-0 align-items-center bg-white px-2 py-3 rounded shadow border border-success" *ngIf="product">
-        <!-- Detalles del producto -->
-        <div class="col-12 col-lg-6 order-1 order-lg-2 ps-1 ps-lg-1">
-            <!-- Nombre clicable para navegar -->
-            <h3 class="h4 fw-bold text-success text-sucesivo" (click)="onImageClick()">
+<section class="mb-5 product-featured-section">
+    <h2 class="h2 fw-bold text-success mb-4 text-center text-lg-start"> Producto Más Vendido </h2>
+    
+    <div class="row g-0 align-items-center bg-white rounded shadow-lg product-highlight-box" *ngIf="product">
+        
+        <div class="col-12 col-lg-6 order-1 order-lg-2 p-4 p-lg-5 product-details-col">
+            
+            <h3 class="h3 fw-bolder text-dark text-sucesivo mb-2" (click)="onImageClick()">
                 {{ product.nombreProducto || ''}}
             </h3>
-            <p class="text-secondary mt-2">{{ product.descripcionProducto }}</p>
+            <p class="text-secondary mb-4">{{ product.descripcionProducto }}</p>
 
-            <!-- Selector de colores -->
-            <div class="mb-3" *ngIf="uniqueColors.length">
+            <div class="mb-4" *ngIf="uniqueColors.length">
                 <h5 class="small fw-semibold text-secondary mb-2">Colores</h5>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-3">
                     <button *ngFor="let color of uniqueColors" type="button"
-                        class="color-option rounded-circle border border-white"
+                        class="color-option rounded-circle border"
                         [class.selected]="selectedColorValue === color" [style.backgroundColor]="getColorHex(color)"
                         [attr.aria-label]="'Seleccionar color ' + color" [attr.title]="'Seleccionar color ' + color"
                         (click)="onSeleccionarColor(color)" role="button">
@@ -23,10 +23,9 @@
                 </div>
             </div>
 
-            <!-- Selector de tallas -->
-            <div class="mb-3" *ngIf="uniqueSizes.length">
+            <div class="mb-4" *ngIf="uniqueSizes.length">
                 <h5 class="small fw-semibold text-secondary mb-2">Tallas</h5>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-3">
                     <button *ngFor="let size of uniqueSizes" type="button" class="size-option border rounded"
                         [class.selected]="selectedSizeValue === size" (click)="onSeleccionarSize(size)">
                         {{ size }}
@@ -34,84 +33,19 @@
                 </div>
             </div>
 
-            <!-- Precio y botón de compra -->
-            <div class="mb-3">
-                <h4 class="text-success fw-bold">S/.{{ (product.precio || product.precio).toFixed(2) }}</h4>
+            <div class="mt-4">
+                <h4 class="text-success display-5 fw-bolder mb-3">S/.{{ (product.precio || product.precio).toFixed(2) }}</h4>
             </div>
-            <button class="btn btn-success px-4 py-2 fw-bold" (click)="agregarCarrito()">Comprar ahora</button>
+            <button class="btn btn-primary-product btn-lg px-5 py-3 fw-bold" (click)="agregarCarrito()">
+                <i class="bi bi-bag-fill me-2"></i> Comprar ahora
+            </button>
         </div>
 
         <div class="col-12 col-lg-6 order-2 order-lg-1 imagen-navegable" (click)="onImageClick()">
             <img [src]="currentImage" alt="{{ product.nombreProducto }}" [attr.title]="product.nombreProducto"
-                class="img-fluid rounded product-image" loading="lazy" />
+                class="img-fluid product-image-featured" loading="lazy" />
         </div>
     </div>
-    <!-- === Comentarios de clientes === -->
-<section class="mt-5 comentarios" *ngIf="product">
-  <h4 class="fw-bold text-success">Comentarios de Clientes</h4>
-
-  <!-- Resumen de valoraciones -->
-  <div *ngIf="reviews.length > 0; else sinComentarios" class="mb-4">
-    <p class="mb-1">
-      Valoración promedio:
-      <span class="fw-bold">{{ averageRating }}</span> ⭐ ({{ reviews.length }} comentarios)
-    </p>
-  </div>
-
-  <!-- Estado vacío -->
-  <ng-template #sinComentarios>
-    <p class="text-muted">Sé el primero en comentar.</p>
-  </ng-template>
-
-  <!-- Listado de comentarios -->
-  <div *ngFor="let r of reviews" class="comentario border rounded p-3 mb-2">
-    <div class="d-flex justify-content-between align-items-center mb-1">
-      <span class="fw-semibold">{{ r.name }}</span>
-      <span class="text-warning">
-        <!-- estrellas llenas / vacías -->
-        <ng-container *ngFor="let s of [1,2,3,4,5]">
-          <span [class.fw-bold]="s <= r.rating">
-            {{ s <= r.rating ? '★' : '☆' }}
-          </span>
-        </ng-container>
-      </span>
-    </div>
-    <p class="mb-1">{{ r.comment }}</p>
-    <small class="text-muted">{{ r.createdAt | date:'short' }}</small>
-  </div>
-
-  <hr class="my-4">
-
-  <!-- Formulario para agregar comentario -->
-  <form [formGroup]="reviewForm" (ngSubmit)="addReview()" class="p-3 border rounded bg-light">
-    <div class="mb-3">
-      <label class="form-label fw-semibold">Nombre</label>
-      <input formControlName="name" type="text" class="form-control" placeholder="Tu nombre" />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label fw-semibold">Valoración</label>
-      <div class="rating">
-        <ng-container *ngFor="let star of [1,2,3,4,5]">
-          <span class="star"
-                (click)="reviewForm.patchValue({ rating: star })"
-                [class.selected]="reviewForm.value.rating >= star">★</span>
-        </ng-container>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label fw-semibold">Comentario</label>
-      <textarea formControlName="comment" class="form-control" rows="3"
-                placeholder="Escribe tu opinión..."></textarea>
-    </div>
-
-    <button class="btn btn-success" type="submit" [disabled]="reviewForm.invalid">
-      Publicar comentario
-    </button>
-  </form>
-</section>
-
 
     <div *ngIf="!product">
         <p class="alert alert-warning">No se pudo cargar el producto más vendido en este momento.</p>

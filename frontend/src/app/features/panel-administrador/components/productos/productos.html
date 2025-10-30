@@ -63,12 +63,12 @@
                 <!-- Filtro de categoría -->
                 <div class="col-lg-4">
                     <select class="form-select" aria-label="Filtrar por categoría" [(ngModel)]="categoriaSeleccionada"
-                        (change)="filtrarProductos()" [disabled]="isLoading">
-                        <option value="">Todas las Categorías</option>
-                        <option *ngFor="let cat of categoriasMaestras" [value]="cat">
-                            {{ cat }}
-                        </option>
-                    </select>
+    (change)="filtrarProductos()" [disabled]="isLoading">
+    <option value="">Todas las Categorías</option>
+    <option *ngFor="let cat of categoriasMaestras" [value]="cat.idCategoria">
+        {{ cat.nombreCategoria }}
+    </option>
+</select>
                 </div>
             </div>
 

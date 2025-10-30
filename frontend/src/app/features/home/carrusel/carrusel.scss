@@ -1,0 +1,116 @@
+// 💚 Estilo elegante del carrusel ✅
+.home-categories-section {
+  padding: 4rem 0;
+  
+  background: #ffffff;
+}
+
+// Título centrado
+.section-title {
+  text-align: center;
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #198754;
+  margin-bottom: 3rem;
+}
+
+// Contenedor tarjetas
+.cards-container {
+  display: flex;
+  gap: 6.5rem;
+  justify-content: center;
+  padding: 0 2rem;
+  margin: 30px;
+}
+
+// Tarjetas
+.category-card-wrapper {
+  flex: 1 1 22%;
+  max-width: 240px;
+}
+
+.category-card {
+  position: relative;
+  display: block;
+  width: 300px;
+  height: 360px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,.15);
+  transition: .35s ease;
+  background: #fff; /* Fondo blanco para el título */
+
+  &:hover {
+    transform: scale(1.07);
+    box-shadow: 0 18px 40px rgba(0,0,0,.3);
+  }
+}
+
+// Título arriba de la imagen
+.category-title {
+  margin: 0;
+  padding: 1rem;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #198754; /* Color verde para el título */
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
+}
+
+.category-image {
+  width: 100%;
+  height: calc(100% - 4rem); /* Ajustar altura para dejar espacio al título */
+  object-fit: cover;
+}
+
+// ✅ Flechas del carrusel BONITAS
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: none;
+  backdrop-filter: blur(4px);
+  background: rgba(25, 135, 84, .8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .2s;
+
+  i {
+    font-size: 1.8rem;
+    color: #fff;
+  }
+
+  &:hover {
+    background: #198754;
+  }
+}
+
+.carousel-control.prev { left: 10px; }
+.carousel-control.next { right: 10px; }
+
+// 📱 Responsive
+@media (max-width: 992px) {
+  .category-card-wrapper {
+    flex: 1 1 30%;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-card-wrapper {
+    flex: 1 1 45%;
+  }
+}
+
+@media (max-width: 576px) {
+  .cards-container {
+    gap: 1.2rem;
+  }
+  .category-card-wrapper {
+    flex: 1 1 85%;
+  }
+}

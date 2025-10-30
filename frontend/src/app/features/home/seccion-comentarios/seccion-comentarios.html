@@ -1,58 +1,81 @@
-<section class="mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="h2 fw-bold text-success">Comentarios</h2>
-        <div class="text-end">
-            <div class="rating-summary">
-                <span class="h5 text-success">{{ getAverageRating() }}</span>
-                <div class="d-inline-flex text-warning ms-2">
-                    <!-- ← CORREGIDO: Removido Math.floor (getStars lo maneja internamente) -->
-                    <!-- Ahora: getStars(getAverageRating()) – pasa float directamente -->
-                    <span *ngFor="let star of getStars(getAverageRating())" class="material-symbols-outlined fs-5"
-                        [class.text-secondary]="!star">star</span>
+<section class="mb-5 review-section-modern">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 review-header-summary">
+        <h2 class="h2 fw-bold text-dark review-title">Comentarios</h2>
+        
+        <div class="rating-summary mt-3 mt-md-0 text-md-end text-start">
+            <div class="d-flex justify-content-start justify-content-md-end align-items-center mb-1">
+                <span class="h5 fw-bold me-2 text-primary-accent">{{ getAverageRating() }}</span>
+                <div class="d-inline-flex text-warning">
+                    <span *ngFor="let star of getStars(getAverageRating())"
+                          class="material-symbols-outlined fs-4 review-star-icon"
+                          [class.text-secondary]="!star">
+                        star
+                    </span>
                 </div>
-                <small class="text-muted d-block">{{ comments.length }} reseñas</small>
             </div>
+            <small class="text-muted d-block">{{ comments.length }} reseñas</small>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div *ngFor="let comment of comments; let i = index" class="col-12" [class.col-lg-6]="comments.length > 1">
-            <div class="bg-white p-4 rounded shadow-sm border border-success-subtle">
-                <!-- Header del comentario -->
-                <div class="d-flex align-items-center mb-3">
-                    <img [src]="comment.userAvatar" alt="'Avatar de ' + {{comment.userName}}"
-                        class="rounded-circle me-3 user-avatar">
-                    <div>
-                        <p class="fw-semibold mb-0 text-success">{{ comment.userName }}</p>
-                        <p class="text-muted small mb-0">{{ formatDate(comment.date) }}</p>
+    <!-- CARRUSEL DE RESEÑAS -->
+    <div id="reviewCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+        <div class="carousel-inner">
+            <div *ngFor="let comment of comments; let i = index"
+                 class="carousel-item"
+                 [class.active]="i === 0">
+
+                <div class="review-card-modern bg-white p-4 shadow-sm">
+                    <div class="d-flex align-items-center justify-content-between mb-3 review-header">
+                        <div class="d-flex align-items-center">
+                            <img [src]="comment.userAvatar" [alt]="'Avatar de ' + comment.userName"
+                                 class="rounded-circle me-3 user-avatar-modern">
+                            <div>
+                                <p class="fw-semibold mb-0 review-username">{{ comment.userName }}</p>
+                                <div class="d-flex text-warning">
+                                    <span *ngFor="let star of getStars(comment.rating)"
+                                          class="material-symbols-outlined fs-5 review-star-icon"
+                                          [class.text-secondary]="!star">
+                                        star
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0 review-date">{{ formatDate(comment.date) }}</p>
+                    </div>
+
+                    <blockquote class="blockquote mb-3 review-text-block">
+                        <p class="mb-0">{{ comment.comment }}</p>
+                    </blockquote>
+
+                    <div class="d-flex gap-3 text-secondary pt-3 mt-3 review-actions">
+                        <button class="btn btn-sm btn-link p-0 gap-1 text-decoration-none"
+                                [class.text-primary-accent]="comment.isLiked"
+                                [class.text-muted]="!comment.isLiked"
+                                (click)="onLike(comment)">
+                            <span class="material-symbols-outlined fs-5">thumb_up</span>
+                            {{ comment.likes }}
+                        </button>
+
+                        <button class="btn btn-sm btn-link p-0 gap-1 text-decoration-none"
+                                [class.text-danger]="comment.isDisliked"
+                                [class.text-muted]="!comment.isDisliked"
+                                (click)="onDislike(comment)">
+                            <span class="material-symbols-outlined fs-5">thumb_down</span>
+                            {{ comment.dislikes }}
+                        </button>
                     </div>
                 </div>
-
-                <!-- Rating con estrellas – SIN CAMBIOS (usa rating entero) -->
-                <div class="d-flex text-warning mb-3">
-                    <span *ngFor="let star of getStars(comment.rating)" class="material-symbols-outlined fs-5"
-                        [class.text-secondary]="!star">star</span>
-                </div>
-
-                <!-- Texto del comentario -->
-                <p class="text-muted mb-3">{{ comment.comment }}</p>
-
-                <!-- Botones like/dislike – SIN CAMBIOS -->
-                <div class="d-flex gap-3 text-secondary">
-                    <button class="btn btn-link p-0 d-flex align-items-center gap-1 text-decoration-none"
-                        [class.text-primary]="comment.isLiked" [class.text-secondary]="!comment.isLiked"
-                        (click)="onLike(comment)">
-                        <span class="material-symbols-outlined fs-5">thumb_up</span>
-                        {{ comment.likes }}
-                    </button>
-                    <button class="btn btn-link p-0 d-flex align-items-center gap-1 text-decoration-none"
-                        [class.text-danger]="comment.isDisliked" [class.text-secondary]="!comment.isDisliked"
-                        (click)="onDislike(comment)">
-                        <span class="material-symbols-outlined fs-5">thumb_down</span>
-                        {{ comment.dislikes }}
-                    </button>
-                </div>
             </div>
+        </div>
+
+        <!-- INDICADORES ELEGANTES -->
+        <div class="carousel-indicators review-indicators">
+            <button *ngFor="let c of comments; let i = index"
+                    type="button"
+                    data-bs-target="#reviewCarousel"
+                    [attr.data-bs-slide-to]="i"
+                    [class.active]="i === 0"
+                    class="indicator-dot"></button>
         </div>
     </div>
 </section>

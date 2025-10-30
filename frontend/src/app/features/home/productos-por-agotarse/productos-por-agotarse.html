@@ -1,6 +1,8 @@
 <section class="mb-5">
+    <!-- Header Sección -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h2 class="h3 fw-bold text-success">Productos por Agotarse</h2>
+
         <form class="mt-3 mt-md-0" (ngSubmit)="onSearch()">
             <div class="input-group">
                 <span class="input-group-text bg-light border-0">
@@ -12,16 +14,46 @@
         </form>
     </div>
 
+    <!-- Error -->
     <div *ngIf="hasError" class="alert alert-danger p-3">
         <p class="mb-0 fw-bold">Error de Conexión:</p>
         <p class="mb-0">{{ errorMessage }}</p>
     </div>
 
-    <app-custom-carousel [products]="obtenerProductos()" [itemsPerSlide]="4" [buttonText]="'Reservar'"
-        [showStock]="true" [autoPlayInterval]="8000" [onAddToCart]="agregarCarrito.bind(this)"
-        [onImageClick]="onImageClick.bind(this)">
-    </app-custom-carousel>
+    <!-- Layout con Banner + Productos -->
+    <div class="section-container">
+        <div class="layout-grid">
 
+            <!-- Banner -->
+            <div class="main-banner agotamiento-banner">
+                <img class="banner-img" src="assets/banners/out-of-stock.png" alt="agotarse">
+            </div>
+
+            <!-- Productos -->
+            <div class="products-grid">
+                <div class="product-card"
+                    *ngFor="let producto of obtenerProductos() | slice:0:8">
+
+                    <img [src]="producto.imagenPrincipal" class="product-image"
+                        (click)="onImageClick(producto)" alt="producto" />
+
+                    <div class="product-info">
+                        <p class="product-title">{{ producto.nombreProducto }}</p>
+                        <p class="product-stock">Stock: {{ producto.stock }}</p>
+                        <p class="product-price">S/. {{ producto.precio }}</p>
+
+                        <button class="btn-reservar"
+                            (click)="agregarCarrito(producto); $event.stopPropagation();">
+                            Reservar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vacío -->
     <div *ngIf="!isLoading && !hasError && obtenerProductos().length === 0" class="alert alert-info p-3">
         <p class="mb-0">No hay productos por agotarse disponibles en este momento.</p>
     </div>

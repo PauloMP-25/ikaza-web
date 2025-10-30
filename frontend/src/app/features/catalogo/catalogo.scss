@@ -1,82 +1,388 @@
-.btn {
-    transition: all 0.3s ease;
-    min-width: 120px;
-    border: 1px solid;
+// =============================================
+// LAYOUT NUEVO - SIDEBAR + PRODUCTOS
+// =============================================
+
+:host {
+  --sidebar-width: 320px; // ← AUMENTADO: Más ancho
+  --sidebar-bg: #ffffff;
+  --content-bg: #f8f9fa;
+  --border-color: #e9ecef;
+  --primary-gradient: linear-gradient(135deg, var(--c2, #0d6efd) 0%, var(--c3, #198754) 100%);
 }
 
-.toast-container{
-    z-index: 1055;
+.catalog-layout {
+  display: flex;
+  min-height: 80vh;
+  gap: 0;
+  background: var(--content-bg);
+  max-width: 1600px; // ← AUMENTADO: Más ancho máximo
+  margin: 2rem auto; // ← AUMENTADO: Margen superior e inferior
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); // ← MEJORADO: Sombra más suave
+  border-radius: 20px; // ← NUEVO: Bordes redondeados
+  overflow: hidden; // ← NUEVO: Contener bordes redondeados
 }
 
-// Layout General
-main {
-    min-height: 70vh;
+// =============================================
+// SIDEBAR MEJORADO CON MÁS ESPACIO
+// =============================================
+
+.catalog-sidebar {
+  width: var(--sidebar-width);
+  background: white;
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem;
+  position: sticky;
+  top: 0;
+  min-height: 100vh;    // ← NUEVO: Mínimo toda la pantalla
+  height: auto;         // ← NUEVO: Se ajusta al contenido
+  overflow-y: auto;     // ← MANTENER: Scroll si es necesario
+  transition: transform 0.3s ease;
+  z-index: 100;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -1px;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--border-color), transparent);
+    z-index: 1;
+  }
+  
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 transparent;
+  
+  &::-webkit-scrollbar {
+    width: 6px; // ← AUMENTADO: Scrollbar más ancho
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px; // ← AUMENTADO: Más redondeado
+  }
 }
 
-// Contenedor de Botones de Filtro
-.filter-buttons-container {
+.sidebar-header {
+  margin-bottom: 3rem; // ← AUMENTADO: Más espacio
+  padding-bottom: 2rem; // ← AUMENTADO: Más espacio
+  border-bottom: 2px solid var(--border-color);
+  
+  .sidebar-title {
+    font-size: 1.3rem; // ← AUMENTADO: Título más grande
+    font-weight: 700;
+    color: var(--c1, #212529);
+    margin: 0;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 1rem 0;
+    align-items: center;
+    
+    i {
+      color: var(--c2, #0d6efd);
+      font-size: 1.4rem; // ← AUMENTADO: Ícono más grande
+    }
+  }
 }
 
-// Botones de Filtro
-.filter-btn {
-    border: 2px solid #dee2e6 !important;
-    background-color: #ffffff !important;
-    color: #212529 !important;
-    transition: all 0.3s ease;
-    min-width: 120px;
-    font-size: 0.95rem;
-    padding: 0.5rem 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.sidebar-section {
+  margin-bottom: 3rem; // ← AUMENTADO: Más espacio entre secciones
+  
+  .section-title {
+    font-size: 1rem; // ← AUMENTADO: Tamaño de fuente
+    font-weight: 600;
+    color: var(--c1, #212529);
+    margin-bottom: 1.5rem; // ← AUMENTADO: Más espacio
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-left: 0.75rem; // ← AUMENTADO: Más offset
+    border-left: 4px solid var(--c2, #0d6efd); // ← AUMENTADO: Línea más gruesa
+  }
+}
 
-    &:hover {
-        background-color: #f8f9fa !important;
-        border-color: var(--c2, #0d6efd) !important;
-        color: var(--c2, #0d6efd) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+// =============================================
+// COMPONENTES DEL SIDEBAR CON MÁS ESPACIO
+// =============================================
+
+.search-box {
+  position: relative;
+  
+  .form-control {
+    padding: 1rem 1rem 1rem 3rem; // ← AUMENTADO: Más padding
+    border-radius: 12px; // ← AUMENTADO: Más redondeado
+    border: 1px solid var(--border-color);
+    font-size: 1rem; // ← AUMENTADO: Texto más grande
+    
+    &:focus {
+      border-color: var(--c2, #0d6efd);
+      box-shadow: 0 0 0 0.3rem rgba(13, 110, 253, 0.15); // ← AUMENTADO: Sombra más visible
     }
+  }
+  
+  .search-icon {
+    position: absolute;
+    left: 1rem; // ← AUMENTADO: Más espacio
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1.2rem; // ← AUMENTADO: Ícono más grande
+  }
+}
 
-    &.active {
-        background-color: var(--c2, #0d6efd) !important;
-        border-color: var(--c2, #0d6efd) !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
-        transform: translateY(-2px);
+.category-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; // ← AUMENTADO: Más espacio entre botones
+}
 
+.category-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem; // ← AUMENTADO: Más padding
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  border-radius: 12px; // ← AUMENTADO: Más redondeado
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
+  margin-bottom: 0.75rem; // ← AUMENTADO: Más espacio entre botones
+  
+  i {
+    color: #6c757d;
+    font-size: 1.2rem; // ← AUMENTADO: Íconos más grandes
+    margin-right: 1rem; // ← AUMENTADO: Más espacio
+    transition: color 0.3s ease;
+  }
+  
+  .product-count {
+    background: #e9ecef;
+    color: #6c757d;
+    padding: 0.4rem 0.8rem; // ← AUMENTADO: Más padding
+    border-radius: 20px; // ← AUMENTADO: Más redondeado
+    font-size: 0.9rem; // ← AUMENTADO: Tamaño de fuente
+    font-weight: 600;
+    min-width: 40px; // ← AUMENTADO: Ancho mínimo
+    text-align: center;
+  }
+  
+  &:hover {
+    border-color: var(--c2, #0d6efd);
+    background: #f8f9fa;
+    transform: translateX(8px); // ← AUMENTADO: Más movimiento
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.2); // ← AUMENTADO: Sombra más visible
+    
+    i {
+      color: var(--c2, #0d6efd);
+      transform: scale(1.15); // ← AUMENTADO: Más escala
+    }
+  }
+  
+  &.active {
+    border-color: var(--c2, #0d6efd);
+    background: linear-gradient(135deg, #f8f9ff, #e3f2fd);
+    box-shadow: 0 6px 25px rgba(13, 110, 253, 0.25); // ← AUMENTADO: Sombra más visible
+    
+    i, .product-count {
+      color: var(--c2, #0d6efd);
+    }
+    
+    .product-count {
+      background: rgba(13, 110, 253, 0.1);
+    }
+  }
+}
+
+// =============================================
+// CONTENIDO PRINCIPAL CON MÁS ESPACIO
+// =============================================
+
+.catalog-main {
+  flex: 1;
+  padding: 3rem 4rem; // ← AUMENTADO: Mucho más padding
+  background: var(--content-bg);
+  min-height: 100vh;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem; // ← AUMENTADO: Más espacio
+  padding: 2.5rem; // ← AUMENTADO: Más padding
+  background: #ffffff;
+  border-radius: 20px; // ← AUMENTADO: Más redondeado
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); // ← AUMENTADO: Sombra más suave
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.results-info {
+  .results-title {
+    font-size: 2rem; // ← AUMENTADO: Título más grande
+    font-weight: 800;
+    color: transparent;
+    background: linear-gradient(135deg, var(--c1, #212529), var(--c2, #0d6efd));
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin: 0 0 1rem 0; // ← AUMENTADO: Más espacio
+  }
+  
+  .results-count {
+    font-size: 1.1rem; // ← AUMENTADO: Texto más grande
+    color: #6c757d;
+    font-weight: 500;
+  }
+}
+
+.sort-options {
+  .sort-select {
+    min-width: 250px; // ← AUMENTADO: Más ancho
+    border-radius: 12px; // ← AUMENTADO: Más redondeado
+    border: 1px solid var(--border-color);
+    padding: 1rem 1.25rem; // ← AUMENTADO: Más padding
+    font-weight: 500;
+    font-size: 1rem; // ← AUMENTADO: Texto más grande
+    
+    &:focus {
+      border-color: var(--c2, #0d6efd);
+      box-shadow: 0 0 0 0.3rem rgba(13, 110, 253, 0.15); // ← AUMENTADO: Sombra más visible
+    }
+  }
+}
+
+// NUEVO CONTENEDOR CON MÁS ESPACIO
+.products-grid-container {
+  margin-bottom: 4rem; // ← AUMENTADO: Más espacio
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem; // ← AUMENTADO: Más espacio
+  
+  .pagination {
+    .page-item {
+      margin: 0 0.5rem; // ← AUMENTADO: Más espacio entre páginas
+      
+      .page-link {
+        border-radius: 12px; // ← AUMENTADO: Más redondeado
+        border: 1px solid var(--border-color);
+        color: #495057;
+        font-weight: 600;
+        padding: 1rem 1.5rem; // ← AUMENTADO: Más padding
+        font-size: 1rem; // ← AUMENTADO: Texto más grande
+        transition: all 0.3s ease;
+        
         &:hover {
-            background-color: #0b5ed7 !important;
-            border-color: #0b5ed7 !important;
-            color: #ffffff !important;
+          background: #f8f9fa;
+          border-color: var(--c2, #0d6efd);
+          color: var(--c2, #0d6efd);
+          transform: translateY(-3px); // ← AUMENTADO: Más movimiento
+          box-shadow: 0 6px 20px rgba(13, 110, 253, 0.2); // ← AUMENTADO: Sombra más visible
         }
+      }
+      
+      &.active .page-link {
+        background: var(--primary-gradient);
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 6px 25px rgba(13, 110, 253, 0.4); // ← AUMENTADO: Sombra más visible
+      }
     }
+  }
 }
 
-// Responsive para filtros
-@media (max-width: 768px) {
-    .filter-buttons-container {
-        gap: 0.5rem;
-        padding: 0.75rem 0;
-    }
+// =============================================
+// RESPONSIVE DESIGN MEJORADO
+// =============================================
 
-    .filter-btn {
-        min-width: 100px;
-        font-size: 0.875rem;
-        padding: 0.4rem 1rem;
-    }
+@media (max-width: 991px) {
+  .catalog-layout {
+    flex-direction: column;
+    max-width: 100%;
+    box-shadow: none;
+    margin: 1rem auto; // ← AJUSTADO: Menos margen en tablets
+    border-radius: 15px; // ← AJUSTADO: Menos redondeado
+  }
+  
+  .catalog-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem; // ← AJUSTADO: Padding en tablets
+  }
+  
+  .catalog-main {
+    padding: 2.5rem; // ← AJUSTADO: Padding en tablets
+  }
+  
+  .content-header {
+    flex-direction: column;
+    gap: 2rem; // ← AUMENTADO: Más espacio
+    align-items: stretch;
+    padding: 2rem; // ← AJUSTADO: Padding en tablets
+  }
+  
+  .sort-options .sort-select {
+    min-width: 100%;
+  }
 }
 
-@media (max-width: 576px) {
-    .filter-buttons-container {
-        justify-content: flex-start;
-    }
+@media (max-width: 767px) {
+  .catalog-layout {
+    margin: 0.5rem auto; // ← AJUSTADO: Menos margen en móviles
+    border-radius: 10px; // ← AJUSTADO: Menos redondeado
+  }
+  
+  .catalog-sidebar {
+    padding: 1.5rem; // ← AJUSTADO: Padding en móviles
+  }
+  
+  .catalog-main {
+    padding: 2rem; // ← AJUSTADO: Padding en móviles
+  }
+  
+  .content-header {
+    padding: 1.5rem; // ← AJUSTADO: Padding en móviles
+    margin-bottom: 2.5rem; // ← AJUSTADO: Espacio en móviles
+  }
+  
+  .results-info .results-title {
+    font-size: 1.75rem; // ← AJUSTADO: Tamaño en móviles
+  }
+  
+  .sidebar-section {
+    margin-bottom: 2.5rem; // ← AJUSTADO: Espacio en móviles
+  }
+}
 
-    .filter-btn {
-        min-width: auto;
-        flex: 0 0 auto;
-    }
+@media (max-width: 575px) {
+  .catalog-sidebar {
+    padding: 1.25rem; // ← AJUSTADO: Padding en móviles pequeños
+  }
+  
+  .catalog-main {
+    padding: 1.5rem; // ← AJUSTADO: Padding en móviles pequeños
+  }
+  
+  .content-header {
+    padding: 1.25rem; // ← AJUSTADO: Padding en móviles pequeños
+    border-radius: 15px; // ← AJUSTADO: Redondeado en móviles
+  }
+  
+  .results-info .results-title {
+    font-size: 1.5rem; // ← AJUSTADO: Tamaño en móviles pequeños
+  }
+  
+  .category-filter-btn {
+    padding: 0.85rem 1.25rem; // ← AJUSTADO: Padding en móviles pequeños
+  }
+}
+
+.toast-container {
+  z-index: 1055;
 }

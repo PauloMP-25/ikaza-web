@@ -1,3 +1,4 @@
+
 <section class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h3 fw-bold text-success">Productos Nuevos</h2>
@@ -21,11 +22,36 @@
         <p class="mb-0">{{ errorMessage }}</p>
     </div>
 
-    <app-custom-carousel *ngIf="!isLoading && !hasError && obtenerProductos().length > 0"
-        [products]="obtenerProductos()" [itemsPerSlide]="4" [buttonText]="'Reservar'" [showNewBadge]="true"
-        [showStock]="false" [autoPlayInterval]="8000" [onAddToCart]="agregarCarrito.bind(this)"
-        [onImageClick]="onImageClick.bind(this)">
-    </app-custom-carousel>
+<div class="section-container">
+    <h2 class="section-title">Para ti</h2>
+
+    <div class="layout-grid">
+
+        
+        <div class="main-banner">
+            <img class="banner-img" src="assets/banners/tiktok.png" alt="banner">
+        </div>
+
+    
+        <div class="products-grid">
+            <div class="product-card"
+                 *ngFor="let producto of obtenerProductos() | slice:0:8"
+                 (click)="onImageClick(producto)">
+
+                <img [src]="producto.imagenPrincipal" class="product-image">
+
+                <div class="product-info">
+                    <h4 class="product-title">{{ producto.nombreProducto }}</h4>
+
+                    <p class="product-price">
+                        S/. {{ producto.precio }}
+                    </p>
+                </div>
+            </div>
+        </div>
+                       
+    </div>
+</div>
 
     <div *ngIf="!isLoading && !hasError && obtenerProductos().length === 0" class="alert alert-info p-3">
         <p class="mb-0">No hay productos nuevos disponibles en este momento.</p>

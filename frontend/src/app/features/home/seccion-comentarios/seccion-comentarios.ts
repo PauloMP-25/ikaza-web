@@ -33,8 +33,8 @@ export class SeccionComentariosComponent implements OnInit {
     {
       id: '1',
       userName: 'Sofía García',
-      userAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC3AcXHNv_goO1BuKSZE67kx0-GYxypklDdUpB0I44XJfg_1XkncfBlk-es-bK_z0yszbl49UuMEv0MChHa7893MAEXIIjn4pgWYgORkuLFIOvseWpESXGA3BUANlhWNIWyWyVCWDCISJsidpZzcgrvwV7F7Vt7RjFCwLXwWVwcRoICIEeBhzhA9eSK-eD6eoMvS4q2_ZR6tgoYDioNWGWMKZ83a3-FPEFum6dgr5B7cBz7V1JXaAick6HfDSoBHyZxiYEw0bJePbyD',
-      date: new Date('2024-07-15'),
+      userAvatar: 'https://scontent.flim2-2.fna.fbcdn.net/v/t39.30808-6/481470013_1733821227477412_4809371446473984969_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=VsERlR-sh0QQ7kNvwF7mNLl&_nc_oc=AdkjdZYNYI95NEM0os0k5AAFyBgu99G2fCyQZB6jiH7gAvH9ULngKpCh6qJ6AYr25fU&_nc_zt=23&_nc_ht=scontent.flim2-2.fna&_nc_gid=hvFbXbCJCk_yk8DU2Kx5Ig&oh=00_Afcd7NhXgWmxIS5qchp1F8mMbYPd_A4PpjIfZSAPOfqrpQ&oe=69097F8D',
+      date: new Date('2025-07-15'),
       rating: 5,
       comment: 'Me encanta la calidad de los productos y el excelente servicio al cliente. ¡Definitivamente volveré a comprar!',
       likes: 10,
@@ -45,35 +45,11 @@ export class SeccionComentariosComponent implements OnInit {
     {
       id: '2',
       userName: 'Carlos López',
-      userAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBm25jVzIopx3Q9oiS6iJWCHXWeAI-TaD86JEZJUPLQBW6Sr-9KzEBSj5vIi7lX-dJsTybXVzBRn3lJqcuFc-vV1-qoIx5GNM_369w90b5TfWj10MekG7wk9hD9F9Xu9HPGJW2qs0GSIERxVB3RuUNbh_xxWxwk43V-Hm30_vle40ykV1VG4BPPg3KSlLWd3GqbKYWJvGHXfJbCqCAW3xWlLKtUfZehfAeK3LbFiCbdVF6ItPl81BvxhsBY1ZNjcZ9mdTb-tWWmLn5O',
-      date: new Date('2024-07-20'),
+      userAvatar: 'https://scontent.flim20-1.fna.fbcdn.net/v/t1.6435-9/79385655_107104440771919_4334156673552744448_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=tAeLkSjqFdwQ7kNvwG0Le8a&_nc_oc=AdldcLcdFzqu0cqjBT3_ZOzzn5BdKdfiefpntP35zcq8WWVTiW-BGqtTJY0XhMUAbDM&_nc_zt=23&_nc_ht=scontent.flim20-1.fna&_nc_gid=feXSYN2e93htKTISG8fyTg&oh=00_AffIaDcHsnQ-vXkzDEaOL53RPaax8nhb6CAgLpWdAHQXSA&oe=692B32D7',
+      date: new Date('2025-07-20'),
       rating: 4,
       comment: 'Los productos son buenos, pero el envío tardó un poco más de lo esperado. En general, una buena experiencia.',
       likes: 5,
-      dislikes: 1,
-      isLiked: false,
-      isDisliked: false
-    },
-    {
-      id: '3',
-      userName: 'María Rodríguez',
-      userAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b1e7?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      date: new Date('2024-07-25'),
-      rating: 5,
-      comment: 'Excelente atención al cliente y productos de alta calidad. Los precios son muy competitivos.',
-      likes: 8,
-      dislikes: 0,
-      isLiked: false,
-      isDisliked: false
-    },
-    {
-      id: '4',
-      userName: 'Juan Pérez',
-      userAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      date: new Date('2024-07-28'),
-      rating: 4,
-      comment: 'Buena variedad de productos. Me gustó especialmente la sección de tecnología.',
-      likes: 6,
       dislikes: 1,
       isLiked: false,
       isDisliked: false

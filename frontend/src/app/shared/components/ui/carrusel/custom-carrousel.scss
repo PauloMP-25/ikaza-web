@@ -1,88 +1,233 @@
-.custom-carousel-container {
-    overflow: hidden;
-    position: relative;
-}
+/* custom-carousel.component.scss - Versión FINAL, Animada, Optimizada y Responsive */
 
-.carousel-wrapper {
-    overflow: hidden;
+$primary-accent: #198754; // Verde principal
+$secondary-accent: #007bff; // Azul para badge/acento
+$dark-text: #212529;
+$light-text: #6c757d;
+$white-bg: #fff;
+$shadow-light: rgba(0, 0, 0, 0.05); 
+$shadow-hover: rgba(0, 0, 0, 0.12);
+
+/* === 1. Contenedor Base del Carrusel === */
+.custom-carousel-container {
+    padding: 0 !important; /* Elimina el padding que cortaba el último elemento */
+    position: relative;
+    overflow: hidden !important; /* Ocultamos el desborde */
+    
+    &:hover .carousel-control-modern {
+        opacity: 1; 
+    }
 }
 
 .carousel-track {
     display: flex;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.6s ease-in-out; 
 }
 
 .carousel-slide {
-    min-width: 100%;
-    flex-shrink: 0;
+    flex: 0 0 100%;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.carousel-control {
+.carousel-slide .row {
+    width: 100%;
+    margin: 0;
+}
+
+/* === 2. Estilo de Tarjeta de Producto (ANIMADO y Altura Fija) === */
+.product-card-modern {
+    border: 1px solid #e9ecef; 
+    border-radius: 8px; 
+    overflow: hidden;
+    box-shadow: 0 4px 10px $shadow-light; 
+    transition: all 0.4s ease; /* Transición para la animación de elevación */
+    height: 100%; 
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+        transform: translateY(-5px); /* Animación: Elevación */
+        box-shadow: 0 10px 25px $shadow-hover; /* Sombra más pronunciada al elevarse */
+    }
+}
+
+.product-image-modern {
+    width: 100%;
+    height: 250px !important; /* Altura ajustada para Desktop/Grande */
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease; 
+}
+
+.product-card-modern:hover .product-image-modern {
+    transform: scale(1.05); /* Animación: Zoom sutil */
+}
+
+.product-card-body-modern {
+    /* Padding inferior incrementado para dar espacio al botón */
+    padding: 1rem 1.2rem 1.5rem 1.2rem; 
+    flex-grow: 1; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    
+    /* Altura ajustada para acomodar el padding extra sin cortar el contenido */
+    min-height: 180px; 
+    max-height: 180px; 
+    overflow: hidden;
+}
+
+.product-title-modern {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $dark-text !important;
+    line-height: 1.3;
+    margin-bottom: 0.5rem; 
+    min-height: 2.6rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-price-modern {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: $primary-accent !important; 
+    margin-bottom: 0.75rem !important; 
+    margin-top: auto;
+}
+
+.product-buy-button-modern {
+    background-color: $primary-accent !important; 
+    border-color: $primary-accent !important;
+    color: $white-bg;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px; 
+    font-weight: 600;
+    box-shadow: none; 
+    transition: background-color 0.2s ease, transform 0.1s ease;
+
+    &:hover {
+        background-color: #136f45 !important; 
+        border-color: #136f45 !important;
+        transform: scale(1.01); 
+        box-shadow: 0 0 10px rgba($primary-accent, 0.5); 
+    }
+    &:active {
+        transform: scale(0.98); 
+    }
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+}
+
+.product-badge-new {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: $secondary-accent !important; 
+    color: $white-bg;
+    padding: 0.4em 0.7em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 4px;
+    z-index: 1;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* === 3. Controles de Navegación (Limpios y Simples) === */
+.carousel-control-modern {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: none;
-    border: none;
-    z-index: 10;
-    cursor: pointer;
-    transition: opacity 0.3s;
-}
-
-.carousel-control:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.carousel-control-prev {
-    left: -15px;
-}
-
-.carousel-control-next {
-    right: -15px;
-}
-
-.carousel-control:hover:not(:disabled) {
-    opacity: 1;
-}
-
-.carousel-indicators {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 1rem;
-}
-
-.carousel-indicators button {
-    width: 10px;
-    height: 10px;
+    width: 35px; 
+    height: 35px;
+    background-color: rgba($dark-text, 0.7); 
     border-radius: 50%;
-    border: 2px solid #198754;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.3s;
-}
+    color: $white-bg;
+    font-size: 1.2rem; 
+    z-index: 10;
+    opacity: 0; 
+    transition: opacity 0.4s ease, background-color 0.3s ease;
 
-.carousel-indicators button.active {
-    background: #198754;
-}
-
-.product-image {
-    transition: transform 0.3s ease;
-    height: 200px;
-    object-fit: cover;
-    cursor: pointer;
-}
-
-.product-image:hover {
-    transform: scale(1.05);
-}
-
-@media (max-width: 768px) {
-    .carousel-control-prev {
-        left: 5px;
+    &:hover:not(:disabled) {
+        background-color: $primary-accent; 
     }
+    
+    &.carousel-control-prev {
+        left: 10px; 
+    }
+    &.carousel-control-next {
+        right: 10px; 
+    }
+    &:disabled {
+        opacity: 0;
+    }
+}
 
-    .carousel-control-next {
+/* === 4. Indicadores (El bloque no existe) === */
+
+/* === 5. Responsive Design === */
+/* Tabletas (992px y menos) */
+@media (max-width: 991.98px) { 
+    .custom-carousel-container {
+        padding: 0; 
+    }
+    .carousel-control-modern {
+        &.carousel-control-prev {
+            left: 5px;
+        }
+        &.carousel-control-next {
+            right: 5px;
+        }
+    }
+    
+    /* Ajuste de altura para tabletas */
+    .product-image-modern {
+        height: 180px; 
+    }
+    .product-card-body-modern {
+        min-height: 150px; 
+        max-height: 150px; 
+        padding: 1rem 1.2rem 1.5rem 1.2rem; /* Mantener padding inferior para el botón */
+    }
+}
+
+/* Móviles (768px y menos) */
+@media (max-width: 767.98px) { 
+    .custom-carousel-container {
+        padding: 0; 
+    }
+    .carousel-control-modern {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+        left: 5px;
         right: 5px;
+        opacity: 1; /* Flechas siempre visibles en móvil */
+    }
+    
+    /* Ajuste de altura para móviles */
+    .product-image-modern {
+        height: 160px;
+    }
+    .product-card-body-modern {
+        min-height: 140px; 
+        max-height: 140px; 
+        padding: 0.8rem 0.8rem 1.2rem 0.8rem; /* Padding inferior ligeramente menor en móvil */
+    }
+    .product-title-modern {
+        font-size: 0.9rem;
+    }
+    .product-price-modern {
+        font-size: 1.2rem; /* Precio un poco más pequeño en móvil */
     }
 }

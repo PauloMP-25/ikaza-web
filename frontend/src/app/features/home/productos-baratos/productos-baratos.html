@@ -1,28 +1,57 @@
 <section class="mb-5">
+    <!-- Header de sección -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="h3 fw-bold text-success">Productos Más Baratos</h2>
-        <form class="formulario-filtro d-none d-md-block" (ngSubmit)="onSearch()">
+        <h2 class="h3 fw-bold text-primary">Productos Más Baratos</h2>
+        <form class="d-none d-md-block" (ngSubmit)="onSearch()">
             <div class="input-group">
                 <span class="input-group-text bg-light border-0">
                     <i class="bi bi-search text-muted"></i>
                 </span>
                 <input type="search" class="form-control rounded-end" placeholder="Filtrar productos..."
-                    [(ngModel)]="buscarPalabra" (input)="onSearch()" name="searchTerm">
+                    [(ngModel)]="buscarPalabra" (input)="onSearch()" name="searchBaratos">
             </div>
         </form>
     </div>
 
+    <!-- Errores de carga -->
     <div *ngIf="hasError" class="alert alert-danger p-3">
         <p class="mb-0 fw-bold">Error de Conexión:</p>
         <p class="mb-0">{{ errorMessage }}</p>
     </div>
 
-    <!-- Usar componente de carousel personalizado -->
-    <app-custom-carousel [products]="obtenerProductos()" [itemsPerSlide]="4" [buttonText]="'Agregar al Carrito'"
-        [showStock]="false" [autoPlayInterval]="8000" [onAddToCart]="agregarCarrito.bind(this)"
-        [onImageClick]="onImageClick.bind(this)">
-    </app-custom-carousel>
+    <!-- Contenedor general -->
+    <div class="section-container">
+        <h2 class="section-title">Productos Baratos</h2>
 
+        <div class="layout-grid">
+
+            <!-- Banner -->
+            <div class="main-banner banner-barato">
+                <img class="banner-img" src="assets/banners/cheap.png" alt="banner">
+            </div>
+
+            <!-- Grid productos -->
+            <div class="products-grid">
+                <div class="product-card"
+                    *ngFor="let producto of obtenerProductos() | slice:0:8"
+                    (click)="onImageClick(producto)">
+
+                    <img [src]="producto.imagenPrincipal" class="product-image">
+
+                    <div class="product-info">
+                        <h4 class="product-title">{{ producto.nombreProducto }}</h4>
+                        <p class="product-price">
+                            S/. {{ producto.precio }}
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Sin resultados -->
     <div *ngIf="!isLoading && !hasError && obtenerProductos().length === 0" class="alert alert-info p-3">
         <p class="mb-0">No hay productos baratos disponibles en este momento.</p>
     </div>

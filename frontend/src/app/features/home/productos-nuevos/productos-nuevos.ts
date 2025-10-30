@@ -18,7 +18,7 @@ import { Subscription, tap, finalize } from 'rxjs';
   imports: [
     CommonModule,
     FormsModule,
-    CustomCarouselComponent
+    
   ]
 })
 export class ProductosNuevosComponent implements OnInit {

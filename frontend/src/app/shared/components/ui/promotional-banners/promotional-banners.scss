@@ -2,8 +2,11 @@
 .promotional-banners {
     margin-top: 2rem;
     margin-bottom: 2rem;
+    color: #fff;
+    width: 98vw; 
+    margin-left: calc(50% - 49vw); 
+    overflow-x: hidden
 }
-
 // Wrapper del Banner (contenedor principal)
 .banner-wrapper {
     position: relative;
@@ -14,7 +17,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-// Container de la Imagen (ocupa casi todo el ancho)
+
 .banner-image-container {
     position: absolute;
     top: 0;

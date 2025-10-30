@@ -17,7 +17,7 @@ export const PANEL_USUARIO_ROUTES: Routes = [
         component: PanelUsuarioComponent,  // Carga el componente padre con side-nav y outlet
         children: [
             // Redirect por default
-            { path: '', redirectTo: 'datos-personales', pathMatch: 'full' },
+            { path: '', redirectTo: 'promociones', pathMatch: 'full' },
             // Rutas hijas (coinciden con routerLink en side-nav)
             { path: 'datos-personales', component: DatosPersonalesComponent }, 
             { path: 'direcciones', component: DireccionesComponent },

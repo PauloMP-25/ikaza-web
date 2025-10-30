@@ -1,0 +1,52 @@
+<section class="home-categories-section">
+  <div class="container">
+    <h1 class="section-title">Categorías de Productos​​</h1>
+
+    <div id="categoriasCarousel" class="carousel slide" data-bs-ride="carousel">
+      
+      <div class="carousel-inner">
+
+        <div class="carousel-item"
+            *ngFor="let grupo of categoriaGrupos; let i = index"
+            [class.active]="i === 0">
+          
+          <div class="cards-container">
+            <div class="category-card-wrapper"
+                *ngFor="let categoria of grupo">
+              
+              <a class="category-card"
+                (click)="onCategoriaClick(categoria.id)">
+                
+                <!-- Título arriba de la imagen -->
+                <h3 class="category-title">{{ categoria.nombre | uppercase }}</h3>
+                
+                <img [src]="categoria.imagen"
+                     [alt]="categoria.nombre"
+                     class="category-image"
+                     loading="lazy"/>
+
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ✅ Flechas visibles -->
+      <button class="carousel-control prev"
+              type="button"
+              data-bs-target="#categoriasCarousel"
+              data-bs-slide="prev">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <button class="carousel-control next"
+              type="button"
+              data-bs-target="#categoriasCarousel"
+              data-bs-slide="next">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+
+    </div>
+  </div>
+</section>

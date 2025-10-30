@@ -1,166 +1,85 @@
-<!-- PANEL PROMOCIONES (NUEVO) -->
-<!-- Sección para canjear código -->
-<div class="card mb-4 border-primary">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0"><span class="material-symbols-outlined me-2">confirmation_number</span>Canjear Código de
-            Descuento</h5>
-    </div>
-    <div class="card-body">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <input type="text" class="form-control form-control-lg code-input"
-                    placeholder="Ingresa tu código promocional" id="codigo-promocional">
-            </div>
-            <div class="col-md-4 mt-2 mt-md-0">
-                <button class="btn btn-success btn-lg w-100" id="btn-canjear-codigo">
-                    <span class="material-symbols-outlined me-2">check_circle</span>
-                    Canjear
-                </button>
-            </div>
-        </div>
-        <small class="text-muted mt-2 d-block">Los códigos promocionales son válidos por tiempo limitado y sujetos a
-            términos y condiciones.</small>
-    </div>
-</div>
+<section class="welcome-section text-center py-5">
+  <div class="container">
+    <h1 class="display-5 fw-bold text-primary mb-3">¡Bienvenido a IKAZA IMPORT 😊❤️!</h1>
+    <p class="lead text-muted">
+      Descubre productos increíbles, ofertas únicas y las mejores experiencias de compra online.
+    </p>
+  </div>
+</section>
 
-<!-- Promociones activas -->
-<h3 class="h5 fw-bold mb-3 text-success">Promociones Activas</h3>
-<div class="row g-4 mb-5">
-    <!-- Promoción 1 -->
-    <div class="col-md-6 col-lg-4">
-        <div class="card promo-card h-100 border-success">
-            <div class="card-header d-flex justify-content-between align-items-center bg-success text-white">
-                <span class="badge badge-promo">Activa</span>
-                <span class="material-symbols-outlined">verified</span>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">Otoño 2024 - 30% OFF</h5>
-                <p class="card-text small text-muted">Descuento en toda la colección de otoño</p>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <span class="badge bg-light text-dark">Mujer</span>
-                    <span class="discount-badge badge">30% OFF</span>
-                </div>
-                <div class="mt-3">
-                    <div class="small"><strong>Código:</strong> <code class="bg-light p-1 rounded">OTOÑO24</code>
-                    </div>
-                    <div class="small text-muted mt-1">Válida hasta: 30/09/2024</div>
-                    <button class="btn btn-outline-primary btn-sm mt-2 w-100 copiar-codigo" data-codigo="OTOÑO24">
-                        <span class="material-symbols-outlined me-1" style="font-size: 14px;">content_copy</span>
-                        Copiar código
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<section class="events-section container py-5">
+  <h2 class="fw-bold text-dark mb-4">PRÓXIMOS EVENTOS</h2>
 
-    <!-- Promoción 2 -->
-    <div class="col-md-6 col-lg-4">
-        <div class="card promo-card h-100 border-success">
-            <div class="card-header d-flex justify-content-between align-items-center bg-success text-white">
-                <span class="badge badge-promo">Activa</span>
-                <span class="material-symbols-outlined">verified</span>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">2x1 en Jeans</h5>
-                <p class="card-text small text-muted">Lleva 2 jeans al precio de 1</p>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <span class="badge bg-light text-dark">Hombre</span>
-                    <span class="discount-badge badge">2x1</span>
-                </div>
-                <div class="mt-3">
-                    <div class="small"><strong>Código:</strong> <code class="bg-light p-1 rounded">JEANS2X1</code>
-                    </div>
-                    <div class="small text-muted mt-1">Válida hasta: 15/09/2024</div>
-                    <button class="btn btn-outline-primary btn-sm mt-2 w-100 copiar-codigo" data-codigo="JEANS2X1">
-                        <span class="material-symbols-outlined me-1" style="font-size: 14px;">content_copy</span>
-                        Copiar código
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="row g-4 mb-5">
 
-    <!-- Promoción 3 -->
-    <div class="col-md-6 col-lg-4">
-        <div class="card promo-card h-100 border-success">
-            <div class="card-header d-flex justify-content-between align-items-center bg-success text-white">
-                <span class="badge badge-promo">Activa</span>
-                <span class="material-symbols-outlined">verified</span>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">Envío Gratis +$50</h5>
-                <p class="card-text small text-muted">Envío gratis en compras mayores a $50</p>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <span class="badge bg-light text-dark">Todos</span>
-                    <span class="discount-badge badge">ENVÍO GRATIS</span>
-                </div>
-                <div class="mt-3">
-                    <div class="small"><strong>Código:</strong> <code class="bg-light p-1 rounded">ENVIOGRATIS50</code>
-                    </div>
-                    <div class="small text-muted mt-1">Válida hasta: 31/12/2024</div>
-                    <button class="btn btn-outline-primary btn-sm mt-2 w-100 copiar-codigo" data-codigo="ENVIOGRATIS50">
-                        <span class="material-symbols-outlined me-1" style="font-size: 14px;">content_copy</span>
-                        Copiar código
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Próximas promociones -->
-<h3 class="h5 fw-bold mb-3 text-info">Próximas Promociones</h3>
-<div class="row g-4">
+    <!-- Evento Halloween -->
     <div class="col-md-6">
-        <div class="card promo-card border-info">
-            <div class="card-header d-flex justify-content-between align-items-center bg-info text-dark">
-                <span class="badge badge-promo promo-status-upcoming">Próximamente</span>
-                <span class="material-symbols-outlined">schedule</span>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">Black Friday - 50% OFF</h5>
-                <p class="card-text small text-muted">Descuento especial para Black Friday</p>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <span class="badge bg-light text-dark">Todos</span>
-                    <span class="badge bg-warning text-dark">50% OFF</span>
-                </div>
-                <div class="mt-2 small">
-                    <div><strong>Disponible a partir del:</strong> 29/11/2024</div>
-                    <div class="text-muted">¡Prepárate para las mejores ofertas del año!</div>
-                </div>
-            </div>
+      <div class="event-card position-relative shadow-sm rounded overflow-hidden"
+           (click)="verFoto('assets/banners/promocion/promociona-halloween.png')">
+        <img src="assets/banners/promocion/promociona-halloween.png" class="event-image" alt="Halloween Ikaza">
+        <div class="event-overlay d-flex flex-column justify-content-end p-3">
+          <span class="badge bg-danger px-3 py-2 event-badge">¡Muy Pronto!</span>
+          <h3 class="event-title mt-2">🎃 Halloween Ikaza</h3>
+          <p class="event-text">Promociones espeluznantes 👻</p>
         </div>
+      </div>
     </div>
-</div>
 
-<!-- Historial de promociones usadas -->
-<h3 class="h5 fw-bold mb-3 mt-5">Historial de Promociones Usadas</h3>
-<div class="table-responsive">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Promoción</th>
-                <th>Código</th>
-                <th>Descuento</th>
-                <th>Fecha de uso</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Verano 2024 - 25% OFF</td>
-                <td><code>VERANO24</code></td>
-                <td>25%</td>
-                <td>15/07/2024</td>
-                <td><span class="badge bg-secondary">Expirada</span></td>
-            </tr>
-            <tr>
-                <td>Primera Compra - 15% OFF</td>
-                <td><code>BIENVENIDO15</code></td>
-                <td>15%</td>
-                <td>20/06/2024</td>
-                <td><span class="badge bg-secondary">Expirada</span></td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Evento Navidad -->
+    <div class="col-md-6">
+      <div class="event-card position-relative shadow-sm rounded overflow-hidden"
+           (click)="verFoto('assets/banners/promocion/navidad.png')">
+        <img src="assets/banners/promocion/navidad.png" class="event-image" alt="Navidad Ikaza">
+        <div class="event-overlay d-flex flex-column justify-content-end p-3">
+          <span class="badge bg-success px-3 py-2 event-badge">¡Muy Pronto!</span>
+          <h3 class="event-title mt-2">🎄 Navidad Ikaza</h3>
+          <p class="event-text">Regalos y sorpresas para todos</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 class="fw-bold text-dark mb-3">Eventos Pasados</h2>
+  <p class="text-muted">Un vistazo a nuestras experiencias y celebraciones.</p>
+
+  <div class="row g-3 mt-3 past-events-grid">
+    <div class="col-6 col-md-3"
+         *ngFor="let foto of fotosEventosPasados"
+         (click)="verFoto(foto)">
+      <div class="past-event-photo"
+           [style.background-image]="'url(' + foto + ')'"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal para mostrar imagen -->
+<!-- Modal para mostrar imagen -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark border-0 position-relative text-center">
+
+      <!-- 📌 Mostrar imagen seleccionada -->
+      <img [src]="selectedPhoto"
+           class="img-fluid w-100 rounded"
+           alt="Foto del Evento">
+
+      <!-- Flechas solo para eventos pasados ✅ -->
+      <span *ngIf="fotosEventosPasados.includes(selectedPhoto)"
+            class="material-symbols-outlined text-white modal-arrow modal-arrow-left"
+            (click)="cambiarFoto(-1)">
+        chevron_left
+      </span>
+
+      <span *ngIf="fotosEventosPasados.includes(selectedPhoto)"
+            class="material-symbols-outlined text-white modal-arrow modal-arrow-right"
+            (click)="cambiarFoto(1)">
+        chevron_right
+      </span>
+
+      <button type="button"
+              class="btn-close btn-close-white position-absolute top-0 end-0 m-2"
+              data-bs-dismiss="modal"></button>
+    </div>
+  </div>
 </div>

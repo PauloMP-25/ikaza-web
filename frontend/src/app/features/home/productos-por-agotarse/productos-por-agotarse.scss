@@ -1,28 +1,122 @@
-/* products-running-out.component.css */
-.product-image {
-    height: 260px;
+/* --- CONTENEDOR --- */
+.section-container {
+    max-width: 1300px;
+    margin: auto;
+}
+
+/* --- GRID CON BANNER --- */
+.layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 20px;
+}
+
+/* --- BANNER --- */
+.main-banner {
+    background: #28a745;
+    border-radius: 14px;
+    min-height: 420px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.agotamiento-banner {
+    background: linear-gradient(135deg, #28a745, #77dd77);
+}
+
+.banner-img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
-.form {
-    width: 280px;
+/* --- PRODUCTOS GRID --- */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
 }
 
-.card {
-    transition: transform 0.2s ease-in-out;
+/* --- TARJETA PRODUCTO --- */
+.product-card {
+    background: #fff;
+    border: 1px solid #e9e9e9;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: .25s ease-in-out;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
 }
 
-.card:hover {
-    transform: translateY(-5px);
+.product-image {
+    height: 190px;
+    width: 100%;
+    object-fit: cover;
 }
 
-.card-precio {
-    font-size: 1.25rem;
+.product-info {
+    padding: 12px;
+    text-align: center;
+}
+
+.product-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #212121;
+}
+
+.product-stock {
+    font-size: 0.85rem;
+    color: #d9534f;
+}
+
+.product-price {
+    font-size: 1.15rem;
     font-weight: bold;
+    color: #28a745;
+    margin: 10px 0;
 }
 
-@media (max-width: 768px) {
-    .product-image {
-        height: 200px;
+.btn-reservar {
+    width: 100%;
+    padding: .45rem;
+    background-color: #198754;
+    border: none;
+    font-weight: 600;
+    color: #fff;
+    border-radius: 6px;
+    transition: .2s;
+
+    &:hover {
+        background-color: #146c43;
+    }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+    .layout-grid {
+        grid-template-columns: 1fr;
+    }
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .main-banner {
+        min-height: 260px;
+    }
+}
+
+@media (max-width: 576px) {
+    .products-grid {
+        grid-template-columns: 1fr;
     }
 }

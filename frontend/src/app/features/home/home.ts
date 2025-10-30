@@ -8,12 +8,13 @@ import { SeccionComentariosComponent } from "./seccion-comentarios/seccion-comen
 import { CartOffcanvasComponent } from '@shared/components/header/menu-carrito/menu-carrito';
 import { BannersPromocionalComponent } from '@shared/components/ui/promotional-banners/promotional-banners';
 import { ConfirmacionPagoModalComponent } from '@features/pagos/confirmacion-pago-modal/confirmacion-pago-modal';
+import { Carrusel } from "./carrusel/carrusel";
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [ProductoMasVendidoComponent, ProductosBaratosComponent,
-    ProductosNuevosComponent, ProductosPorAgotarseComponent, SeccionComentariosComponent, BannersPromocionalComponent, CartOffcanvasComponent, ConfirmacionPagoModalComponent],
+    ProductosNuevosComponent, ProductosPorAgotarseComponent, SeccionComentariosComponent, BannersPromocionalComponent, CartOffcanvasComponent, ConfirmacionPagoModalComponent, Carrusel],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })

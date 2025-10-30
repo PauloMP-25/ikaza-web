@@ -1,32 +1,30 @@
 <div class="custom-carousel-container position-relative">
-    <!-- Contenedor de slides -->
     <div class="carousel-wrapper" #carouselWrapper>
         <div class="carousel-track" [style.transform]="'translateX(-' + (currentIndex * 100) + '%)'">
             <div *ngFor="let chunk of productChunks" class="carousel-slide">
                 <div class="row g-3 justify-content-center">
                     <div *ngFor="let product of chunk" class="col-6 col-md-3">
-                        <div class="card h-100 border-success shadow-sm position-relative">
-                            <!-- Badge opcional -->
-                            <span *ngIf="showNewBadge"
-                                class="position-absolute top-0 start-0 badge bg-warning text-dark m-2">
+                        
+                        <div class="card product-card-modern position-relative">
+                            
+                            <span *ngIf="showNewBadge" class="product-badge-new">
                                 Nuevo
                             </span>
 
-                            <!-- Imagen -->
                             <img [src]="product.imagenPrincipal" [alt]="product.nombreProducto" 
-                            class="card-img-top img-fluid product-image" loading="lazy" aria-label="{{product.nombreProducto}}"
+                            class="img-fluid product-image-modern" loading="lazy" aria-label="{{product.nombreProducto}}"
                                 (click)="onImageClick.emit(product)">
 
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title text-success">{{ product.nombreProducto }}</h5>
-                                <p class="card-text text-muted small">{{ product.descripcionProducto}}</p>
-
+                            <div class="card-body d-flex flex-column product-card-body-modern">
+                                
+                                <h5 class="card-title product-title-modern">{{ product.nombreProducto }}</h5>
+                                
                                 <div class="price-container mb-2">
-                                    <h4 class="card-precio text-success mb-0">S/.{{ product.precio.toFixed(2) }}</h4>
+                                    <h4 class="card-precio product-price-modern">S/.{{ product.precio.toFixed(2) }}</h4>
                                     <small class="text-muted" *ngIf="showStock">Stock: {{ product.stock }}</small>
                                 </div>
 
-                                <button class="btn btn-success w-100 mt-auto" (click)="onAddToCart.emit(product)"
+                                <button class="btn product-buy-button-modern w-100 mt-auto" (click)="onAddToCart.emit(product)"
                                     [disabled]="product.stock === 0">
                                     {{ product.stock === 0 ? 'Agotado' : buttonText }}
                                 </button>
@@ -38,23 +36,19 @@
         </div>
     </div>
 
-    <!-- Controles
-    <button class="carousel-control carousel-control-prev" (click)="prev()" [disabled]="currentIndex === 0"
+    <button class="carousel-control carousel-control-prev carousel-control-modern" (click)="prev()" [disabled]="currentIndex === 0"
         *ngIf="productChunks.length > 1">
-        <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
-        <span class="visually-hidden">Anterior</span>
+        <i class="bi bi-chevron-left"></i>
     </button>
 
-    <button class="carousel-control carousel-control-next" (click)="next()"
+    <button class="carousel-control carousel-control-next carousel-control-modern" (click)="next()"
         [disabled]="currentIndex === productChunks.length - 1" *ngIf="productChunks.length > 1">
-        <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
-        <span class="visually-hidden">Siguiente</span>
-    </button> -->
+        <i class="bi bi-chevron-right"></i>
+    </button>
 
-    <!-- Indicadores -->
-    <div class="carousel-indicators" *ngIf="productChunks.length > 1">
+    <!-- <div class="carousel-indicators carousel-indicators-modern" *ngIf="productChunks.length > 1">
         <button *ngFor="let chunk of productChunks; let i = index" type="button" [class.active]="i === currentIndex"
-            (click)="goToSlide(i)" [attr.aria-label]="'Slide ' + (i + 1)" aria-label="Avanzar">
+            (click)="goToSlide(i)" [attr.aria-label]="'Slide ' + (i + 1)">
         </button>
-    </div>
+    </div>-->
 </div>

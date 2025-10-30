@@ -27,68 +27,56 @@ export interface PromotionalBanner {
 })
 export class BannersPromocionalComponent implements OnInit {
 
-  banners: PromotionalBanner[] = [
-    {
-      id: '1',
-      title: 'Síguenos en TikTok',
-      description: 'Descubre contenido exclusivo y ofertas sorpresa',
-      imageUrl: 'assets/banners/canal-tiktok.jpg',
-      linkUrl: 'https://www.tiktok.com/@ikazaimport',
-      linkType: 'external',
-      backgroundColor: '#000000',
-      textColor: '#ffffff',
-      buttonText: 'Ver TikTok',
-      isActive: true
-    },
-    {
-      id: '2',
-      title: 'Suscríbete en YouTube',
-      description: 'Tutoriales, reviews y mucho más',
-      imageUrl: 'assets/banners/canal-youtube.jpg',
-      linkUrl: 'https://www.youtube.com/@tucanal',
-      linkType: 'external',
-      backgroundColor: '#FF0000',
-      textColor: '#ffffff',
-      buttonText: 'Ver Canal',
-      isActive: true
-    },
-    {
-      id: '3',
-      title: 'Síguenos en Facebook',
-      description: 'Únete a nuestra comunidad',
-      imageUrl: 'assets/banners/canal-facebook.png',
-      linkUrl: 'https://www.facebook.com/profile.php/?id=61552746324574',
-      linkType: 'external',
-      backgroundColor: '#1877F2',
-      textColor: '#ffffff',
-      buttonText: 'Visitar Página',
-      isActive: true
-    },
-    {
-      id: '4',
-      title: 'Ofertas de Temporada',
-      description: 'Hasta 50% de descuento en productos seleccionados',
-      imageUrl: 'assets/banners/ofertas-verano.jpg',
-      linkUrl: '/ofertas',
-      linkType: 'internal',
-      backgroundColor: '#ffc107',
-      textColor: '#212529',
-      buttonText: 'Ver Ofertas',
-      isActive: true
-    },
-    {
-      id: '5',
-      title: 'Nueva Colección',
-      description: 'Descubre los últimos productos de temporada',
-      imageUrl: 'assets/banners/nueva-coleccion.jpg',
-      linkUrl: 'nuevos-productos',
-      linkType: 'section',
-      backgroundColor: '#6f42c1',
-      textColor: '#ffffff',
-      buttonText: 'Explorar',
-      isActive: true
-    }
-  ];
+banners: PromotionalBanner[] = [
+  {
+    id: '1',
+    title: 'Novedades y mucho más!', 
+    description: 'Únete a nuestra comunidad y mantente al día con los nuevos productos. ¡Sé parte de Ikaza Import!',
+    imageUrl: 'assets/banners/banner-principal.png',
+    linkUrl: 'https://chat.whatsapp.com/FnNKHZOGiVc7I4opDtcxce',
+    linkType: 'external',
+    backgroundColor: '#25D366', 
+    textColor: '#ffffff', 
+    buttonText: 'Unirme al Grupo',
+    isActive: true
+  },
+  {
+    id: '2',
+    title: 'Síguenos en Facebook',
+    description: 'Únete a nuestra comunidad y sé el primero en conocer las novedades.',
+    imageUrl: 'assets/banners/bannerFB.jpg',
+    linkUrl: 'https://www.facebook.com/profile.php/?id=61552746324574',
+    linkType: 'external',
+    backgroundColor: '#1877F2', 
+    textColor: '#ffffff', 
+    buttonText: 'Visitar Página', 
+    isActive: true
+  },
+  {
+    id: '3',
+    title: '¡Súmate a la tendencia en TikTok!',
+    description: 'Tutoriales, reviews rápidos y divertidos. No te pierdas nuestros videos más virales.',
+    imageUrl: 'assets/banners/tiktok.png',
+    linkUrl: 'https://www.tiktok.com/@ikaza.import',
+    linkType: 'external',
+    backgroundColor: '#2b2b2ba9', 
+    textColor: '#ffffffff', 
+    buttonText: 'Ver TikTok', 
+    isActive: true
+  },
+  {
+    id: '4',
+    title: '¡Ofertas de Temporada!',
+    description: 'Hasta 50% de descuento en productos seleccionados. ¡Aprovecha antes que se acaben!',
+    imageUrl: 'assets/banners/halloween.jpg',
+    linkUrl: '/ofertas',
+    linkType: 'internal',
+    backgroundColor: '#FF6600', 
+    textColor: '#ffffff',
+    buttonText: 'Ver Ofertas',
+    isActive: true
+  },
+];
 
   activeBanners: PromotionalBanner[] = [];
 

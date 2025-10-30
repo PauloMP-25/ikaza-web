@@ -1,40 +1,119 @@
-/* Estilos específicos para promociones (adaptados para usuario) */
-.promo-card {
-    transition: transform 0.3s, box-shadow 0.3s;
-    border: 1px solid #e0e0e0;
+/* Bienvenida */
+.welcome-section {
+    background: linear-gradient(135deg, #f3f8ff, #ffffff);
 }
 
-.promo-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+/* Tarjetas de eventos */
+.event-card {
+    height: 300px;
+    cursor: pointer;
+    transition: transform .3s ease, box-shadow .3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
 }
 
-.badge-promo {
-    font-size: 0.75rem;
+.event-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.promo-status-active {
-    background-color: #198754;
+.event-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 80%);
+    color: #fff;
 }
 
-.promo-status-upcoming {
-    background-color: #0dcaf0;
-    color: #000;
-}
-
-.promo-status-expired {
-    background-color: #6c757d;
-}
-
-.discount-badge {
-    background: linear-gradient(45deg, #ff6b6b, #ffa726);
-    color: white;
+.event-title {
+    font-size: 1.3rem;
     font-weight: bold;
-    font-size: 1.1rem;
 }
 
-.code-input {
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    letter-spacing: 1px;
+.event-text {
+    font-size: .95rem;
+    opacity: .9;
 }
+
+.event-badge {
+    font-size: .75rem;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+/* Eventos Pasados */
+.past-events-grid .past-event-photo {
+    background: #e9ecef;
+    width: 100%;
+    height: 130px;
+    border-radius: 8px;
+    transition: transform .25s ease;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+@media (max-width: 768px) {
+    .event-card {
+        height: 240px;
+    }
+    .past-events-grid .past-event-photo {
+        height: 100px;
+    }
+}
+.past-event-photo {
+  background-color: #e9ecef;
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 130px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease;
+
+  &:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+}
+
+.modal-content img {
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+.modal-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  img {
+    max-height: 75vh; // ✅ imagen más pequeña
+    width: auto;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+}
+
+.modal-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.2rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  padding: 0.4rem 0.8rem;
+  transition: background 0.3s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.modal-arrow-left { left: 10px; }
+.modal-arrow-right { right: 10px; }
+
