@@ -48,8 +48,7 @@
                         </div>
                         <div class="user-details">
                             <div class="fw-bold">{{ displayName }}</div>
-                            <small class="text-muted">{{ currentUser .email.toLocaleLowerCase() || currentUser
-                                .displayName }}</small>
+                            <small class="text-muted">{{ currentUser .email.toLocaleLowerCase() || currentUser.username }}</small>
                         </div>
                     </div>
                 </li>

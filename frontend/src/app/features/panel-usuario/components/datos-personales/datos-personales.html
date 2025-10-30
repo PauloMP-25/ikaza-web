@@ -1,7 +1,12 @@
 <h1 class="h3 fw-bold text-dark mb-4">Datos Personales</h1>
+<!-- AGREGAR ESTE MENSAJE PARA USUARIOS NUEVOS -->
+<div class="alert alert-info mb-4" *ngIf="isProfileEmpty(originalFormData) && !isSaveEnabled()">
+    <strong>👋 ¡Bienvenido!</strong> Como eres nuevo, completa todos los campos marcados con <span
+        class="text-danger">*</span> para crear tu perfil.
+</div>
 
 <form [formGroup]="datosForm" (ngSubmit)="guardarCambios()" class="row g-3">
-    <!-- Nombres (Deshabilitado - viene de Firebase Auth) -->
+    <!-- Usuario -->
     <div class="col-12">
         <label for="nombreUsuario" class="form-label">Usuario</label>
         <input type="text" class="form-control" id="nombreUsuario" formControlName="nombreUsuario"
@@ -9,52 +14,92 @@
         <small class="text-muted">Este campo se obtiene de tu cuenta</small>
     </div>
 
+    <!-- Nombre -->
     <div class="col-md-6">
-        <label for="nombre" class="form-label">Nombres</label>
-        <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Nombres" />
-        <small class="text-muted">Este campo se obtiene de tu cuenta</small>
+        <label for="nombre" class="form-label">Nombres <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Nombres"
+            (blur)="onFieldBlur('nombre')" (input)="onFieldInput('nombre')"
+            [class.is-invalid]="isFieldInvalid('nombre')" [class.is-valid]="isFieldValid('nombre')" />
+        <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('nombre')">
+            {{ getFieldError('nombre') }}
+        </div>
     </div>
 
-    <!-- Apellidos (Deshabilitado - viene de Firebase Auth) -->
+    <!-- Apellidos -->
     <div class="col-md-6">
-        <label for="apellido" class="form-label">Apellidos</label>
-        <input type="text" class="form-control" id="apellido" formControlName="apellido" placeholder="Apellidos" />
-        <small class="text-muted">Este campo se obtiene de tu cuenta</small>
+        <label for="apellido" class="form-label">Apellidos <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="apellido" formControlName="apellido" placeholder="Apellidos"
+            (blur)="onFieldBlur('apellido')" (input)="onFieldInput('apellido')"
+            [class.is-invalid]="isFieldInvalid('apellido')" [class.is-valid]="isFieldValid('apellido')" />
+        <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('apellido')">
+            {{ getFieldError('apellido') }}
+        </div>
     </div>
 
     <!-- Fecha de Nacimiento -->
     <div class="col-md-6">
-        <label for="nacimiento" class="form-label">Fecha de nacimiento</label>
+        <label for="nacimiento" class="form-label">Fecha de nacimiento <span class="text-danger">*</span></label>
         <input type="date" class="form-control" id="nacimiento" formControlName="nacimiento"
-            [class.is-invalid]="isFieldInvalid('nacimiento')" />
-        <div class="invalid-feedback" *ngIf="isFieldInvalid('nacimiento')">
+            (blur)="onFieldBlur('nacimiento')" (input)="onFieldInput('nacimiento')"
+            [class.is-invalid]="isFieldInvalid('nacimiento')" [class.is-valid]="isFieldValid('nacimiento')" />
+        <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('nacimiento')">
             {{ getFieldError('nacimiento') }}
         </div>
     </div>
 
-    <!-- DNI con validación -->
-    <div class="col-md-6">
-        <label for="dni" class="form-label">Documento de Identidad (DNI)</label>
-        <input type="text" class="form-control" id="dni" formControlName="dni" placeholder="Numero de DNI" maxlength="8"
-            [class.is-invalid]="isFieldInvalid('dni')" />
-        <div class="invalid-feedback" *ngIf="isFieldInvalid('dni')">
-            {{ getFieldError('dni') }}
+    <!-- Tipo de Documento -->
+    <div class="col-md-4">
+        <label for="tipoDocumento" class="form-label">Tipo de Documento <span class="text-danger">*</span></label>
+        <select class="form-select" id="tipoDocumento" formControlName="tipoDocumento"
+            (blur)="onFieldBlur('tipoDocumento')" (change)="onFieldInput('tipoDocumento')"
+            [class.is-invalid]="isFieldInvalid('tipoDocumento')" [class.is-valid]="isFieldValid('tipoDocumento')">
+            <option value="" disabled>Selecciona tipo</option>
+            <option *ngFor="let t of tipoDocumento" [value]="t">{{ t }}</option>
+        </select>
+        <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('tipoDocumento')">
+            {{ getFieldError('tipoDocumento') }}
         </div>
-        <small class="text-muted">El DNI debe coincidir con tus nombres y apellidos</small>
     </div>
 
-    <!-- Teléfono con botón de verificación -->
+    <!-- Número de Documento -->
+    <div class="col-md-8">
+        <label for="dni" class="form-label">
+            {{ documentoLabel() }} <span class="text-danger">*</span>
+        </label>
+        <input type="text" class="form-control" id="dni" formControlName="dni" [placeholder]="documentoLabel()"
+            [maxlength]="documentoMaxLength()" (blur)="onFieldBlur('dni')" (input)="onFieldInput('dni')"
+            [class.is-invalid]="isFieldInvalid('dni')" [class.is-valid]="isFieldValid('dni')" />
+        <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('dni')">
+            {{ getFieldError('dni') }}
+        </div>
+        <div class="form-text">{{ documentoMaxLength() }} caracteres máx.</div>
+    </div>
+
+    <!-- Teléfono -->
     <div class="col-12">
         <label class="form-label">Número de teléfono</label>
         <div class="row g-2">
             <div class="col-md-4">
-                <input type="tel" class="form-control" id="digitT" formControlName="prefijo" placeholder="+51"
-                    [class.is-invalid]="isFieldInvalid('prefijo')" />
+                <label for="prefijoTelefono" class="form-label">Prefijo</label>
+                <select class="form-select" id="prefijoTelefono" formControlName="prefijoTelefono"
+                    (blur)="onFieldBlur('prefijoTelefono')" (change)="onFieldInput('prefijoTelefono')"
+                    [class.is-invalid]="isFieldInvalid('prefijoTelefono')"
+                    [class.is-valid]="isFieldValid('prefijoTelefono')">
+                    <option *ngFor="let prefijo of prefijosTelefonicos" [value]="prefijo.codigo">
+                        {{ prefijo.bandera }} {{ prefijo.codigo }} ({{ prefijo.pais }})
+                    </option>
+                </select>
+                <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('prefijoTelefono')">
+                    {{ getFieldError('prefijoTelefono') }}
+                </div>
             </div>
             <div class="col-md-4">
+                <label for="telefono" class="form-label">Teléfono</label>
                 <input type="tel" class="form-control" id="telefono" formControlName="telefono"
-                    placeholder="Numero de celular" maxlength="9" [class.is-invalid]="isFieldInvalid('telefono')" />
-                <div class="invalid-feedback" *ngIf="isFieldInvalid('telefono')">
+                    placeholder="Número de celular" maxlength="15" (blur)="onFieldBlur('telefono')"
+                    (input)="onFieldInput('telefono')" [class.is-invalid]="isFieldInvalid('telefono')"
+                    [class.is-valid]="isFieldValid('telefono')" />
+                <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('telefono')">
                     {{ getFieldError('telefono') }}
                 </div>
             </div>
@@ -62,22 +107,23 @@
         <small class="text-muted mt-1 d-block">
             <i class="bi bi-info-circle"></i> La verificación del teléfono se realiza en la sección **Configuración**.
         </small>
+    </div>
 
-        <div class="col-md-4">
-            <label for="genero" class="form-label">Género</label>
-            <select class="form-select" id="genero" formControlName="genero"
-                [class.is-invalid]="isFieldInvalid('genero')">
-                <option value="" disabled>Selecciona una opción</option>
-                <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
-            </select>
-            <div class="invalid-feedback" *ngIf="isFieldInvalid('genero')">
-                {{ getFieldError('genero') }}
-            </div>
+    <!-- Género -->
+    <div class="col-md-4">
+        <label for="genero" class="form-label">Género <span class="text-danger">*</span></label>
+        <select class="form-select" id="genero" formControlName="genero" (blur)="onFieldBlur('genero')"
+            (change)="onFieldInput('genero')" [class.is-invalid]="isFieldInvalid('genero')"
+            [class.is-valid]="isFieldValid('genero')">
+            <option value="" disabled>Selecciona una opción</option>
+            <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
+        </select>
+        <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('genero')">
+            {{ getFieldError('genero') }}
         </div>
     </div>
 
-
-    <!-- Email (Deshabilitado - viene de Firebase Auth) -->
+    <!-- Email -->
     <div class="col-12">
         <label for="email" class="form-label">Correo electrónico</label>
         <input type="email" class="form-control" id="email" formControlName="email"
@@ -85,12 +131,24 @@
         <small class="text-muted">Este correo está vinculado a tu cuenta y no se puede modificar</small>
     </div>
 
+    <!-- Mensajes de Estado -->
+    <div class="col-12">
+        <div *ngIf="errorMessage()" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ errorMessage() }}
+            <button type="button" class="btn-close" (click)="clearMessages()" aria-label="Close"></button>
+        </div>
+        <div *ngIf="successMessage()" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ successMessage() }}
+            <button type="button" class="btn-close" (click)="clearMessages()" aria-label="Close"></button>
+        </div>
+    </div>
+
     <!-- Botón Guardar -->
     <div class="col-12 d-flex justify-content-end pt-3">
-        <button type="submit" class="btn btn-primary px-4 fw-bold"
-            [disabled]="datosForm.invalid || !isPhoneVerified || isLoading">
-            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-            {{ isLoading ? 'Guardando...' : 'Guardar cambios' }}
+        <button type="submit" class="btn btn-primary btn-lg fw-bold" [disabled]="isSaveEnabled()">
+            <span *ngIf="isSaving()" class="spinner-border spinner-border-sm me-2" role="status"
+                aria-hidden="true"></span>
+            {{ isSaving() ? 'Guardando...' : 'Guardar cambios' }}
         </button>
     </div>
 </form>

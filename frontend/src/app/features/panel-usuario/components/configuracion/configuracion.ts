@@ -63,7 +63,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   profileImage: string | null = null;
   private originalIcon: string = 'bi-person-circle';
   private originalImage: string | null = null;
-  private originalDisplayName: string = '';
+  private originalUsername: string = '';
 
   // ============================================================================
   // DATOS DEL USUARIO
@@ -119,9 +119,9 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
    * Inicializar formularios
    */
   private initializeForms(): void {
-    // Formulario de perfil
+    // Formulario de perfil - Ahora usa username en lugar de displayName
     this.perfilForm = this.fb.group({
-      displayName: ['', [Validators.required, Validators.minLength(2)]]
+      username: ['', [Validators.required, Validators.minLength(2)]]
     });
 
     // Formulario de contraseña
@@ -148,7 +148,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   // ============================================================================
 
   /**
-   * Cargar datos del usuario
+   * Cargar datos del usuario desde la entidad Usuario
    */
   private loadUserData(): void {
     this.authService.getCurrentUser$().pipe(
@@ -162,22 +162,34 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         console.log('Usuario cargado:', currentUser);
         this.userEmail = currentUser.email;
 
-        // Cargar displayName del email
-        const displayName = currentUser.email.split('@')[0];
-        this.perfilForm.patchValue({ displayName });
-        this.originalDisplayName = displayName;
+        // Cargar username de la entidad Usuario
+        const username = currentUser.username || '';
+        this.perfilForm.patchValue({ username });
+        this.originalUsername = username;
 
-        // Cargar foto/icono
+        // Cargar foto_perfil como URL o customIcon como icono Bootstrap
         if (currentUser.photoURL) {
-          this.profileImage = currentUser.photoURL;
-          this.originalImage = currentUser.photoURL;
+          // Si photoURL contiene una URL completa, es una imagen
+          if (currentUser.photoURL.startsWith('http') || currentUser.photoURL.startsWith('data:')) {
+            this.profileImage = currentUser.photoURL;
+            this.originalImage = currentUser.photoURL;
+          } else {
+            // Si no es una URL, es un icono de Bootstrap
+            this.selectedIcon = currentUser.photoURL;
+            this.originalIcon = currentUser.photoURL;
+          }
         }
+
+        // También verificar customIcon
         if (currentUser.customIcon) {
           this.selectedIcon = currentUser.customIcon;
           this.originalIcon = currentUser.customIcon;
         }
+
+        // Estado de verificación de email desde emailVerificado de Usuario
+        this.isEmailVerified = currentUser.activo && (currentUser as any).emailVerificado;
       }),
-      // Cargar datos del cliente desde el backend
+      // Cargar datos del cliente desde el backend para obtener teléfono
       switchMap(currentUser => {
         if (!currentUser) {
           throw new Error('No hay usuario autenticado');
@@ -188,11 +200,10 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       next: (cliente) => {
         console.log('Datos del cliente cargados:', cliente);
 
-        // Cargar estado de verificaciones
-        this.isEmailVerified = cliente.activo; // Asumiendo que activo implica email verificado
+        // Cargar estado de verificación de teléfono
         this.isPhoneVerified = cliente.telefonoVerificado;
 
-        // Cargar teléfono
+        // Cargar teléfono completo
         const telefonoCompleto = `${cliente.prefijoTelefono || ''}${cliente.telefono || ''}`;
         this.userPhone = telefonoCompleto;
         this.phoneVerificationForm.patchValue({ telefonoCompleto });
@@ -382,6 +393,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
 
   /**
    * Guardar avatar
+   * Guarda en el campo foto_perfil de Usuario (URL o clase de icono Bootstrap)
    */
   guardarAvatar(): void {
     if (!this.hasAvatarChanges()) {
@@ -390,9 +402,12 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
 
     this.isLoadingAvatar = true;
 
+    // Si hay imagen, guardar la URL; si no, guardar el icono de Bootstrap
+    const fotoPerfilValue = this.profileImage || this.selectedIcon;
+
     this.profileService.updateProfile(this.userEmail, {
-      photoURL: this.profileImage,
-      customIcon: this.profileImage ? null : this.selectedIcon
+      photoURL: fotoPerfilValue,
+      customIcon: null // Ya no necesitamos customIcon separado
     })
       .pipe(
         takeUntil(this.destroy$),
@@ -416,7 +431,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   // ============================================================================
 
   /**
-   * Guardar perfil
+   * Guardar perfil (username de Usuario)
    */
   guardarPerfil(): void {
     if (!this.perfilForm.valid) {
@@ -424,16 +439,17 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     }
 
     const formData = this.perfilForm.value;
-    const displayNameChanged = formData.displayName !== this.originalDisplayName;
+    const usernameChanged = formData.username !== this.originalUsername;
 
-    if (!displayNameChanged) {
+    if (!usernameChanged) {
       return;
     }
 
     this.isLoadingProfile = true;
 
+    // Actualizar username en la entidad Usuario
     this.profileService.updateProfile(this.userEmail, {
-      displayName: formData.displayName
+      displayName: formData.username // El backend debe mapear esto al campo username
     })
       .pipe(
         takeUntil(this.destroy$),
@@ -441,7 +457,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: () => {
-          this.originalDisplayName = formData.displayName;
+          this.originalUsername = formData.username;
           alert('Perfil actualizado correctamente');
         },
         error: (error) => {
@@ -456,7 +472,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   // ============================================================================
 
   /**
-   * Cambiar contraseña
+   * Cambiar contraseña (actualiza el campo password de Usuario)
    */
   cambiarPassword(): void {
     if (!this.passwordForm.valid) {

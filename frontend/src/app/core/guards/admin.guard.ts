@@ -17,7 +17,6 @@ export const AdminGuard: CanActivateFn = (route, state) => {
         map(user => {
             if (user && user.isAdmin) {
                 console.log('✅ Admin Guard: Acceso permitido');
-                
                 return true;
             } else if (user && !user.isAdmin) {
                 console.warn('⚠️ Admin Guard: Usuario no es admin');
