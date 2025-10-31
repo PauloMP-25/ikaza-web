@@ -51,8 +51,7 @@ public class MercadoPagoService {
                 mpItems.add(mpItem);
             }
 
-            // Configurar URLs de retorno (CRÍTICO: incluir pedidoId)
-            // Mercado Pago requiere 'back_url.success' si 'auto_return' es 'approved'.
+            // Configurar URLs de retorno
             Map<String, String> backUrls = new HashMap<>();
             backUrls.put("success", frontendUrl + "/pago-exito?pedidoId=" + pedidoId);
             backUrls.put("failure", frontendUrl + "/pago-error?pedidoId=" + pedidoId);
@@ -62,8 +61,7 @@ public class MercadoPagoService {
             Map<String, Object> payload = new HashMap<>();
             payload.put("items", mpItems);
             payload.put("back_urls", backUrls);
-            // El valor 'approved' requiere la URL de éxito definida
-            //payload.put("auto_return", "approved"); 
+            payload.put("auto_return", "approved"); 
             payload.put("external_reference", pedidoId.toString());
             
             // Metadata adicional
@@ -78,7 +76,6 @@ public class MercadoPagoService {
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-            // Hacer petición a Mercado Pago
             ResponseEntity<String> response = restTemplate.postForEntity(
                 MP_API_URL, 
                 request, 

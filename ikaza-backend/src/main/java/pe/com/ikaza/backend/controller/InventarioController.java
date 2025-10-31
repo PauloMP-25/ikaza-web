@@ -2,6 +2,8 @@ package pe.com.ikaza.backend.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,14 +13,14 @@ import pe.com.ikaza.backend.dto.request.AjusteStockRequest;
 import pe.com.ikaza.backend.dto.response.InventarioResponse;
 import pe.com.ikaza.backend.dto.response.MessageResponse;
 import pe.com.ikaza.backend.dto.response.MovimientoInventarioResponse;
-import pe.com.ikaza.backend.security.UserDetailsServiceImpl;
 import pe.com.ikaza.backend.service.InventarioAdminService;
+import pe.com.ikaza.backend.service.UsuarioService;
+import pe.com.ikaza.backend.utils.SecurityUtils;
 
 import java.util.List;
 
 /**
  * Controlador REST para gestión administrativa de inventario
- * Solo accesible para administradores
  */
 @RestController
 @RequestMapping("/api/inventario")
@@ -27,7 +29,28 @@ import java.util.List;
 public class InventarioController {
 
     private final InventarioAdminService inventarioAdminService;
-    private final UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private SecurityUtils securityUtils;
+
+    // ========== METODO AUXILIAR ==========
+
+    /**
+     * Obtiene el ID del usuario autenticado a partir del token JWT.
+     */
+    private Integer getCurrentUserId() {
+        String email = securityUtils.getCurrentUserEmail();
+
+        if (email == null) {
+            throw new RuntimeException("Usuario no autenticado o token no contiene email.");
+        }
+        return usuarioService.obtenerPorEmail(email).getIdUsuario();
+    }
+
+    // ========== ENDPOINTS PARA ADMINISTRADORES ==========
 
     /**
      * GET /api/inventario
@@ -65,18 +88,12 @@ public class InventarioController {
             @Valid @RequestBody AjusteStockRequest request,
             @AuthenticationPrincipal UserDetails principal) {
         try {
-            // 1. Obtener el email (username) del principal
-            String email = principal.getUsername();
-
-             // 2. Usar el servicio para obtener el ID de la BD a partir del email
-            // Asumimos que el ID de usuario es de tipo Long, consistente con idProducto
-            Integer idUsuario = userDetailsService.getUserIdByEmail(email); 
+            Integer idUsuario = getCurrentUserId();
 
             InventarioResponse inventario = inventarioAdminService.ajustarStock(
-                    idProducto, 
-                    request, 
-                    idUsuario
-            );
+                    idProducto,
+                    request,
+                    idUsuario);
             return ResponseEntity.ok(inventario);
         } catch (IllegalArgumentException e) {
             return ResponseEntity

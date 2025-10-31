@@ -8,15 +8,9 @@ import { Router } from '@angular/router';
 import { CartService } from '@core/services/carrito/cart';
 import { CartItem } from '@core/models/carrito/cart-item';
 import { MercadoPagoService } from '@core/services/metodos/mercado-pago';
-import { CulqiService, CulqiChargeResponse } from '@core/services/metodos/culqui';
 import { AuthService } from '@core/services/auth/auth';
 import { ItemPedido } from '@core/models/pedido/pedido.model';
-declare global {
-  interface Window {
-    Culqi: any;
-    culqi?: () => void;
-  }
-}
+
 declare var bootstrap: any;
 @Component({
   selector: 'app-confirmacion-pago-modal',
@@ -31,7 +25,6 @@ export class ConfirmacionPagoModalComponent implements OnInit, OnDestroy {
   // ============================================================================
   private cartService = inject(CartService);
   private mercadoPagoService = inject(MercadoPagoService);
-  private culqiService = inject(CulqiService);
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -87,7 +80,6 @@ export class ConfirmacionPagoModalComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    delete window.culqi;
   }
 
   // ============================================================================
@@ -98,7 +90,6 @@ export class ConfirmacionPagoModalComponent implements OnInit, OnDestroy {
    * Inicializar componente y configurar callback de Culqi
    */
   private inicializarComponente(): void {
-    window.culqi = this.culqiCallback.bind(this);
     this.cartItems = this.cartService.getCartItems();
   }
 
@@ -255,184 +246,10 @@ export class ConfirmacionPagoModalComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================================
-  // CULQI (FLUJO REACTIVO)
-  // ============================================================================
-
-  /**
-   * Procesar pago con Culqi usando flujo reactivo
-   */
-  /**
-   * Procesar pago con Culqi usando flujo reactivo
-   */
-  proceedToCulqui(): void {
-    this.verificarAutenticacion$().pipe(
-      takeUntil(this.destroy$),
-      switchMap(isAuthenticated => {
-        if (!isAuthenticated) {
-          throw new Error('Usuario no autenticado');
-        }
-
-        if (this.cartItems.length === 0) {
-          throw new Error('El carrito está vacío');
-        }
-
-        return this.cartTotal$;
-      }),
-      takeUntil(this.destroy$),
-      tap(total => {
-        if (isNaN(total) || total <= 0) {
-          throw new Error('Error: El total del carrito no es válido.');
-        }
-
-        this.configurarYAbrirCulqi(total);
-      })
-    ).subscribe({
-      error: (error) => this.manejarErrorCulqiInicial(error)
-    });
-  }
-
-  /**
-   * Configurar y abrir modal de Culqi
-   */
-  private configurarYAbrirCulqi(total: number): void {
-    const montoCulqi = Math.round(total * 100);
-
-    if (!window.Culqi) {
-      this.mostrarError('Error: Culqi no está disponible. Por favor, intenta más tarde.');
-      return;
-    }
-
-    window.Culqi.publicKey = 'pk_test_eb16955d4d3abdf7';
-    window.Culqi.settings({
-      title: 'TIENDA ONLINE IKAZA IMPORT',
-      currency: 'PEN',
-      amount: montoCulqi
-    });
-
-    window.Culqi.options({
-      lang: "auto",
-      installments: false,
-      paymentMethods: {
-        yapeQR: true,
-        yape: true,
-        tarjeta: true,
-        bancaMovil: true,
-        pagoEfectivo: true,
-        transferencia: true,
-        pagoFacil: true,
-        mercadoPagoQR: true,
-        pagoQR: true,
-        pagoLink: true,
-      },
-      style: {
-        logo: "https://tse2.mm.bing.net/th/id/OIP.E9TIFcPkumP9HbJxTPpTJQHaHa?pid=Api&P=0&h=180",
-        maincolor: "#28a745",
-        buttontextcolor: "#ffffff",
-        desccolor: "#28a745",
-        maintextcolor: "#000000",
-        subtitletextcolor: "#000000",
-        overlaycolor: "#000000",
-        overlayopacity: "0.6"
-      }
-    });
-
-    this.closeModal();
-    window.Culqi.open();
-  }
-
-  /**
-   * Callback invocado por Culqi al completar el pago
-   */
-  private culqiCallback(): void {
-    if (window.Culqi.token) {
-      this.procesarTokenCulqi(window.Culqi.token.id);
-    } else if (window.Culqi.error) {
-      this.manejarErrorCulqi(window.Culqi.error);
-    }
-  }
-
-  /**
-   * Procesar token de Culqi usando flujo reactivo
-   */
-  private procesarTokenCulqi(token: string): void {
-    this.isProcessing = true;
-
-    this.cartTotal$.pipe(
-      takeUntil(this.destroy$),
-      switchMap(total => {
-        const montoCulqi = Math.round(total * 100);
-        console.log('💳 Procesando cargo en backend...');
-
-        return this.culqiService.charge(token, montoCulqi);
-      }),
-      finalize(() => this.isProcessing = false)
-    ).subscribe({
-      next: (response) => this.manejarRespuestaCulqi(response),
-      error: (error) => this.manejarErrorProcesamientoCulqi(error)
-    });
-  }
-
-  /**
-   * Manejar respuesta exitosa de Culqi
-   */
-  private manejarRespuestaCulqi(response: CulqiChargeResponse): void {
-    if (response.success) {
-      console.log('✅ Pago exitoso:', response.transactionId);
-      this.cartService.clearCart();
-
-      this.router.navigate(['/pago-exito'], {
-        queryParams: {
-          transactionId: response.transactionId,
-          method: 'culqi'
-        }
-      });
-    } else {
-      throw new Error(response.error || 'Error desconocido');
-    }
-  }
-
-  // ============================================================================
   // MANEJO DE ERRORES
   // ============================================================================
 
-  /**
-   * Manejar error inicial de Culqi
-   */
-  private manejarErrorCulqiInicial(error: any): void {
-    console.error('❌ Error al abrir Culqi:', error);
-    this.mostrarError('Error al iniciar el pago: ' + (error.message || 'Intenta de nuevo'));
-  }
-
-  /**
-   * Manejar error de procesamiento de Culqi
-   */
-  private manejarErrorProcesamientoCulqi(error: any): void {
-    console.error('❌ Error en Culqi:', error);
-    this.router.navigate(['/pago-error'], {
-      queryParams: {
-        motivo: error.message || 'Error al procesar el pago',
-        method: 'culqi'
-      }
-    });
-  }
-
-  /**
-   * Manejar error específico de Culqi
-   */
-  private manejarErrorCulqi(error: any): void {
-    const errorMessage = error.merchant_message ||
-      error.user_message ||
-      'Error desconocido';
-
-    console.error('❌ Error de Culqi:', errorMessage);
-    this.router.navigate(['/pago-error'], {
-      queryParams: {
-        motivo: errorMessage,
-        method: 'culqi'
-      }
-    });
-  }
-
+  
   /**
   * Mostrar mensaje de error en el modal
   */

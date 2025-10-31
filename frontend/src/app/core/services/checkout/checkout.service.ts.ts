@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import {
   PedidoResponse,
@@ -32,7 +32,7 @@ export interface ConfirmacionPagoResponse {
   providedIn: 'root'
 })
 export class CheckoutService {
-  private apiUrl = `${environment.apiUrl}/api/usuarios/pedidos`; // ⚠️ Ajustado según tu backend
+  private apiUrl = `${environment.apiUrl}/api/usuarios/pedidos`;
 
   constructor(private http: HttpClient) { }
 
@@ -47,9 +47,7 @@ export class CheckoutService {
    * - Pagos con transferencia bancaria
    * - Pagos contra entrega
    * - Pagos con tarjeta guardada
-   * 
    * POST /api/usuarios/pedidos/checkout
-   * 
    * @param request - Datos completos del pedido
    * @returns Observable con la respuesta del pedido
    */
@@ -87,9 +85,7 @@ export class CheckoutService {
    * 
    * El frontend llama a este método cuando el usuario regresa de Mercado Pago.
    * El backend valida el pago con la API de Mercado Pago y actualiza el pedido.
-   * 
    * POST /api/usuarios/pedidos/confirmar-pago
-   * 
    * @param pedidoId - ID del pedido a confirmar
    * @param paymentId - ID del pago en Mercado Pago
    * @param status - Estado del pago (approved, rejected, pending)
@@ -125,14 +121,6 @@ export class CheckoutService {
 
   /**
    * Mapea un item del carrito (frontend) a ItemPedido (backend).
-   * 
-   * Uso:
-   * ```typescript
-   * const itemsBackend = cartItems.map(item => 
-   *   checkoutService.construirItemPedido(item)
-   * );
-   * ```
-   * 
    * @param cartItem - Item del carrito del frontend
    * @returns ItemPedido formateado para el backend
    */
@@ -151,17 +139,6 @@ export class CheckoutService {
 
   /**
    * Construye un PedidoRequest completo desde el carrito.
-   * 
-   * Uso:
-   * ```typescript
-   * const pedidoRequest = checkoutService.construirPedidoRequest(
-   *   cartItems,
-   *   idUsuario,
-   *   total,
-   *   'TRANSFERENCIA_BANCARIA',
-   *   direccionId
-   * );
-   * ```
    */
   construirPedidoRequest(
     cartItems: any[],
@@ -178,7 +155,6 @@ export class CheckoutService {
       subtotal: subtotal,
       total: total,
       email: '', // Se puede agregar si es necesario
-      tokenCulqi: '',
       idTarjetaGuardada: undefined
     };
   }

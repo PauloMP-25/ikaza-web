@@ -20,7 +20,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         
-        // ✅ VERIFICAR que la autenticación se mantenga
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("🔐 Autenticación durante validación: " + (auth != null ? auth.getName() : "NULL"));
         

@@ -29,6 +29,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   private verificationService = inject(VerificationService);
   private clienteService = inject(ClienteService);
 
+
   // ============================================================================
   // FORMULARIOS
   // ============================================================================
@@ -119,7 +120,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
    * Inicializar formularios
    */
   private initializeForms(): void {
-    // Formulario de perfil - Ahora usa username en lugar de displayName
+    // Formulario de perfil
     this.perfilForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(2)]]
     });
@@ -130,16 +131,24 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
-
     // Formulario de verificación de email
     this.emailVerificationForm = this.fb.group({
-      verificationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+      verificationCode: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(6),
+        Validators.pattern(/^\d{6}$/)
+      ]]
     });
-
     // Formulario de verificación de teléfono
     this.phoneVerificationForm = this.fb.group({
       telefonoCompleto: [{ value: '', disabled: true }],
-      verificationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+      verificationCode: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(6),
+        Validators.pattern(/^\d{6}$/)
+      ]]
     });
   }
 
@@ -221,6 +230,9 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   /**
    * Enviar código de verificación por email
    */
+  /**
+   * Enviar código de verificación por email
+   */
   sendEmailVerificationCode(): void {
     this.isSendingEmailCode = true;
     this.emailCodeSent = false;
@@ -233,10 +245,12 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.emailCodeSent = true;
-          alert('Código de verificación enviado a tu email. Revisa tu bandeja de entrada.');
+          console.log('✅ Código enviado:', response);
+          alert('📧 Código de verificación enviado a tu email. Revisa tu bandeja de entrada y spam.');
         },
         error: (error) => {
-          alert(error.message);
+          console.error('❌ Error:', error);
+          alert(`❌ ${error.message || 'Error al enviar el código'}`);
         }
       });
   }
@@ -245,8 +259,13 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
    * Verificar código de email
    */
   verifyEmailCode(): void {
-    if (this.emailVerificationForm.invalid || !this.emailCodeSent) {
-      alert('Por favor, ingresa el código de 6 dígitos.');
+    if (this.emailVerificationForm.invalid) {
+      alert('⚠️ Por favor, ingresa un código de 6 dígitos válido.');
+      return;
+    }
+
+    if (!this.emailCodeSent) {
+      alert('⚠️ Primero debes solicitar un código.');
       return;
     }
 
@@ -259,14 +278,16 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         finalize(() => this.isVerifyingEmail = false)
       )
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.isEmailVerified = true;
           this.emailCodeSent = false;
           this.emailVerificationForm.reset();
-          alert('¡Email verificado correctamente!');
+          console.log('✅ Email verificado:', response);
+          alert('✅ ¡Email verificado correctamente!');
         },
         error: (error) => {
-          alert(error.message);
+          console.error('❌ Error:', error);
+          alert(`❌ ${error.message || 'Código inválido o expirado'}`);
         }
       });
   }
@@ -279,14 +300,18 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
    * Enviar código de verificación por SMS
    */
   sendPhoneVerificationCode(): void {
-    const telefonoInfo = this.phoneVerificationForm.getRawValue();
-    const telefono = telefonoInfo.telefonoCompleto;
+    const telefono = this.userPhone;
 
     if (!telefono || telefono.length < 10) {
-      alert('Error: El número de teléfono no ha sido guardado en "Datos Personales".');
+      alert('❌ Error: El número de teléfono no ha sido guardado en "Datos Personales".\n\nPor favor, ve a "Datos Personales" y guarda tu número primero.');
       return;
     }
 
+    // Validar formato (debe incluir prefijo)
+    if (!telefono.startsWith('+')) {
+      alert('❌ El teléfono debe incluir el código de país (ej: +51987654321)');
+      return;
+    }
     this.isSendingPhoneCode = true;
     this.phoneCodeSent = false;
 
@@ -298,10 +323,12 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.phoneCodeSent = true;
-          alert('Código SMS enviado. Revisa tu teléfono.');
+          console.log('✅ SMS enviado:', response);
+          alert('📱 Código SMS enviado. Revisa tu teléfono.');
         },
         error: (error) => {
-          alert(error.message);
+          console.error('❌ Error:', error);
+          alert(`❌ ${error.message || 'Error al enviar SMS'}`);
         }
       });
   }
@@ -310,8 +337,13 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
    * Verificar código de teléfono
    */
   verifyPhoneCode(): void {
-    if (this.phoneVerificationForm.invalid || !this.phoneCodeSent) {
-      alert('Por favor, ingresa el código de 6 dígitos.');
+    if (this.phoneVerificationForm.get('verificationCode')?.invalid) {
+      alert('⚠️ Por favor, ingresa un código de 6 dígitos válido.');
+      return;
+    }
+
+    if (!this.phoneCodeSent) {
+      alert('⚠️ Primero debes solicitar un código SMS.');
       return;
     }
 
@@ -324,14 +356,16 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         finalize(() => this.isVerifyingPhone = false)
       )
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.isPhoneVerified = true;
           this.phoneCodeSent = false;
           this.phoneVerificationForm.get('verificationCode')?.reset();
-          alert('¡Teléfono verificado correctamente!');
+          console.log('✅ Teléfono verificado:', response);
+          alert('✅ ¡Teléfono verificado correctamente!');
         },
         error: (error) => {
-          alert(error.message);
+          console.error('❌ Error:', error);
+          alert(`❌ ${error.message || 'Código inválido o expirado'}`);
         }
       });
   }
@@ -363,7 +397,6 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       alert('La imagen no puede ser mayor a 5MB');
       return;
     }
-
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.profileImage = e.target.result;
@@ -431,7 +464,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   // ============================================================================
 
   /**
-   * Guardar perfil (username de Usuario)
+   * Guardar perfil
    */
   guardarPerfil(): void {
     if (!this.perfilForm.valid) {
@@ -444,12 +477,10 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     if (!usernameChanged) {
       return;
     }
-
     this.isLoadingProfile = true;
 
-    // Actualizar username en la entidad Usuario
     this.profileService.updateProfile(this.userEmail, {
-      displayName: formData.username // El backend debe mapear esto al campo username
+      username: formData.username
     })
       .pipe(
         takeUntil(this.destroy$),
@@ -458,11 +489,11 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.originalUsername = formData.username;
-          alert('Perfil actualizado correctamente');
+          alert('✅ Perfil actualizado correctamente');
         },
         error: (error) => {
-          console.error('Error al actualizar perfil:', error);
-          alert('Error al actualizar el perfil. Por favor intenta nuevamente.');
+          console.error('❌ Error al actualizar perfil:', error);
+          alert('❌ Error al actualizar el perfil. Por favor intenta nuevamente.');
         }
       });
   }
@@ -475,6 +506,19 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
    * Cambiar contraseña (actualiza el campo password de Usuario)
    */
   cambiarPassword(): void {
+    const userEmail = '';
+    this.authService.getCurrentUser$().pipe(
+      takeUntil(this.destroy$),
+      tap(currentUser => {
+        if (!currentUser) {
+          console.error('No hay usuario autenticado');
+          return;
+        }
+
+        console.log('Usuario cargado:', currentUser);
+        this.userEmail = currentUser.email
+      }));
+
     if (!this.passwordForm.valid) {
       return;
     }
@@ -483,6 +527,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     const formData = this.passwordForm.value;
 
     this.passwordService.changePassword(
+      userEmail,
       formData.currentPassword,
       formData.newPassword
     )

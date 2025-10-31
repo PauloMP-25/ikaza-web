@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.com.ikaza.backend.dto.request.TarjetaRequest;
 import pe.com.ikaza.backend.dto.response.TarjetaResponse;
 import pe.com.ikaza.backend.entity.Tarjeta;
-import pe.com.ikaza.backend.repository.jpa.TarjetaRepository;
 import pe.com.ikaza.backend.exception.ResourceNotFoundException;
+import pe.com.ikaza.backend.repository.TarjetaRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,17 +98,14 @@ public class TarjetaService {
     }
 
     /**
-     * Marca una tarjeta como inactiva (eliminación lógica).
+     * Elimina una tarjeta
      * @param idMetodo ID de la tarjeta a eliminar.
      * @param idUsuario ID del usuario autenticado.
      */
     public void eliminarTarjeta(Integer idMetodo, Integer idUsuario) {
         Tarjeta existente = metodoPagoRepository.findByIdMetodoAndIdUsuario(idMetodo, idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarjeta no encontrada para este usuario."));
-
-        // Se prefiere la eliminación lógica
-        existente.setActivo(false); 
         metodoPagoRepository.save(existente);
-        // Si quieres eliminación física, usa: metodoPagoRepository.delete(existente);
+        metodoPagoRepository.delete(existente);
     }
 }

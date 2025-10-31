@@ -3,14 +3,11 @@ package pe.com.ikaza.backend.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
+import pe.com.ikaza.backend.repository.UsuarioRepository;
 import pe.com.ikaza.backend.dto.request.PreferenciaMercadoPagoRequest;
-import pe.com.ikaza.backend.dto.request.CulquiChargeRequest;
 import pe.com.ikaza.backend.dto.request.ItemPedidoRequest;
 import pe.com.ikaza.backend.dto.response.PreferenciaMercadoPagoResponse;
-import pe.com.ikaza.backend.dto.response.CulquiChargeResponse;
 import pe.com.ikaza.backend.service.PedidoService;
-import pe.com.ikaza.backend.service.CulqiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +21,6 @@ import java.util.stream.Collectors;
 
 /**
  * Controlador para manejar webhooks y endpoints de pasarelas de pago.
- * Compatible con el sistema refactorizado de pedidos e inventario.
  */
 @RestController
 @RequestMapping("/api/webhooks")
@@ -34,7 +30,6 @@ import java.util.stream.Collectors;
 public class WebhookController {
 
     private final PedidoService pedidoService;
-    private final CulqiService culqiService;
     private final ObjectMapper objectMapper;
     private final UsuarioRepository usuarioRepository;
 
@@ -47,12 +42,6 @@ public class WebhookController {
      * 2. Crea pedido preliminar
      * 3. Reserva stock temporalmente
      * 4. Genera URL de pago
-     * 
-     * POST /api/webhooks/mercadopago/create-preference
-     */
-
-    /**
-     * Endpoint para crear preferencia de Mercado Pago desde el frontend.
      * POST /api/webhooks/mercadopago/create-preference
      */
     @PostMapping("/mercadopago/create-preference")
@@ -60,8 +49,7 @@ public class WebhookController {
             @RequestBody PreferenciaMercadoPagoRequest request,
             Authentication authentication) {
         try {
-            log.info("📝 Creando preferencia de Mercado Pago con {} items", request.getItems().size());
-            // Extraer información del usuario del JWT
+            log.info("Creando preferencia de Mercado Pago con {} items", request.getItems().size());
             Usuario usuario = extraerUsuario(authentication);
             Integer idUsuario = usuario.getIdUsuario();
             String emailUsuario = usuario.getEmail();
@@ -74,10 +62,10 @@ public class WebhookController {
                     .map(item -> item.getPrecioUnitario().multiply(BigDecimal.valueOf(item.getCantidad())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            BigDecimal subtotal = total.multiply(BigDecimal.valueOf(0.82)); // IGV 18%
+            BigDecimal subtotal = total.multiply(BigDecimal.valueOf(0.82));
 
             // Crear pedido preliminar con reserva de stock
-            log.info("🔄 Creando pedido preliminar y reservando stock...");
+            log.info("Creando pedido preliminar y reservando stock...");
 
             // Simular PedidoRequest para usar el método refactorizado
             pe.com.ikaza.backend.dto.request.PedidoRequest pedidoRequest = new pe.com.ikaza.backend.dto.request.PedidoRequest();
@@ -103,13 +91,13 @@ public class WebhookController {
                     .pedidoId(pedidoResponse.getPedidoId())
                     .build();
 
-            log.info("✅ Preferencia creada: {} para pedido: {} (Stock reservado)",
+            log.info("Preferencia creada: {} para pedido: {} (Stock reservado)",
                     response.getPreference_id(), response.getPedidoId());
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("❌ Error creando preferencia de Mercado Pago", e);
+            log.error("Error creando preferencia de Mercado Pago", e);
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse("Error al crear preferencia: " + e.getMessage()));
         }
@@ -117,8 +105,7 @@ public class WebhookController {
 
     /**
      * Webhook de Mercado Pago para notificaciones asíncronas.
-     * Este webhook actualiza el estado del pedido según la notificación.
-     * 
+     * Este webhook actualiza el estado del pedido según la notificación
      * POST /api/webhooks/mercadopago
      */
     @PostMapping("/mercadopago")
@@ -128,7 +115,7 @@ public class WebhookController {
             @RequestParam(required = false) String id) {
 
         try {
-            log.info("🔔 Webhook recibido de Mercado Pago. Type: {}, ID: {}", type, id);
+            log.info("Webhook recibido de Mercado Pago. Type: {}, ID: {}", type, id);
             log.debug("Payload completo: {}", payload);
 
             JsonNode jsonNode = objectMapper.readTree(payload);
@@ -138,13 +125,13 @@ public class WebhookController {
             } else if ("merchant_order".equals(type)) {
                 procesarNotificacionOrden(id, jsonNode);
             } else {
-                log.warn("⚠️ Tipo de notificación no manejado: {}", type);
+                log.warn("Tipo de notificación no manejado: {}", type);
             }
 
             return ResponseEntity.ok("OK");
 
         } catch (Exception e) {
-            log.error("❌ Error procesando webhook de Mercado Pago", e);
+            log.error("Error procesando webhook de Mercado Pago", e);
             return ResponseEntity.ok("ERROR");
         }
     }
@@ -154,15 +141,14 @@ public class WebhookController {
      */
     private void procesarNotificacionPago(String paymentId, JsonNode payload) {
         try {
-            log.info("💳 Procesando notificación de pago: {}", paymentId);
+            log.info("Procesando notificación de pago: {}", paymentId);
             String action = payload.has("action") ? payload.get("action").asText() : "payment.updated";
 
-            // Usar el método refactorizado del PedidoService
             pedidoService.procesarWebhookMercadoPago(paymentId, action);
 
-            log.info("✅ Notificación de pago procesada exitosamente");
+            log.info("Notificación de pago procesada exitosamente");
         } catch (Exception e) {
-            log.error("❌ Error al procesar notificación de pago", e);
+            log.error("Error al procesar notificación de pago", e);
         }
     }
 
@@ -170,90 +156,11 @@ public class WebhookController {
      * Procesa notificación de orden desde MercadoPago
      */
     private void procesarNotificacionOrden(String orderId, JsonNode payload) {
-        log.info("📦 Procesando notificación de orden: {}", orderId);
-        // TODO: Implementar si es necesario
-    }
-
-    // ==================== CULQI ====================
-
-    /**
-     * Endpoint para procesar cargo de Culqi desde el frontend.
-     * POST /api/webhooks/culqi/charge
-     */
-    @PostMapping("/culqi/charge")
-    public ResponseEntity<CulquiChargeResponse> procesarCargoCulqi(
-            @RequestBody CulquiChargeRequest request,
-            Authentication authentication) {
-        try {
-            log.info("💳 Procesando cargo de Culqi. Token: {}, Monto: {}",
-                    request.getToken(), request.getAmount());
-
-            // Extraer información del usuario del JWT
-            Usuario usuario = extraerUsuario(authentication);
-            String emailUsuario = usuario.getEmail();
-
-            // Validar token
-            if (!culqiService.validarToken(request.getToken())) {
-                return ResponseEntity.badRequest()
-                        .body(CulquiChargeResponse.builder()
-                                .success(false)
-                                .error("Token de Culqi inválido")
-                                .build());
-            }
-
-            // Convertir centavos a soles
-            BigDecimal montoSoles = BigDecimal.valueOf(request.getAmount())
-                    .divide(BigDecimal.valueOf(100));
-
-            // Crear cargo en Culqi
-            JsonNode respuestaCulqi = culqiService.crearCargo(
-                    request.getToken(),
-                    montoSoles,
-                    emailUsuario);
-
-            // Construir respuesta exitosa
-            CulquiChargeResponse response = CulquiChargeResponse.builder()
-                    .success(true)
-                    .data(respuestaCulqi)
-                    .transactionId(respuestaCulqi.get("id").asText())
-                    .build();
-
-            log.info("✅ Cargo exitoso en Culqi: {}", response.getTransactionId());
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            log.error("❌ Error procesando cargo de Culqi", e);
-            return ResponseEntity.ok(CulquiChargeResponse.builder()
-                    .success(false)
-                    .error("Error al procesar el pago: " + e.getMessage())
-                    .build());
-        }
-    }
-
-    /**
-     * Webhook de Culqi (opcional, para notificaciones asíncronas).
-     * POST /api/webhooks/culqi
-     */
-    @PostMapping("/culqi")
-    public ResponseEntity<String> webhookCulqi(@RequestBody String payload) {
-        try {
-            log.info("🔔 Webhook recibido de Culqi");
-            log.debug("Payload: {}", payload);
-            // TODO: Implementar procesamiento de webhook Culqi si es necesario
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            log.error("❌ Error procesando webhook de Culqi", e);
-            return ResponseEntity.ok("ERROR");
-        }
+        log.info("Procesando notificación de orden: {}", orderId);
+        //Implementar
     }
 
     // ===== MÉTODOS AUXILIARES =====
-
-    @GetMapping("/test")
-    public ResponseEntity<String> testWebhook() {
-        return ResponseEntity.ok("Webhook endpoint is working!");
-    }
 
     /**
      * Extrae el ID del usuario del JWT utilizando el email.

@@ -8,8 +8,6 @@ import { ProductoDetalle, Producto } from '@core/models/productos/producto-backe
 import { ProductDetailModalComponent } from '@shared/components/product-detail-modal/product-detail-modal';
 import { CartService } from '@core/services/carrito/cart';
 import { ProductUtilsService } from '@core/services/productos/product-utils.service';
-import { CategorySectionComponent } from './category-section/category-section';
-import { FilterByCategoryPipe } from '@shared/pipes/filter-by-category.pipe';
 import { ProductCardComponent } from '@shared/components/producto/product-card/product-card';
 
 @Component({
@@ -18,9 +16,6 @@ import { ProductCardComponent } from '@shared/components/producto/product-card/p
   imports: [
     CommonModule,
     FormsModule,
-    ProductDetailModalComponent,
-    CategorySectionComponent,
-    FilterByCategoryPipe,
     ProductCardComponent
   ],
   templateUrl: './catalogo.html',
@@ -46,7 +41,7 @@ export class CatalogoComponent implements OnInit {
     private cartService: CartService,
     private productUtils: ProductUtilsService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadProducts();
@@ -61,7 +56,7 @@ export class CatalogoComponent implements OnInit {
         this.categories = [
           { name: 'Todos', value: 'todos' },
           ...Array.from(new Set(this.allProducts.map(p => p.nombreCategoria)))
-              .map(cat => ({ name: cat, value: cat }))
+            .map(cat => ({ name: cat, value: cat }))
         ];
 
         this.applyAllFilters();

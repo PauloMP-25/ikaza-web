@@ -25,5 +25,5 @@ public class MovimientoInventarioResponse {
     private Integer stockNuevo;
     private String motivo;
     private LocalDateTime fechaMovimiento;
-    private String nombreUsuario; // Usuario que realizó el movimiento
+    private String nombreUsuario;
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Excepción lanzada cuando un recurso (entidad) no es encontrado.
  * Mapea automáticamente a un código de estado HTTP 404 (Not Found).
  */
-@ResponseStatus(HttpStatus.NOT_FOUND) // Esto es clave para el manejo REST
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

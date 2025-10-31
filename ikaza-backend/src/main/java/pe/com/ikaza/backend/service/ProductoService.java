@@ -6,28 +6,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.com.ikaza.backend.document.ProductDetail;
 import pe.com.ikaza.backend.dto.request.ProductoRequest;
 import pe.com.ikaza.backend.dto.request.ProductoUpdateRequest;
 import pe.com.ikaza.backend.dto.response.ProductoDetalleResponse;
 import pe.com.ikaza.backend.dto.response.ProductoResponse;
-import pe.com.ikaza.backend.entity.Categoria;
-import pe.com.ikaza.backend.entity.Inventario;
-import pe.com.ikaza.backend.entity.Producto;
-import pe.com.ikaza.backend.repository.jpa.CategoriaRepository;
-import pe.com.ikaza.backend.repository.jpa.InventarioRepository;
-import pe.com.ikaza.backend.repository.jpa.ProductoRepository;
-import pe.com.ikaza.backend.repository.mongo.ProductDetailRepository;
+import pe.com.ikaza.backend.entity.*;
+import pe.com.ikaza.backend.repository.CategoriaRepository;
+import pe.com.ikaza.backend.repository.InventarioRepository;
+import pe.com.ikaza.backend.repository.ProductoDetalleRepository;
+import pe.com.ikaza.backend.repository.ProductoRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Servicio para gestionar productos con PostgreSQL + MongoDB
- */
 @Service
-@Transactional
 public class ProductoService {
 
     @Autowired
@@ -40,38 +32,26 @@ public class ProductoService {
     private InventarioRepository inventarioRepository;
 
     @Autowired
-    private ProductDetailRepository productDetailRepository;
+    private ProductoDetalleRepository productoDetalleRepository;
 
-    /**
-     * Obtiene todos los productos con paginación
-     */
     @Transactional(readOnly = true)
     public Page<ProductoResponse> obtenerProductosPaginados(Pageable pageable) {
         return productoRepository.findAll(pageable)
                 .map(this::convertirAResponse);
     }
 
-    /**
-     * Obtiene productos por categoría con paginación
-     */
     @Transactional(readOnly = true)
     public Page<ProductoResponse> obtenerProductosPorCategoria(Long idCategoria, Pageable pageable) {
         return productoRepository.findByCategoriaIdCategoria(idCategoria, pageable)
                 .map(this::convertirAResponse);
     }
 
-    /**
-     * Busca productos por texto con paginación
-     */
     @Transactional(readOnly = true)
     public Page<ProductoResponse> buscarProductos(String texto, Pageable pageable) {
         return productoRepository.buscarPorTexto(texto, pageable)
                 .map(this::convertirAResponse);
     }
 
-    /**
-     * Obtiene un producto por ID (vista simplificada)
-     */
     @Transactional(readOnly = true)
     public ProductoResponse obtenerProductoPorId(Long id) {
         Producto producto = productoRepository.findById(id)
@@ -79,17 +59,12 @@ public class ProductoService {
         return convertirAResponse(producto);
     }
 
-    /**
-     * Obtiene el detalle completo de un producto (incluye MongoDB)
-     */
     @Transactional(readOnly = true)
     public ProductoDetalleResponse obtenerDetalleProducto(Long id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
 
         ProductoDetalleResponse response = new ProductoDetalleResponse();
-
-        // Información de PostgreSQL
         response.setIdProducto(producto.getIdProducto());
         response.setNombreProducto(producto.getNombreProducto());
         response.setDescripcionProducto(producto.getDescripcionProducto());
@@ -99,7 +74,6 @@ public class ProductoService {
         response.setNombreCategoria(producto.getCategoria().getNombreCategoria());
         response.setIdCategoria(producto.getCategoria().getIdCategoria());
 
-        // Información de inventario
         if (producto.getInventario() != null) {
             response.setStockDisponible(producto.getInventario().getStockDisponible());
             response.setStockReservado(producto.getInventario().getStockReservado());
@@ -108,15 +82,17 @@ public class ProductoService {
             response.setStockReservado(0);
         }
 
-        // Información de MongoDB (si existe)
-        ProductDetail detalle = productDetailRepository.findByProductId(id).orElse(null);
+        // Cargar detalles extendidos
+        ProductoDetalle detalle = productoDetalleRepository.findByProductoIdProducto(id).orElse(null);
         if (detalle != null) {
             response.setCodigo(detalle.getCodigo());
             response.setMarca(detalle.getMarca());
+            response.setModelo(detalle.getModelo());
+            response.setGarantia(detalle.getGarantia());
             response.setAtributos(detalle.getAtributos());
 
             // Convertir imágenes
-            if (detalle.getImagenes() != null) {
+            if (detalle.getImagenes() != null && !detalle.getImagenes().isEmpty()) {
                 response.setImagenes(detalle.getImagenes().stream()
                         .map(img -> new ProductoDetalleResponse.ImagenDto(
                                 img.getUrl(), img.getAlt(), img.getEsPrincipal(), img.getOrden()))
@@ -131,20 +107,33 @@ public class ProductoService {
                         detalle.getSeo().getMetaDescription(),
                         detalle.getSeo().getKeywords()));
             }
+
+            // Especificaciones
+            if (detalle.getEspecificaciones() != null) {
+                response.setEspecificaciones(detalle.getEspecificaciones().stream()
+                        .map(esp -> new ProductoDetalleResponse.EspecificacionDto(
+                                esp.getNombre(), esp.getValor(), esp.getUnidad()))
+                        .collect(Collectors.toList()));
+            }
+
+            // Variantes
+            if (detalle.getVariantes() != null) {
+                response.setVariantes(detalle.getVariantes().stream()
+                        .map(var -> new ProductoDetalleResponse.VarianteDto(
+                                var.getSku(), var.getColor(), var.getTalla(),
+                                var.getMaterial(), var.getStockAdicional(), var.getImagenUrl()))
+                        .collect(Collectors.toList()));
+            }
         }
 
         return response;
     }
 
-    /**
-     * Crea un nuevo producto
-     */
+    @Transactional
     public ProductoResponse crearProducto(ProductoRequest request) {
-        // Validar categoría
         Categoria categoria = categoriaRepository.findById(request.getIdCategoria())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
-        // Crear producto en PostgreSQL
         Producto producto = new Producto();
         producto.setCategoria(categoria);
         producto.setNombreProducto(request.getNombreProducto());
@@ -155,32 +144,26 @@ public class ProductoService {
 
         Producto guardado = productoRepository.save(producto);
 
-        // Crear inventario automáticamente
+        // Crear inventario
         Inventario inventario = new Inventario();
         inventario.setProducto(guardado);
         inventario.setStockActual(request.getStock());
         inventario.setStockReservado(0);
         inventarioRepository.save(inventario);
 
-        // Crear detalles en MongoDB (si hay datos)
+        // Crear detalles si hay datos extendidos
         if (tieneDetallesExtendidos(request)) {
-            ProductDetail detalle = crearProductDetail(guardado.getIdProducto(), request);
-            ProductDetail detalleGuardado = productDetailRepository.save(detalle);
-            guardado.setMongoProductId(detalleGuardado.getId());
-            productoRepository.save(guardado);
+            crearProductoDetalle(guardado, request);
         }
 
         return convertirAResponse(guardado);
     }
 
-    /**
-     * Actualiza un producto existente
-     */
+    @Transactional
     public ProductoResponse actualizarProducto(Long id, ProductoUpdateRequest request) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // Actualizar campos si se proporcionan
         if (request.getIdCategoria() != null) {
             Categoria categoria = categoriaRepository.findById(request.getIdCategoria())
                     .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -201,19 +184,11 @@ public class ProductoService {
 
         if (request.getStock() != null) {
             producto.setStock(request.getStock());
-            // Actualizar inventario también
             Inventario inventario = inventarioRepository.findByProductoIdProducto(id)
                     .orElse(null);
 
             if (inventario != null) {
                 inventario.setStockActual(request.getStock());
-                inventarioRepository.save(inventario);
-            } else {
-                // Crear inventario si no existe
-                inventario = new Inventario();
-                inventario.setProducto(producto);
-                inventario.setStockActual(request.getStock());
-                inventario.setStockReservado(0);
                 inventarioRepository.save(inventario);
             }
         }
@@ -226,115 +201,83 @@ public class ProductoService {
         return convertirAResponse(actualizado);
     }
 
-    /**
-     * Elimina un producto
-     */
+    @Transactional
     public void eliminarProducto(Long id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        // Eliminar detalles de MongoDB si existen
-        if (producto.getMongoProductId() != null) {
-            try {
-                productDetailRepository.deleteById(producto.getMongoProductId());
-            } catch (Exception e) {
-                System.err.println("Error eliminando detalles de MongoDB: " + e.getMessage());
-            }
-        }
-
-        // Eliminar producto (el inventario se elimina en cascada)
         productoRepository.delete(producto);
     }
 
-    /**
-     * Obtiene el producto más vendido
-     */
     @Transactional(readOnly = true)
     public ProductoDetalleResponse obtenerProductoMasVendido() {
-        Producto producto = productoRepository.findProductoMasVendido()
-                .orElse(null);
-
-        if (producto == null) {
+        Producto producto = productoRepository.findProductoMasVendido().orElse(null);
+        if (producto == null)
             return null;
-        }
-
         return obtenerDetalleProducto(producto.getIdProducto());
     }
 
-    /**
-     * Obtiene los productos más baratos
-     */
     @Transactional(readOnly = true)
     public List<ProductoResponse> obtenerProductosMasBaratos(int limite) {
         Pageable pageable = PageRequest.of(0, limite);
         return productoRepository.findProductosMasBaratos(pageable)
-                .getContent()
-                .stream()
+                .getContent().stream()
                 .map(this::convertirAResponse)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Obtiene los productos más recientes
-     */
     @Transactional(readOnly = true)
     public List<ProductoResponse> obtenerProductosMasRecientes(int limite) {
         Pageable pageable = PageRequest.of(0, limite);
         return productoRepository.findProductosMasRecientes(pageable)
-                .getContent()
-                .stream()
+                .getContent().stream()
                 .map(this::convertirAResponse)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Obtiene productos por agotarse (stock entre 5 y 10)
-     */
     @Transactional(readOnly = true)
     public List<ProductoResponse> obtenerProductosPorAgotarse(int limite) {
         Pageable pageable = PageRequest.of(0, limite);
         return productoRepository.findProductosPorAgotarse(pageable)
-                .getContent()
-                .stream()
+                .getContent().stream()
                 .map(this::convertirAResponse)
                 .collect(Collectors.toList());
     }
 
-    // ============================================
     // MÉTODOS AUXILIARES
-    // ============================================
 
     private boolean tieneDetallesExtendidos(ProductoRequest request) {
         return request.getCodigo() != null ||
                 request.getMarca() != null ||
                 request.getModelo() != null ||
+                request.getGarantia() != null ||
                 (request.getImagenesUrls() != null && !request.getImagenesUrls().isEmpty()) ||
                 (request.getAtributos() != null && !request.getAtributos().isEmpty());
     }
 
-    private ProductDetail crearProductDetail(Long productId, ProductoRequest request) {
-        ProductDetail detalle = new ProductDetail();
-        detalle.setProductId(productId);
+    @Transactional
+    protected void crearProductoDetalle(Producto producto, ProductoRequest request) {
+        ProductoDetalle detalle = new ProductoDetalle();
+        detalle.setProducto(producto);
         detalle.setCodigo(request.getCodigo());
         detalle.setMarca(request.getMarca());
         detalle.setModelo(request.getModelo());
         detalle.setGarantia(request.getGarantia());
-        detalle.setAtributos(request.getAtributos());
+        detalle.setAtributos(request.getAtributos() != null ? request.getAtributos() : new HashMap<>());
 
-        // Agregar imágenes si existen
+        // Agregar imágenes
         if (request.getImagenesUrls() != null && !request.getImagenesUrls().isEmpty()) {
-            List<ProductDetail.ImagenProducto> imagenes = new ArrayList<>();
+            List<ProductoDetalle.ImagenDto> imagenes = new ArrayList<>();
             for (int i = 0; i < request.getImagenesUrls().size(); i++) {
-                imagenes.add(new ProductDetail.ImagenProducto(
+                imagenes.add(new ProductoDetalle.ImagenDto(
                         request.getImagenesUrls().get(i),
                         request.getNombreProducto(),
-                        i == 0, // Primera imagen es principal
+                        i == 0,
                         i));
             }
             detalle.setImagenes(imagenes);
         }
 
-        return detalle;
+        productoDetalleRepository.save(detalle);
     }
 
     private ProductoResponse convertirAResponse(Producto producto) {
@@ -352,21 +295,19 @@ public class ProductoService {
         response.setFechaActualizacion(producto.getFechaActualizacion());
         response.setDisponible(producto.getStock() > 0);
 
-        // Cargar imagen principal y marca de MongoDB si existe
-        if (producto.getMongoProductId() != null) {
-            try {
-                productDetailRepository.findById(producto.getMongoProductId())
-                        .ifPresent(detalle -> {
-                            ProductDetail.ImagenProducto imgPrincipal = detalle.getImagenPrincipal();
-                            if (imgPrincipal != null) {
-                                response.setImagenPrincipal(imgPrincipal.getUrl());
-                            }
-                            response.setMarca(detalle.getMarca());
-                            response.setModelo(detalle.getModelo());
-                        });
-            } catch (Exception e) {
-                System.err.println("Error cargando detalles de MongoDB: " + e.getMessage());
-            }
+        // Cargar imagen principal y marca
+        try {
+            productoDetalleRepository.findByProductoIdProducto(producto.getIdProducto())
+                    .ifPresent(detalle -> {
+                        ProductoDetalle.ImagenDto imgPrincipal = detalle.getImagenPrincipal();
+                        if (imgPrincipal != null) {
+                            response.setImagenPrincipal(imgPrincipal.getUrl());
+                        }
+                        response.setMarca(detalle.getMarca());
+                        response.setModelo(detalle.getModelo());
+                    });
+        } catch (Exception e) {
+            System.err.println("Error cargando detalles: " + e.getMessage());
         }
 
         return response;

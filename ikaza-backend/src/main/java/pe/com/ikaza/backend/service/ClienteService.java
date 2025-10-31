@@ -7,12 +7,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pe.com.ikaza.backend.dto.request.ActualizarUsuarioRequest;
-import pe.com.ikaza.backend.dto.response.UsuarioResponse;
+import pe.com.ikaza.backend.dto.request.ActualizarClienteRequest;
+import pe.com.ikaza.backend.dto.response.ClienteResponse;
 import pe.com.ikaza.backend.entity.Cliente;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.ClienteRepository;
-import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
+import pe.com.ikaza.backend.repository.ClienteRepository;
+import pe.com.ikaza.backend.repository.UsuarioRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,10 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Servicio para la gestión del perfil Cliente (Datos personales) y
- * Administración de Clientes.
- * Trabaja con la entidad Cliente, separada del núcleo de autenticación
- * (Usuario).
+ * Servicio para la gestión del perfil Cliente (Datos personales) y Administración de Clientes.
  */
 @Service
 @Transactional
@@ -46,35 +43,26 @@ public class ClienteService {
 
     /**
      * POST /api/clientes/crear-perfil-inicial
-     * Crea el registro inicial en la tabla Cliente después del registro en
-     * AuthService.
-     * Solo debe ser llamado una vez por el frontend.
+     * Crea el registro inicial en la tabla Cliente después del registro en AuthService.
      * @param email El email del usuario (obtenido del token JWT).
-     * @return UsuarioResponse con los datos iniciales.
+     * @return ClienteResponse con los datos iniciales.
      */
-    public UsuarioResponse crearPerfilInicial(String email) {
-        logger.info("📝 Creando perfil inicial Cliente para email: {}", email);
+    public ClienteResponse crearPerfilInicial(String email) {
+        logger.info("Creando perfil inicial Cliente para email: {}", email);
 
-        // 1. Verificar si el Usuario existe en la tabla principal
-        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
 
-        // 2. Verificar si el perfil Cliente ya fue creado
         Optional<Cliente> clienteOpt = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario());
         if (clienteOpt.isPresent()) {
-            logger.warn("⚠️ Perfil Cliente ya existe para email: {}", email);
+            logger.warn("Perfil Cliente ya existe para email: {}", email);
             return convertirAResponse(usuario, clienteOpt.get());
         }
 
-        // 3. Crear el registro Cliente
         Cliente nuevoCliente = new Cliente();
-        nuevoCliente.setUsuario(usuario);
-        nuevoCliente.setNombresCliente("Pendiente"); // Valores por defecto
-        nuevoCliente.setApellidosCliente("");
-        nuevoCliente.setTelefonoVerificado(false);
 
         Cliente clienteGuardado = clienteRepository.save(nuevoCliente);
-        logger.info("✅ Perfil Cliente inicial creado para Usuario ID: {}", usuario.getIdUsuario());
+        logger.info("Perfil Cliente inicial creado para Usuario ID: {}", usuario.getIdUsuario());
 
         return convertirAResponse(usuario, clienteGuardado);
     }
@@ -88,8 +76,8 @@ public class ClienteService {
      * Obtener perfil del usuario autenticado (combinando Usuario y Cliente).
      */
     @Transactional(readOnly = true)
-    public UsuarioResponse obtenerPorEmail(String email) { // FIX: Renombrado de obtenerPorFirebaseUid
-        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
+    public ClienteResponse obtenerPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
 
         Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
@@ -102,36 +90,18 @@ public class ClienteService {
      * PUT /api/clientes/perfil/{email}
      * Actualizar perfil del usuario (solo campos de Cliente).
      */
-    public UsuarioResponse actualizarCliente(String email, ActualizarUsuarioRequest request) { // FIX: Cambio de firma
-        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
+    public ClienteResponse actualizarCliente(String email, ActualizarClienteRequest request) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
                 .orElseThrow(() -> new RuntimeException("Datos de perfil Cliente no encontrados."));
 
-        // Lógica de actualización solo aplica a la entidad Cliente
         actualizarDatosCliente(cliente, request);
 
         Cliente actualizado = clienteRepository.save(cliente);
-        logger.info("✅ Perfil Cliente actualizado: {}", usuario.getEmail());
+        logger.info("Perfil Cliente actualizado: {}", usuario.getEmail());
 
-        return convertirAResponse(usuario, actualizado);
-    }
-
-    /**
-     * PUT /api/clientes/perfil/{email}/verificar-telefono
-     * Marcar el campo 'telefonoVerificado' en la tabla Cliente como TRUE.
-     */
-    public UsuarioResponse verificarTelefono(String email) { // FIX: Cambio de firma
-        Usuario usuario = usuarioRepository.findByEmail(email) // FIX: Ahora busca por email
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
-                .orElseThrow(() -> new RuntimeException("Datos de perfil Cliente no encontrados."));
-
-        cliente.setTelefonoVerificado(true);
-        Cliente actualizado = clienteRepository.save(cliente);
-        logger.info("✅ Teléfono verificado para email: {}", email); // FIX: Mensaje de log actualizado
         return convertirAResponse(usuario, actualizado);
     }
 
@@ -144,14 +114,12 @@ public class ClienteService {
      * Listar todos los clientes/usuarios con paginación (Solo datos esenciales).
      */
     @Transactional(readOnly = true)
-    public Page<UsuarioResponse> listarClientesPaginados(Pageable pageable) {
-        // Obtenemos los registros de Usuario (base para la paginación)
+    public Page<ClienteResponse> listarClientesPaginados(Pageable pageable) {
         Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
 
-        // Convertimos a DTO combinando con Cliente
         return usuarios.map(usuario -> {
             Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
-                    .orElse(new Cliente()); // Crear un cliente vacío si no se encuentra (caso borde)
+                    .orElse(new Cliente());
             return convertirAResponse(usuario, cliente);
         });
     }
@@ -166,9 +134,7 @@ public class ClienteService {
 
         usuario.setActivo(true);
         usuarioRepository.save(usuario);
-        // NOTA: Firebase Auth debe ser actualizado por un servicio dedicado si se
-        // requiere.
-        logger.info("✅ Usuario activado ID: {}", id);
+        logger.info("Usuario activado ID: {}", id);
     }
 
     /**
@@ -181,26 +147,23 @@ public class ClienteService {
 
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
-        // NOTA: Firebase Auth debe ser actualizado por un servicio dedicado si se
-        // requiere.
-        logger.info("🚫 Usuario desactivado ID: {}", id);
+        logger.info("Usuario desactivado ID: {}", id);
     }
 
     /**
      * GET /api/clientes/buscar (Admin)
-     * Buscar clientes por email, documento o teléfono (combina datos de ambas
-     * tablas).
+     * Buscar clientes por email, documento o teléfono.
      */
     @Transactional(readOnly = true)
-    public List<UsuarioResponse> buscarClientes(String email, String documento, String telefono) {
+    public List<ClienteResponse> buscarClientes(String email, String documento, String telefono) {
 
-        List<Usuario> usuarios = usuarioRepository.findAll(); // Obtener todos para el filtro in-memory/stream
+        List<Usuario> usuarios = usuarioRepository.findAll(); 
 
-        List<UsuarioResponse> resultados = usuarios.stream()
+        List<ClienteResponse> resultados = usuarios.stream()
                 .map(usuario -> {
                     Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario())
                             .orElse(new Cliente());
-                    return new Object[] { usuario, cliente }; // Retorna un par
+                    return new Object[] { usuario, cliente };
                 })
                 .filter(par -> {
                     Usuario u = (Usuario) par[0];
@@ -212,7 +175,6 @@ public class ClienteService {
                     boolean matchTelefono = telefono != null && c.getTelefono() != null
                             && c.getTelefono().contains(telefono);
 
-                    // Se busca por CUALQUIERA de los campos (OR)
                     return matchEmail || matchDocumento || matchTelefono;
                 })
                 .map(par -> convertirAResponse((Usuario) par[0], (Cliente) par[1]))
@@ -228,26 +190,18 @@ public class ClienteService {
      */
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticas() {
-        // 1. Obtener datos combinados (Usuarios y Clientes)
         List<Usuario> todosUsuarios = usuarioRepository.findAll();
         long totalClientes = todosUsuarios.size();
 
-        // 2. Contadores básicos y de actividad (desde Usuario)
         long activos = todosUsuarios.stream().filter(Usuario::getActivo).count();
         long inactivos = totalClientes - activos;
 
-        // 3. Contadores de Perfil (desde ClienteRepository)
         Long datosIncompletos = clienteRepository.countClientesConDatosIncompletos();
         Long telefonoVerificado = clienteRepository.countClientesConTelefonoVerificado();
 
-        // 4. Contadores demográficos (Género)
         Long varones = clienteRepository.countByGenero("HOMBRE");
         Long mujeres = clienteRepository.countByGenero("MUJER");
 
-        // Contar otros/no especificado (opcional)
-        // long otros = totalClientes - (varones + mujeres);
-
-        // 5. Contadores por fecha (Actividad de registro)
         LocalDateTime hoyInicio = LocalDateTime.now().toLocalDate().atStartOfDay();
         long registradosHoy = todosUsuarios.stream()
                 .filter(u -> u.getFechaCreacion().isAfter(hoyInicio))
@@ -258,24 +212,20 @@ public class ClienteService {
                 .filter(u -> u.getFechaCreacion().isAfter(mesInicio))
                 .count();
 
-        // 7. Construir el mapa de respuesta
         Map<String, Object> stats = new HashMap<>();
 
-        // Core y Actividad
         stats.put("usuariosTotales", totalClientes);
         stats.put("usuariosActivos", activos);
         stats.put("usuariosInactivos", inactivos);
         stats.put("usuariosRegistradosMes", registradosMes);
         stats.put("usuariosRegistradosHoy", registradosHoy);
 
-        // Perfil y Demografía
         stats.put("clientesConDatosIncompletos", datosIncompletos);
         stats.put("clientesConTelefonoVerificado", telefonoVerificado);
         stats.put("clientesVarones", varones);
         stats.put("clientesMujeres", mujeres);
-        // stats.put("clientesOtros", otros);
 
-        logger.info("📊 Estadísticas administrativas generadas exitosamente.");
+        logger.info("Estadísticas administrativas generadas exitosamente.");
         return stats;
     }
 
@@ -284,7 +234,7 @@ public class ClienteService {
     // ===============================================
 
     /**
-     * Obtener el ID de usuario por email (necesario para DireccionController).
+     * Obtener el ID de usuario por email
      */
     @Transactional(readOnly = true)
     public Integer obtenerIdPorEmail(String email) {
@@ -296,7 +246,7 @@ public class ClienteService {
     /**
      * Actualizar datos del Cliente desde request (solo campos permitidos).
      */
-    private void actualizarDatosCliente(Cliente cliente, ActualizarUsuarioRequest request) {
+    private void actualizarDatosCliente(Cliente cliente, ActualizarClienteRequest request) {
         if (request.getNombres() != null && !request.getNombres().isEmpty()) {
             cliente.setNombresCliente(request.getNombres());
         }
@@ -310,7 +260,6 @@ public class ClienteService {
         }
 
         if (request.getNumeroDocumento() != null) {
-            // Verificar duplicados (solo entre Clientes)
             if (!request.getNumeroDocumento().equals(cliente.getNumeroDocumento())) {
                 if (clienteRepository.existsByNumeroDocumento(request.getNumeroDocumento())) {
                     throw new RuntimeException("El número de documento ya está registrado");
@@ -331,27 +280,21 @@ public class ClienteService {
             cliente.setTelefono(request.getTelefono());
         }
 
+        if (request.getGenero() != null) {
+            cliente.setGenero(request.getGenero());
+        }
+
         if (request.getTelefonoVerificado() != null) {
             cliente.setTelefonoVerificado(request.getTelefonoVerificado());
         }
     }
 
     /**
-     * Convertir entidad Usuario + Cliente a DTO UsuarioResponse.
+     * Convertir entidad Usuario + Cliente a DTO ClienteResponse.
      */
-    private UsuarioResponse convertirAResponse(Usuario usuario, Cliente cliente) {
-        UsuarioResponse response = new UsuarioResponse();
-
-        // Datos de Usuario (Auth Core)
+    private ClienteResponse convertirAResponse(Usuario usuario, Cliente cliente) {
+        ClienteResponse response = new ClienteResponse();
         response.setIdUsuario(usuario.getIdUsuario());
-        response.setEmail(usuario.getEmail());
-
-        // Metadatos de Usuario
-        response.setActivo(usuario.getActivo());
-        response.setFechaCreacion(usuario.getFechaCreacion());
-        response.setUltimoAcceso(usuario.getUltimoAcceso());
-        // La fecha de actualización del Cliente se usará como fecha de actualización
-        // del Perfil
         response.setFechaActualizacion(cliente.getFechaActualizacion());
 
         // Datos de Cliente (Perfil)
@@ -373,7 +316,7 @@ public class ClienteService {
     }
 
     /**
-     * Calcular edad desde fecha de nacimiento (copiado del auxiliar anterior)
+     * Calcular edad desde fecha de nacimiento
      */
     private Integer calcularEdad(LocalDate fechaNacimiento) {
         if (fechaNacimiento == null)
@@ -383,12 +326,11 @@ public class ClienteService {
 
     /**
      * Verifica si el Cliente tiene todos los datos de perfil requeridos
-     * para proceder con operaciones sensibles (como el Checkout).
      * Incluye validaciones de nulos y campos vacíos.
      */
     private boolean tieneDatosCompletos(Cliente cliente) {
         if (cliente == null) {
-            logger.warn("⚠️ Verificación de datos completos fallida: cliente es null");
+            logger.warn("Verificación de datos completos fallida: cliente es null");
             return false;
         }
 
@@ -398,11 +340,12 @@ public class ClienteService {
                 cliente.getNumeroDocumento() != null && !cliente.getNumeroDocumento().isBlank() &&
                 cliente.getFechaNacimiento() != null &&
                 cliente.getPrefijoTelefono() != null && !cliente.getPrefijoTelefono().isBlank() &&
-                cliente.getTelefono() != null && !cliente.getTelefono().isBlank() &&
+                cliente.getTelefono() != null && !cliente.getTelefono().isBlank() && 
+                cliente.getNumeroDocumento() != null && !cliente.getNumeroDocumento().isBlank() &&
                 Boolean.TRUE.equals(cliente.getTelefonoVerificado());
 
         if (!datosCompletos) {
-            logger.info("📋 Perfil incompleto para cliente con ID: {}",
+            logger.info("Perfil incompleto para cliente con ID: {}",
                     cliente.getUsuario() != null ? cliente.getUsuario().getIdUsuario() : "desconocido");
         }
 

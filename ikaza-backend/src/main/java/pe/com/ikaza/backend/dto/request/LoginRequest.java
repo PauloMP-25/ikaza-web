@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO para login tradicional con email/password
+ * DTO para login con email/password
  */
 @Data
 @NoArgsConstructor

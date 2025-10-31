@@ -138,8 +138,7 @@
                 (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
                 [class.border-primary]="formData.imagenPreview">
 
-                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" />
-
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" class="input-file"   />
                 <!-- Preview de imagen -->
                 <img *ngIf="formData.imagenPreview" [src]="formData.imagenPreview" alt="Previsualización"
                   class="preview-imagen" />
@@ -250,7 +249,7 @@
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" [disabled]="isLoading">
             <i class="bi bi-x-lg me-2"></i>Cancelar
           </button>
-          <button type="submit" class="btn text-white shadow-sm"
+          <button type="submit" class="btn btn-primary text-white shadow-sm"
             [disabled]="!productForm.valid || isLoading || categorias.length === 0">
             <span *ngIf="!isLoading">
               <i class="bi bi-plus-lg me-2"></i>Crear Producto

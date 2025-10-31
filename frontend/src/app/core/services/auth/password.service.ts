@@ -17,28 +17,25 @@ import { environment } from 'src/environments/environment';
 })
 export class PasswordService {
     private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}/api/auth`;
+    private apiUrl = `${environment.apiUrl}/api/usuarios`;
 
     /**
      * Cambiar contraseña del usuario
      */
-    changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    changePassword(email: string, currentPassword: string, newPassword: string): Observable<void> {
         const requestBody = {
             currentPassword,
             newPassword
         };
 
-        return this.http.post<void>(`${this.apiUrl}/cambiar-password`, requestBody).pipe(
+        return this.http.post<void>(`${this.apiUrl}/perfil/${email}/cambiar-password`, requestBody).pipe(
             tap(() => console.log('✅ Contraseña cambiada exitosamente')),
             catchError(error => {
                 console.error('❌ Error al cambiar contraseña:', error);
-
                 let errorMessage = 'Error al cambiar la contraseña';
 
-                if (error.status === 401) {
+                if (error.status === 401 || error.error?.mensaje?.includes('incorrecta')) {
                     errorMessage = 'La contraseña actual es incorrecta';
-                } else if (error.status === 400) {
-                    errorMessage = error.error?.mensaje || 'La nueva contraseña no cumple los requisitos';
                 } else if (error.error?.mensaje) {
                     errorMessage = error.error.mensaje;
                 }

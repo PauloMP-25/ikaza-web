@@ -9,7 +9,7 @@
 
     <div class="offcanvas-body d-flex flex-column">
         <app-resumen-carrito [cartItems]="cartItems" [isAuthenticated]="isAuthenticated"
-            [userHasCompleteData]="userHasCompleteData" [total]="total" [paymentButtonText]="paymentButtonText"
+            [userHasCompleteData]="userHasCompleteData" [total]="total()" [paymentButtonText]="paymentButtonText"
             [paymentButtonIcon]="paymentButtonIcon" [missingRequirements]="missingRequirements"
             (checkoutClicked)="openModal()" (clearCartClicked)="clearCart()"
             (removeItemClicked)="removeItem($event)"></app-resumen-carrito>

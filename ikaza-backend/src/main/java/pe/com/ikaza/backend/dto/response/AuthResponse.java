@@ -7,20 +7,23 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO de respuesta del login
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AuthResponse {
 
-    // Token de Firebase
+    // Token JWT
     private String token;
     private String refreshToken;
 
     // Información del usuario
     private Integer idUsuario;
     private String email;
-    
+    private String username;
     // Rol y permisos
     private String rol;
     private Boolean isAdmin;

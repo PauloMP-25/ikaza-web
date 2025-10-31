@@ -41,13 +41,8 @@ public class Categoria {
     /**
      * Relación One-to-Many con Producto
      * Una categoría puede tener múltiples productos
-     * mappedBy: indica que la relación es manejada por el campo "categoria" en Producto
-     * cascade: operaciones en cascada (si eliminamos categoría, ¿qué pasa con productos?)
-     * orphanRemoval: elimina productos huérfanos (sin categoría)
      */
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = false)
-    // orphanRemoval = false: NO eliminar productos si se elimina la categoría
-    // En su lugar, el producto quedará con categoria = NULL (gracias al ON DELETE SET NULL en la BD)
     private List<Producto> productos = new ArrayList<>();
 
     @PrePersist
@@ -83,24 +78,3 @@ public class Categoria {
         producto.setCategoria(null);
     }
 }
-
-/**
- * EXPLICACIÓN DE CONCEPTOS:
- * 
- * 1. @OneToMany: Relación uno a muchos
- *    - Una categoría tiene muchos productos
- *    - mappedBy = "categoria": el lado "dueño" de la relación está en Producto
- * 
- * 2. CascadeType:
- *    - ALL: todas las operaciones se propagan (persist, merge, remove, etc.)
- *    - PERSIST: si guardas la categoría, guarda los productos también
- *    - REMOVE: si eliminas la categoría, elimina los productos
- *    
- * 3. orphanRemoval:
- *    - true: elimina productos que ya no pertenecen a ninguna categoría
- *    - false: mantiene los productos aunque se elimine la categoría
- * 
- * 4. ¿Por qué usamos ArrayList<>()?
- *    - Para evitar NullPointerException al agregar productos
- *    - Inicializa la lista vacía en lugar de null
- */

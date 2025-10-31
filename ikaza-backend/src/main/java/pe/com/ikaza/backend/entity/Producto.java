@@ -8,11 +8,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * @autor Paulo
- * Entidad que representa los productos del catálogo
- * Mapea a la tabla "productos" de PostgreSQL
- */
 @Entity
 @Table(name = "productos")
 @Data
@@ -25,10 +20,6 @@ public class Producto {
     @Column(name = "id_producto")
     private Long idProducto;
 
-    /**
-     * Relación Many-to-One con Categoria
-     * Muchos productos pertenecen a una categoría
-     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
@@ -40,9 +31,6 @@ public class Producto {
     private String descripcionProducto;
 
     @Column(name = "precio", nullable = false, precision = 10, scale = 2)
-    // precision = 10: número total de dígitos
-    // scale = 2: dígitos después del punto decimal
-    // Ejemplo: 9999999.99
     private BigDecimal precio;
 
     @Column(name = "stock", nullable = false)
@@ -52,15 +40,7 @@ public class Producto {
     private Integer stockMinimo = 5;
 
     @Column(name = "calificacion_promedio", precision = 3, scale = 2)
-    // Ejemplo: 4.75 (escala de 0 a 5)
     private BigDecimal calificacionPromedio = BigDecimal.ZERO;
-
-    /**
-     * Referencia al documento de MongoDB con detalles extendidos
-     * Este campo almacena el ObjectId de MongoDB como String
-     */
-    @Column(name = "mongo_product_id", length = 24)
-    private String mongoProductId;
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
@@ -68,95 +48,26 @@ public class Producto {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-    /**
-     * Relación One-to-One con Inventario
-     * Un producto tiene un registro de inventario
-     * mappedBy: el lado dueño está en Inventario
-     * cascade: si creamos un producto, creamos su inventario también
-     * orphanRemoval: si eliminamos el producto, eliminamos su inventario
-     */
     @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private Inventario inventario;
+
+    @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ProductoDetalle detalle;
 
     @PrePersist
     protected void onCreate() {
         fechaCreacion = LocalDateTime.now();
         fechaActualizacion = LocalDateTime.now();
-        if (stock == null) {
+        if (stock == null)
             stock = 0;
-        }
-        if (stockMinimo == null) {
+        if (stockMinimo == null)
             stockMinimo = 5;
-        }
-        if (calificacionPromedio == null) {
+        if (calificacionPromedio == null)
             calificacionPromedio = BigDecimal.ZERO;
-        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         fechaActualizacion = LocalDateTime.now();
     }
-
-    /**
-     * Métodos de utilidad
-     */
-    
-    public boolean tieneStockDisponible() {
-        return stock != null && stock > 0;
-    }
-
-    public boolean necesitaReposicion() {
-        return stock != null && stockMinimo != null && stock <= stockMinimo;
-    }
-
-    public String getNombreCompleto() {
-        return nombreProducto + (categoria != null ? " - " + categoria.getNombreCategoria() : "");
-    }
-
-    /**
-     * Método para obtener el precio formateado
-     */
-    public String getPrecioFormateado() {
-        return precio != null ? "S/ " + precio.toString() : "S/ 0.00";
-    }
 }
-
-/**
- * EXPLICACIÓN DE BigDecimal:
- * 
- * ¿Por qué usamos BigDecimal en lugar de double o float?
- * 
- * - double y float tienen problemas de precisión con decimales
- * - Ejemplo: 0.1 + 0.2 = 0.30000000000000004 (¡error!)
- * 
- * - BigDecimal es exacto y perfecto para dinero
- * - Ejemplo: BigDecimal.valueOf(0.1).add(BigDecimal.valueOf(0.2)) = 0.3 (correcto)
- * 
- * Cómo usar BigDecimal:
- * - Crear: BigDecimal.valueOf(10.50)
- * - Sumar: precio.add(otroValor)
- * - Restar: precio.subtract(descuento)
- * - Multiplicar: precio.multiply(cantidad)
- * - Dividir: precio.divide(divisor, 2, RoundingMode.HALF_UP)
- * - Comparar: precio.compareTo(otroValor) > 0
- * 
- * ========================================
- * 
- * EXPLICACIÓN DE @OneToOne:
- * 
- * Producto <-> Inventario es una relación 1 a 1
- * - Un producto tiene UN solo registro de inventario
- * - Un inventario pertenece a UN solo producto
- * 
- * mappedBy = "producto":
- * - La relación es manejada por el campo "producto" en Inventario
- * - Inventario tiene la foreign key (id_producto)
- * 
- * cascade = CascadeType.ALL:
- * - Al guardar un producto, guarda su inventario automáticamente
- * - Al actualizar un producto, actualiza su inventario
- * 
- * orphanRemoval = true:
- * - Si eliminamos un producto, su inventario también se elimina
- */

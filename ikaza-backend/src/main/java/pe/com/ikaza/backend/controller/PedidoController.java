@@ -2,6 +2,7 @@ package pe.com.ikaza.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,9 +12,8 @@ import pe.com.ikaza.backend.dto.response.PedidoDetalleResponse;
 import pe.com.ikaza.backend.dto.response.PedidoResponse;
 import pe.com.ikaza.backend.entity.Pedido;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
+import pe.com.ikaza.backend.repository.UsuarioRepository;
 import pe.com.ikaza.backend.service.PedidoService;
-
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,8 +34,7 @@ public class PedidoController {
 
     /**
      * Endpoint para crear pedidos SÍNCRONOS
-     * Soporta: Culqi, Transferencia Bancaria, Efectivo Contraentrega
-     * 
+     * Soporta: Transferencia Bancaria, Efectivo Contraentrega
      * NOTA: MercadoPago se maneja en WebhookController con
      * /api/webhooks/mercadopago/create-preference
      */
@@ -47,7 +46,6 @@ public class PedidoController {
         try {
             Usuario usuario = extraerUsuario(authentication);
             Integer idUsuario = usuario.getIdUsuario();
-            String email = usuario.getEmail();
 
             log.info("Procesando checkout para usuario: {} con {} items",
                     idUsuario, request.getCartItems().size());
@@ -58,7 +56,7 @@ public class PedidoController {
                         .body(PedidoResponse.error("Usuario no autorizado"));
             }
 
-            log.info("📦 Nuevo pedido - Usuario: {}, Método: {}", idUsuario, request.getMetodoPago());
+            log.info("Nuevo pedido - Usuario: {}, Método: {}", idUsuario, request.getMetodoPago());
 
             // Validar que no sea MercadoPago (ese flujo va por WebhookController)
             if ("MERCADO_PAGO".equals(request.getMetodoPago())) {
@@ -67,13 +65,10 @@ public class PedidoController {
                                 "MercadoPago debe procesarse desde /api/webhooks/mercadopago/create-preference"));
             }
 
-            // Procesar pago síncrono (Culqi, Transferencia, Efectivo)
-            PedidoResponse response = pedidoService.procesarPedidoSincrono(request, idUsuario, email);
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(null);
 
         } catch (Exception e) {
-            log.error("❌ Error al crear pedido", e);
+            log.error("Error al crear pedido", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(PedidoResponse.error("Error al procesar el pedido: " + e.getMessage()));
         }
@@ -82,7 +77,6 @@ public class PedidoController {
     /**
      * Endpoint para confirmar pago asíncrono (Mercado Pago).
      * POST /api/pedidos/confirmar-pago
-     * 
      * Llamado desde el frontend después de la redirección de Mercado Pago.
      */
     @GetMapping("/confirmar-mercadopago")
@@ -96,7 +90,7 @@ public class PedidoController {
             Usuario usuario = extraerUsuario(authentication);
             Integer idUsuario = usuario.getIdUsuario();
 
-            log.info("✅ Confirmando MercadoPago - Pedido: {}, Payment: {}", pedidoId, payment_id);
+            log.info("Confirmando MercadoPago - Pedido: {}, Payment: {}", pedidoId, payment_id);
 
             PedidoResponse response = pedidoService.confirmarPagoMercadoPago(
                     pedidoId, payment_id, status, idUsuario);
@@ -104,11 +98,13 @@ public class PedidoController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("❌ Error al confirmar pago MercadoPago", e);
+            log.error("Error al confirmar pago MercadoPago", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(PedidoResponse.error("Error al confirmar el pago: " + e.getMessage()));
         }
     }
+
+    // ========== ENDPOINTS PARA CLIENTES ==========
 
     /**
      * Obtener un pedido por ID (Detalle Completo).
@@ -121,7 +117,6 @@ public class PedidoController {
         try {
             Usuario usuario = extraerUsuario(authentication);
             Integer idUsuario = usuario.getIdUsuario();
-            // LLAMA AL MÉTODO DETALLADO
             PedidoDetalleResponse response = pedidoService.getPedidoDetalleByIdAndUser(id, idUsuario);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
@@ -142,13 +137,10 @@ public class PedidoController {
     @GetMapping("/mis-pedidos")
     public ResponseEntity<?> obtenerMisPedidos(Authentication authentication) {
         try {
-
-            // Extraer información del usuario del JWT
             Usuario usuario = extraerUsuario(authentication);
             Integer idUsuario = usuario.getIdUsuario();
 
-            List<Pedido> pedidos = pedidoService.getPedidosByUserId(idUsuario); // Llama al servicio
-            // Mapear a una lista de respuestas (o DTOs si es necesario)
+            List<Pedido> pedidos = pedidoService.getPedidosByUserId(idUsuario);
             List<PedidoResponse> responseList = pedidos.stream().map(pedido -> {
                 int cantidadProductos = pedidoService.contarDetallesPedido(pedido.getIdPedido());
                 return PedidoResponse.builder()
@@ -166,7 +158,7 @@ public class PedidoController {
                         .cantidadProductos(cantidadProductos)
                         .build();
             }).collect(Collectors.toList());
-            return ResponseEntity.ok(responseList); // Devuelve una lista de PedidoResponse
+            return ResponseEntity.ok(responseList);
         } catch (Exception e) {
             log.error("Error al obtener pedidos", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

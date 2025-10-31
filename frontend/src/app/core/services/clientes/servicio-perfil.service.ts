@@ -12,7 +12,7 @@ import { AuthStateService } from '../auth/auth.state';
  * ============================================================================
  */
 export interface ProfileUpdateData {
-    displayName?: string;
+    username?: string;
     photoURL?: string | null;
     customIcon?: string | null;
 }
@@ -27,55 +27,60 @@ export interface ProfileUpdateData {
 @Injectable({
     providedIn: 'root'
 })
+
 export class ProfileService {
     private http = inject(HttpClient);
     private authState = inject(AuthStateService);
     private apiUrl = `${environment.apiUrl}/api/usuarios`;
 
     /**
-     * Actualizar perfil del usuario
+     * Actualizar username
      */
     updateProfile(email: string, profileData: ProfileUpdateData): Observable<any> {
-        return this.http.put(`${this.apiUrl}/perfil/${email}`, profileData).pipe(
-            tap(() => console.log('✅ Perfil actualizado')),
-            switchMap(() => {
-                // Actualizar el estado local
-                const currentUser = this.authState.getCurrentUser();
-                if (currentUser) {
-                    const updatedUser = {
-                        ...currentUser,
-                        displayName: profileData.displayName || currentUser.username,
-                        // Convertir null a undefined para compatibilidad con UserData
-                        photoURL: profileData.photoURL !== undefined
-                            ? (profileData.photoURL === null ? undefined : profileData.photoURL)
-                            : currentUser.photoURL,
-                        // Convertir null a undefined para compatibilidad con UserData
-                        customIcon: profileData.customIcon !== undefined
-                            ? (profileData.customIcon === null ? undefined : profileData.customIcon)
-                            : currentUser.customIcon
-                    };
-                    this.authState.setAuthenticatedUser(updatedUser);
-                }
-                return this.http.get(`${this.apiUrl}/perfil/${email}`);
-            })
+        // Si solo cambia el username
+        if (profileData.username && !profileData.photoURL) {
+            return this.http.put(`${this.apiUrl}/perfil/${email}`, {
+                username: profileData.username
+            }).pipe(
+                tap(() => console.log('✅ Username actualizado')),
+                switchMap(() => this.actualizarEstadoLocal(email, profileData))
+            );
+        }
+        
+        // Si solo cambia la foto
+        if (profileData.photoURL !== undefined) {
+            return this.http.put(`${this.apiUrl}/perfil/${email}/imagen`, {
+                photoURL: profileData.photoURL
+            }).pipe(
+                tap(() => console.log('✅ Foto actualizada')),
+                switchMap(() => this.actualizarEstadoLocal(email, profileData))
+            );
+        }
+
+        // Si cambian ambos, hacer dos llamadas
+        return this.http.put(`${this.apiUrl}/perfil/${email}`, {
+            username: profileData.username
+        }).pipe(
+            switchMap(() => this.http.put(`${this.apiUrl}/perfil/${email}/imagen`, {
+                photoURL: profileData.photoURL
+            })),
+            switchMap(() => this.actualizarEstadoLocal(email, profileData))
         );
     }
 
-    /**
-     * Subir imagen de perfil
-     */
-    uploadProfileImage(email: string, base64Image: string): Observable<string> {
-        return this.http.post<{ url: string }>(`${this.apiUrl}/perfil/${email}/imagen`, {
-            image: base64Image
-        }).pipe(
-            tap(response => console.log('✅ Imagen subida:', response.url)),
-            switchMap(response => {
-                // Actualizar photoURL en el perfil
-                return this.updateProfile(email, { photoURL: response.url }).pipe(
-                    switchMap(() => this.http.get<string>(`${this.apiUrl}/perfil/${email}/imagen`))
-                );
-            })
-        );
+    private actualizarEstadoLocal(email: string, profileData: ProfileUpdateData): Observable<any> {
+        const currentUser = this.authState.getCurrentUser();
+        if (currentUser) {
+            const updatedUser = {
+                ...currentUser,
+                username: profileData.username || currentUser.username,
+                photoURL: profileData.photoURL !== undefined
+                    ? (profileData.photoURL === null ? undefined : profileData.photoURL)
+                    : currentUser.photoURL
+            };
+            this.authState.setAuthenticatedUser(updatedUser);
+        }
+        return this.http.get(`${this.apiUrl}/perfil/${email}`);
     }
 
     /**
@@ -83,8 +88,7 @@ export class ProfileService {
      */
     removeProfileImage(email: string): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/perfil/${email}/imagen`).pipe(
-            tap(() => console.log('✅ Imagen eliminada')),
-            switchMap(() => this.updateProfile(email, { photoURL: null }))
+            tap(() => console.log('✅ Imagen eliminada'))
         );
     }
 }

@@ -23,7 +23,7 @@ public class PedidoResponse {
     
     private String numeroPedido;
     
-    private String transaccionId; // ID de Culqi o Mercado Pago
+    private String transaccionId;
     
     // URL de redirección para Mercado Pago
     private String redirectionUrl;
@@ -57,23 +57,7 @@ public class PedidoResponse {
                 .mensaje(mensaje)
                 .build();
     }
-    
-    // Constructor para respuesta exitosa síncrona (Culqi)
-    public static PedidoResponse exitoSincrono(
-            Long pedidoId, 
-            String numeroPedido, 
-            String transaccionId,
-            String mensaje) {
-        return PedidoResponse.builder()
-                .success(true)
-                .pedidoId(pedidoId)
-                .numeroPedido(numeroPedido)
-                .transaccionId(transaccionId)
-                .estadoPedido("CONFIRMADO")
-                .estadoPago("APROBADO")
-                .mensaje(mensaje)
-                .build();
-    }
+
     
     // Constructor para respuesta de error
     public static PedidoResponse error(String mensaje) {

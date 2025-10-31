@@ -18,22 +18,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
- * Utilidad para generar y validar tokens JWT (Actualizado para JJWT moderno)
- * Reemplaza la funcionalidad de Firebase Auth
+ * Utilidad para generar y validar tokens JWT
  */
 @Component
 public class JwtUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    // Se recomienda usar una clave de al menos 256 bits (32 caracteres en Base64)
     @Value("${jwt.secret:miSecretoSuperSeguroParaProduccionDebeSerMuyLargoYComplejo2024!}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration:86400000}") // 24 horas en milisegundos
+    @Value("${jwt.expiration:86400000}")
     private long jwtExpiration;
 
-    @Value("${jwt.refresh-expiration:604800000}") // 7 días en milisegundos
+    @Value("${jwt.refresh-expiration:604800000}")
     private long refreshExpiration;
 
     /**
@@ -45,41 +43,34 @@ public class JwtUtils {
     }
 
     /**
-     * Generar token JWT desde email (Método actualizado: usa signWith(Key) para
-     * evitar deprecación)
+     * Generar token JWT desde email
      */
     public String generateTokenFromUsername(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                // La duración del Access Token
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                // Actualizado: usamos signWith(SecretKey) para inferir el algoritmo (HS512)
+¿                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey())
                 .compact();
     }
 
     /**
-     * Generar Refresh Token (duración mayor) (Método actualizado: usa signWith(Key)
-     * para evitar deprecación)
+     * Generar Refresh Token (duración mayor)
      */
     public String generateRefreshToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                // La duración del Refresh Token
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
-                // Actualizado: usamos signWith(SecretKey) para inferir el algoritmo (HS512)
                 .signWith(getSigningKey())
                 .compact();
     }
 
     /**
-     * Obtener email del token JWT (Método actualizado: usa Jwts.parser() y requiere
-     * setSigningKey)
+     * Obtener email del token JWT
      */
     public String getUserEmailFromJwtToken(String token) {
-        return Jwts.parser() // FIX: Reemplaza parserBuilder() por parser()
+        return Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
@@ -92,7 +83,7 @@ public class JwtUtils {
      */
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser() // FIX: Reemplaza parserBuilder() por parser()
+            Jwts.parser()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(authToken);
@@ -106,7 +97,6 @@ public class JwtUtils {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims vacío: {}", e.getMessage());
         } catch (Exception e) {
-            // Generalmente, se captura SignatureException aquí si la firma no es válida
             logger.error("Error al validar token JWT (posiblemente firma inválida): {}", e.getMessage());
         }
         return false;
@@ -117,7 +107,7 @@ public class JwtUtils {
      */
     public boolean isTokenExpired(String token) {
         try {
-            Claims claims = Jwts.parser() // FIX: Reemplaza parserBuilder() por parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
@@ -126,8 +116,6 @@ public class JwtUtils {
         } catch (ExpiredJwtException e) {
             return true;
         } catch (Exception e) {
-            // Si hay cualquier otro error (p. ej. firma inválida), asumimos
-            // expirado/inválido
             return true;
         }
     }
@@ -136,8 +124,6 @@ public class JwtUtils {
      * Obtener clave de firma segura
      */
     private SecretKey getSigningKey() {
-        // Asegura que la clave secreta se maneje como bytes UTF-8 para la generación
-        // del SecretKey
         byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }

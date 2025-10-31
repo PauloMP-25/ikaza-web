@@ -5,11 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pe.com.ikaza.backend.dto.request.PedidoRequest;
-import pe.com.ikaza.backend.entity.Tarjeta;
 import pe.com.ikaza.backend.enums.EstadoPago;
 import pe.com.ikaza.backend.enums.MetodoPago;
-import pe.com.ikaza.backend.model.internal.ResultadoPago;
-import pe.com.ikaza.backend.repository.jpa.TarjetaRepository;
+import pe.com.ikaza.backend.enums.ResultadoPago;
 
 /**
  * Servicio que maneja la estrategia de procesamiento de pagos
@@ -20,9 +18,7 @@ import pe.com.ikaza.backend.repository.jpa.TarjetaRepository;
 @RequiredArgsConstructor
 public class ProcesadorPagoService {
 
-    private final CulqiService culqiService;
     private final MercadoPagoService mercadoPagoService;
-    private final TarjetaRepository tarjetaRepository;
 
     /**
      * Procesa el pago según el método seleccionado
@@ -30,16 +26,8 @@ public class ProcesadorPagoService {
     public ResultadoPago procesarPago(PedidoRequest request, Integer idUsuario, Long pedidoId) {
         log.info("Procesando pago con método: {}", request.getMetodoPago());
 
-        // Si usa tarjeta guardada
-        if (request.getIdTarjetaGuardada() != null) {
-            return procesarPagoConTarjetaGuardada(request);
-        }
-
         // Según método de pago
-        switch (request.getMetodoPago()) {
-            case "CULQI":
-                return procesarPagoCulqi(request);
-            
+        switch (request.getMetodoPago()) {            
             case "MERCADO_PAGO":
                 return procesarPagoMercadoPago(request, pedidoId);
             
@@ -52,58 +40,6 @@ public class ProcesadorPagoService {
         }
     }
 
-    /**
-     * Procesa pago con tarjeta guardada (Culqi)
-     */
-    private ResultadoPago procesarPagoConTarjetaGuardada(PedidoRequest request) {
-        log.info("Procesando pago con tarjeta guardada ID: {}", request.getIdTarjetaGuardada());
-
-        Tarjeta tarjeta = tarjetaRepository.findById(request.getIdTarjetaGuardada())
-                .orElseThrow(() -> new RuntimeException("Tarjeta no encontrada"));
-
-        JsonNode respuestaCulqi = culqiService.crearCargo(
-                tarjeta.getTokenPago(),
-                request.getTotal(),
-                request.getEmail());
-
-        String transaccionId = respuestaCulqi.get("id").asText();
-
-        return ResultadoPago.builder()
-                .exitoso(true)
-                .transaccionId(transaccionId)
-                .requiereRedireccion(false)
-                .estadoPago(EstadoPago.APROBADO)
-                .metodoPago(MetodoPago.CULQI)
-                .datosJson(respuestaCulqi.toString())
-                .build();
-    }
-
-    /**
-     * Procesa pago con Culqi (síncrono)
-     */
-    private ResultadoPago procesarPagoCulqi(PedidoRequest request) {
-        log.info("Procesando pago con Culqi (token)");
-
-        if (!culqiService.validarToken(request.getTokenCulqi())) {
-            throw new RuntimeException("Token de Culqi inválido");
-        }
-
-        JsonNode respuestaCulqi = culqiService.crearCargo(
-                request.getTokenCulqi(),
-                request.getTotal(),
-                request.getEmail());
-
-        String transaccionId = respuestaCulqi.get("id").asText();
-
-        return ResultadoPago.builder()
-                .exitoso(true)
-                .transaccionId(transaccionId)
-                .requiereRedireccion(false)
-                .estadoPago(EstadoPago.APROBADO)
-                .metodoPago(MetodoPago.CULQI)
-                .datosJson(respuestaCulqi.toString())
-                .build();
-    }
 
     /**
      * Procesa pago con Mercado Pago (asíncrono)

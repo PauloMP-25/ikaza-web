@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * DTO de respuesta para productos (vista simplificada)
+ * DTO de respuesta para productos
  */
 @Data
 @NoArgsConstructor
@@ -27,9 +27,9 @@ public class ProductoResponse {
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
     
-    // Campos de MongoDB (si existen)
+    // Campos de Producto_Detalle (si existen)
     private String imagenPrincipal;
     private String marca;
     private String modelo;
-    private Boolean disponible; // Calculado: stock > 0
+    private Boolean disponible;
 }

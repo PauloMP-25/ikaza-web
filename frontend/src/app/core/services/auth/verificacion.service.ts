@@ -20,7 +20,6 @@ export interface VerificationResponse {
  * ============================================================================
  * SERVICIO DE VERIFICACIÓN (Email y Teléfono)
  * ============================================================================
- * Reemplaza Firebase Email Verification y Phone Auth
  * Usa servicios del backend para enviar códigos por email/SMS
  * ============================================================================
  */

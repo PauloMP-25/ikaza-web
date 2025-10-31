@@ -19,5 +19,5 @@ public class CategoriaResponse {
     private String descripcionCategoria;
     private Boolean activo;
     private LocalDateTime fechaCreacion;
-    private Integer cantidadProductos; // Número de productos en esta categoría
+    private Integer cantidadProductos;
 }

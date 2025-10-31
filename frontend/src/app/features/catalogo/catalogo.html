@@ -14,16 +14,13 @@
     <div class="sidebar-section">
       <h6>Categorías</h6>
 
-      <button class="category-filter-btn"
-              [class.active]="filteredCategory === 'todos'"
-              (click)="filterByCategory('todos')">
+      <button class="category-filter-btn" [class.active]="filteredCategory === 'todos'"
+        (click)="filterByCategory('todos')">
         <i class="bi bi-grid-3x3-gap me-2"></i> Todos
       </button>
 
-      <button *ngFor="let cat of categories"
-              class="category-filter-btn"
-              [class.active]="filteredCategory === cat.value"
-              (click)="filterByCategory(cat.value)">
+      <button *ngFor="let cat of categories" class="category-filter-btn" [class.active]="filteredCategory === cat.value"
+        (click)="filterByCategory(cat.value)">
         <i class="bi bi-tags me-2"></i> {{ cat.name }}
       </button>
     </div>
@@ -32,8 +29,10 @@
     <div class="sidebar-section">
       <h6>Precio</h6>
       <div class="d-flex gap-2">
-        <input type="number" class="form-control" [(ngModel)]="minPrice" (change)="applyPriceFilter()">
-        <input type="number" class="form-control" [(ngModel)]="maxPrice" (change)="applyPriceFilter()">
+        <input type="number" class="form-control" [(ngModel)]="minPrice" (change)="applyPriceFilter()"
+          aria-label="Bajar">
+        <input type="number" class="form-control" [(ngModel)]="maxPrice" (change)="applyPriceFilter()"
+          aria-label="Subir">
       </div>
     </div>
 
@@ -45,12 +44,8 @@
           {value:'all', label:'Todos'},
           {value:'available', label:'En Stock'},
           {value:'low', label:'Poco Stock'} ]">
-        <input class="form-check-input"
-               type="radio"
-               name="stockFilter"
-               [value]="option.value"
-               [(ngModel)]="stockFilter"
-               (change)="applyStockFilter()">
+        <input class="form-check-input" type="radio" name="stockFilter" [value]="option.value" [(ngModel)]="stockFilter"
+          (change)="applyStockFilter()" aria-label="Filtrar por stock">
         <label class="form-check-label">{{ option.label }}</label>
       </div>
     </div>
@@ -67,7 +62,7 @@
         <span>{{ filteredProducts.length }} productos encontrados</span>
       </div>
 
-      <select class="form-select w-auto" [(ngModel)]="sortOption" (change)="applySort()">
+      <select class="form-select w-auto" [(ngModel)]="sortOption" (change)="applySort()" aria-label="Ordenar">
         <option value="featured">Destacados</option>
         <option value="price-low">Precio más bajo</option>
         <option value="price-high">Precio más alto</option>
@@ -107,7 +102,7 @@
   <div id="successToast" class="toast" role="alert">
     <div class="toast-header">
       <strong class="me-auto">✔ Éxito</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Cerrar"></button>
     </div>
     <div class="toast-body">
       <span id="toastMessage"></span>

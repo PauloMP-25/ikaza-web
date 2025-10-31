@@ -9,9 +9,9 @@ import pe.com.ikaza.backend.entity.Inventario;
 import pe.com.ikaza.backend.entity.MovimientoInventario;
 import pe.com.ikaza.backend.entity.Producto;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.InventarioRepository;
-import pe.com.ikaza.backend.repository.jpa.MovimientoInventarioRepository;
-import pe.com.ikaza.backend.repository.jpa.ProductoRepository;
+import pe.com.ikaza.backend.repository.InventarioRepository;
+import pe.com.ikaza.backend.repository.MovimientoInventarioRepository;
+import pe.com.ikaza.backend.repository.ProductoRepository;
 
 import java.util.List;
 
@@ -68,11 +68,9 @@ public class InventarioService {
 
             Inventario inventario = obtenerOCrearInventario(producto);
             
-            // Reservar stock
             inventario.reservarStock(item.getCantidad());
             inventarioRepository.save(inventario);
 
-            // Registrar movimiento
             registrarMovimiento(
                 usuario,
                 producto,
@@ -104,15 +102,12 @@ public class InventarioService {
 
             int stockAnterior = inventario.getStockActual();
             
-            // Confirma venta (reduce stock actual y reservado)
             inventario.confirmarVenta(item.getCantidad());
             inventarioRepository.save(inventario);
 
-            // Actualizar tabla productos (para compatibilidad)
             producto.setStock(inventario.getStockActual());
             productoRepository.save(producto);
 
-            // Registrar movimiento de salida
             registrarMovimiento(
                 usuario,
                 producto,
@@ -143,11 +138,9 @@ public class InventarioService {
 
             int stockReservadoAnterior = inventario.getStockReservado();
             
-            // Liberar stock reservado
             inventario.liberarStockReservado(item.getCantidad());
             inventarioRepository.save(inventario);
 
-            // Registrar movimiento
             registrarMovimiento(
                 usuario,
                 producto,
@@ -178,15 +171,12 @@ public class InventarioService {
 
             int stockAnterior = inventario.getStockActual();
             
-            // Devolver stock
             inventario.agregarStock(item.getCantidad());
             inventarioRepository.save(inventario);
 
-            // Actualizar tabla productos
             producto.setStock(inventario.getStockActual());
             productoRepository.save(producto);
 
-            // Registrar movimiento de devolución
             registrarMovimiento(
                 usuario,
                 producto,

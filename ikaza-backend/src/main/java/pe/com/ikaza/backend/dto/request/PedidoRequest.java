@@ -17,8 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PedidoRequest {
-    // El idUsuario se extraerá del JWT en el controlador
-    // pero puede venir en el DTO como validación adicional
     private Long idUsuario;
 
     @NotEmpty(message = "El carrito no puede estar vacío")
@@ -31,17 +29,11 @@ public class PedidoRequest {
     private BigDecimal subtotal;
 
     @NotNull(message = "El método de pago es obligatorio")
-    private String metodoPago; // "MERCADO_PAGO", "CULQI", "TRANSFERENCIA_BANCARIA", etc.
-
-    // Token de Culqi (solo si metodoPago == "CULQI")
-    private String tokenCulqi;
+    private String metodoPago; // "MERCADO_PAGO", "TRANSFERENCIA_BANCARIA", etc.
 
     //ID de la tarjeta guardada al pedido.
     private Integer idTarjetaGuardada;
 
     // Email del usuario (para notificaciones)
     private String email;
-
-    // Información adicional (opcional)
-    private String notasAdicionales;
 }

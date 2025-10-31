@@ -198,34 +198,45 @@ export class Productos implements OnInit, OnDestroy { // Implementado OnDestroy
     * Filtrado por texto (nombre, SKU o categoría) y por categoría seleccionada.
     */
     filtrarProductos() {
-        const texto = (this.filtro || '').toLowerCase().trim();
-        const categoria = (this.categoriaSeleccionada || '').toLowerCase();
+    const texto = (this.filtro || '').toLowerCase().trim();
+    // 1. Convertir el ID seleccionado (string) a número. Si es vacío, será 0.
+    const categoriaIdSeleccionada = Number(this.categoriaSeleccionada); 
 
-        this.productosFiltrados = this.productos.filter(prod => {
-            const nombre = String(prod.nombreProducto || '').toLowerCase();
-            const sku = String(prod.codigo || '').toLowerCase();
-            const cat = String(prod.nombreCategoria || '').toLowerCase();
-            const descripcion = String(prod.nombreProducto || '').toLowerCase();
-            const marca = String(prod.marca || '').toLowerCase();
+    this.productosFiltrados = this.productos.filter(prod => {
+        
+        // Acceso directo a las propiedades de ProductoDetalle/Producto
+        const nombre = String(prod.nombreProducto || '').toLowerCase();
+        const sku = String(prod.codigo || '').toLowerCase();
+        const descripcion = String(prod.descripcionProducto || '').toLowerCase();
+        const marca = String(prod.marca || '').toLowerCase();
+        
+        // ✨ ACCESO DIRECTO AL NOMBRE E ID DE CATEGORÍA (modelo plano)
+        const catNombre = String(prod.nombreCategoria || '').toLowerCase(); 
+        const catId = prod.idCategoria; 
 
-            const coincideTexto =
-                nombre.includes(texto) ||
-                sku.includes(texto) ||
-                cat.includes(texto) ||
-                descripcion.includes(texto) ||
-                marca.includes(texto);
+        // 3. Coincidencia por Texto (Busca en todos los campos, incluido nombreCategoria)
+        const coincideTexto =
+            nombre.includes(texto) ||
+            sku.includes(texto) ||
+            catNombre.includes(texto) || // Usamos el nombre plano para la búsqueda por texto
+            descripcion.includes(texto) ||
+            marca.includes(texto);
 
-            const coincideCategoria =
-                categoria === '' || cat === categoria;
+        // 4. Coincidencia por Categoría Seleccionada (Compara IDs)
+        const coincideCategoria =
+            // Si el ID seleccionado es 0 (o no es un número válido), se cumple la condición.
+            !categoriaIdSeleccionada || 
+            // Si no, verifica que los IDs coincidan.
+            catId === categoriaIdSeleccionada; 
 
-            return coincideTexto && coincideCategoria;
-        });
+        return coincideTexto && coincideCategoria;
+    });
 
-        this.calcularTotalPages();
-        this.currentPage = 1;
-        console.log(`🔍 Filtro aplicado: "${texto}" | Categoría: "${categoria}"`);
-        console.log(`📊 Resultados: ${this.productosFiltrados.length} de ${this.productos.length} productos`);
-    }
+    this.calcularTotalPages();
+    this.currentPage = 1;
+    console.log(`🔍 Filtro aplicado: "${texto}" | Categoría ID: "${categoriaIdSeleccionada}`);
+    console.log(`📊 Resultados: ${this.productosFiltrados.length} de ${this.productos.length} productos`);
+}
 
     /**
      * Elimina un producto usando el servicio de administración.
