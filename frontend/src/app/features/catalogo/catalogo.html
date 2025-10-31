@@ -84,8 +84,11 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let product of filteredProducts">
-        <app-product-card [product]="product" (quickView)="onQuickView($event)" (viewDetails)="onViewDetails($event)"
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3"
+           *ngFor="let product of filteredProducts">
+        <app-product-card
+          [product]="product"
+          (viewDetails)="onViewDetails($event)"
           (addToCart)="onAddToCart($event)">
         </app-product-card>
       </div>

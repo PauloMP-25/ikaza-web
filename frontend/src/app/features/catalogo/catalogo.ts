@@ -132,10 +132,6 @@ export class CatalogoComponent implements OnInit {
     this.applyAllFilters();
   }
 
-  onQuickView(product: Producto) {
-    this.selectedProduct = product;
-  }
-
   onViewDetails(product: Producto) {
     this.selectedProduct = product;
   }
