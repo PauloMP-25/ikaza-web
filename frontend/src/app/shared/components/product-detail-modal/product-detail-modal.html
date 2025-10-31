@@ -1,0 +1,90 @@
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" *ngIf="product">
+
+      <!-- HEADER -->
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold" id="detalleModalLabel">
+          {{ product.nombreProducto }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body">
+        <div class="row align-items-stretch">
+
+          <!-- IMAGES -->
+          <div class="col-md-6">
+            <div class="main-image-container mb-4 text-center">
+              <img 
+                [src]="productImages[selectedImageIndex]"
+                [alt]="product.nombreProducto"
+                class="img-fluid rounded shadow-sm"
+                style="max-height: 350px;">
+            </div>
+
+            <!-- Thumbnails -->
+            <div class="d-flex gap-2 justify-content-center" *ngIf="productImages.length > 1">
+              <img *ngFor="let img of productImages; let i=index"
+                [src]="img"
+                class="img-thumbnail"
+                [class.border-primary]="i === selectedImageIndex"
+                style="width: 60px; height: 60px; cursor:pointer"
+                (click)="selectImage(i)"
+                loading="lazy">
+            </div>
+          </div>
+
+          <!-- PRODUCT INFO -->
+          <div class="col-md-6">
+
+            <!-- CATEGORÍA -->
+            <span class="badge bg-success mb-3">{{ product.nombreCategoria }}</span>
+
+            <!-- DESCRIPCIÓN -->
+            <p class="text-muted">
+              {{ product.descripcionProducto || 'Descripción no disponible' }}
+            </p>
+
+            <!-- PRECIO -->
+            <h3 class="text-success fw-bold mb-0">
+              S/ {{ product.precio?.toFixed(2) }}
+            </h3>
+            <small class="text-muted">Precio incluye IGV</small>
+
+            <!-- STOCK -->
+            <div class="mt-3">
+              <span class="badge"
+                [class.bg-success]="product.stock > 10"
+                [class.bg-warning]="product.stock > 0 && product.stock <= 10"
+                [class.bg-danger]="product.stock === 0">
+                {{ product.stock > 0 ? 'Stock: ' + product.stock : 'Producto Agotado' }}
+              </span>
+            </div>
+
+            <!-- CALIFICACIÓN -->
+            <div class="mt-4" *ngIf="product.calificacionPromedio">
+              <small class="text-muted fw-semibold">Calificación:</small>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-star-fill text-warning"></i>
+                <span class="ms-1 fw-semibold">
+                  {{ product.calificacionPromedio }}/5
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

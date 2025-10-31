@@ -57,13 +57,6 @@ export const routes: Routes = [
         path: 'search',
         loadComponent: () => import('@features/resultado-busqueda/search-results').then(m => m.SearchResultsComponent)
     },
-
-    // Ruta de prueba (falta integrar)
-    {
-        path: 's2',
-        loadComponent: () => import('@shared/components/productoSpringBoot/productosSpring').then(m => m.ProductosListaComponent)
-    },
-
     // RUTAS DE PAGOS (MERCADO PAGO)
     {
         path: 'pago-exito',

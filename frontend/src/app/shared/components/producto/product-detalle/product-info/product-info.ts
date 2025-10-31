@@ -74,7 +74,7 @@ ngOnInit() {
     } else if (stock < 10) {
       return { clase: 'badge bg-warning text-dark', texto: `Solo quedan ${stock}` };
     } else {
-      return { clase: 'badge bg-success', texto: 'Disponible' };
+      return { clase: 'badge bg-success', texto: 'Disp' };
     }
   }
 

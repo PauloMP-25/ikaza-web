@@ -46,7 +46,9 @@ export class ModalLoginComponent {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
+      username: ['', [Validators.minLength(3), Validators.maxLength(50)]]
+
     }, {
       validators: this.passwordMatchValidator
     });
@@ -248,7 +250,8 @@ export class ModalLoginComponent {
     const displayNames: { [key: string]: string } = {
       'email': 'Email',
       'password': 'Contraseña',
-      'confirmPassword': 'Confirmar contraseña'
+      'confirmPassword': 'Confirmar contraseña',
+      'username': 'Nombre de usuario'
     };
 
     return displayNames[fieldName] || fieldName;

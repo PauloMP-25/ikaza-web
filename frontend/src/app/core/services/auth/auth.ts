@@ -358,6 +358,7 @@ export class AuthService {
     return {
       idUsuario: response.idUsuario,
       email: response.email,
+      username: response.username,
       rol: response.rol,
       isAdmin: response.isAdmin,
       activo: response.activo,

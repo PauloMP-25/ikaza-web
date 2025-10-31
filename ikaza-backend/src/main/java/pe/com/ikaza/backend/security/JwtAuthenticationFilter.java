@@ -41,7 +41,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/verificar-email",
             "/api/public",
             "/api/google-maps/",
-            
+
+            "/api/productos",
             "/api/categorias"
     );
 

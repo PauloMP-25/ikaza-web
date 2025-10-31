@@ -84,8 +84,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/google-maps/**").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/productos").hasAuthority("ADMINISTRADOR")
+                        .requestMatchers("/api/productos/**").permitAll()
                         .requestMatchers("/api/categorias/**").permitAll()
 
                         // Rutas de cliente

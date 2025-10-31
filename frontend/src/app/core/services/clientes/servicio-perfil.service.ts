@@ -44,7 +44,7 @@ export class ProfileService {
                 if (currentUser) {
                     const updatedUser = {
                         ...currentUser,
-                        displayName: profileData.displayName || currentUser.displayName,
+                        displayName: profileData.displayName || currentUser.username,
                         // Convertir null a undefined para compatibilidad con UserData
                         photoURL: profileData.photoURL !== undefined
                             ? (profileData.photoURL === null ? undefined : profileData.photoURL)
