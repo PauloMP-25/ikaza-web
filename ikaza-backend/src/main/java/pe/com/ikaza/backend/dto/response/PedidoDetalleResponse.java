@@ -9,8 +9,9 @@ import lombok.EqualsAndHashCode;
 import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-// Se debe extender de PedidoResponse heredar los campos básicos
+/**
+ * DTO de respuesta de los detalles de un producto y heredada los atributos de un Pedido
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -24,13 +25,11 @@ public class PedidoDetalleResponse extends PedidoResponse {
     private String ultimos4DigitosTarjeta;
     private String tipoTarjeta;
     private String bancoEmisor;
-    private LocalDateTime fechaPago; // Fecha real de la entidad Pago
+    private LocalDateTime fechaPago;
 
-    // Información de envío (Asumiendo que es una dirección)
-    private String direccionEnvioCompleta;
+    // Información de envío 
     private String telefonoContacto;
 
-    // Usar el constructor base (del DTO padre) si no usas @SuperBuilder
     @Builder(builderMethodName = "detalleBuilder")
     public PedidoDetalleResponse(
             boolean success, String mensaje, Long pedidoId, String numeroPedido, String transaccionId,
@@ -47,7 +46,6 @@ public class PedidoDetalleResponse extends PedidoResponse {
         this.tipoTarjeta = tipoTarjeta;
         this.bancoEmisor = bancoEmisor;
         this.fechaPago = fechaPago;
-        this.direccionEnvioCompleta = direccionEnvioCompleta;
         this.telefonoContacto = telefonoContacto;
     }
 }

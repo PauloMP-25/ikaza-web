@@ -57,7 +57,6 @@ public class Pedido {
     @Column(name = "fecha_pago")
     private LocalDateTime fechaPago;
 
-    // Relaciones
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetallePedido> detalles = new ArrayList<>();
 
@@ -67,7 +66,6 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<HistorialEstadoPedido> historial = new ArrayList<>();
 
-    // Métodos de utilidad
     @PrePersist
     protected void onCreate() {
         if (fechaPedido == null) {

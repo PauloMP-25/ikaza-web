@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pe.com.ikaza.backend.dto.request.DireccionRequest;
 import pe.com.ikaza.backend.dto.response.DireccionResponse;
 import pe.com.ikaza.backend.service.DireccionService;
-import pe.com.ikaza.backend.service.ClienteService;
+import pe.com.ikaza.backend.service.UsuarioService;
 import pe.com.ikaza.backend.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -16,38 +16,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Controlador REST para la gestión de las direcciones del Cliente
+ */
 @RestController
 @RequestMapping("/api/usuarios/direcciones")
-// Asume que el ID del usuario se obtiene del contexto de seguridad (JWT/Principal)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class DireccionController {
 
     @Autowired
     private DireccionService direccionService;
 
     @Autowired
-    private ClienteService clienteService;
+    private UsuarioService usuarioService;
 
     @Autowired
     private SecurityUtils securityUtils;
-    
+
+    // ========== METODO AUXILIAR ==========
+
     /**
      * Obtiene el ID del usuario autenticado a partir del token JWT.
-     * ESTA ES LA FUNCIÓN CORREGIDA
      */
     private Integer getCurrentUserId() {
-        // 1. Obtener el email (username) del contexto de seguridad
         String email = securityUtils.getCurrentUserEmail();
-        
+
         if (email == null) {
-            // Esto no debería ocurrir en una ruta @PreAuthorize, pero es buena práctica
             throw new RuntimeException("Usuario no autenticado o token no contiene email.");
         }
-        
-        // 2. Usar el email para buscar el id_usuario en la BD
-        // ** NOTA: Reemplazar el 6 por una llamada a ClienteService.obtenerIdPorEmail(email)
-        return clienteService.obtenerIdPorEmail(email);
+        return usuarioService.obtenerPorEmail(email).getIdUsuario();
     }
-    
+
     /**
      * GET /api/usuarios/direcciones
      * Carga todas las direcciones del usuario autenticado.
@@ -64,21 +63,20 @@ public class DireccionController {
      * POST /api/usuarios/direcciones
      * Guarda una nueva dirección.
      */
-@PostMapping
-@PreAuthorize("hasRole('CLIENTE')")
-public ResponseEntity<?> guardarDireccion(@Valid @RequestBody DireccionRequest request) {
-    try {
-        Integer idUsuario = getCurrentUserId();
-        DireccionResponse nuevaDireccion = direccionService.guardarDireccion(idUsuario, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaDireccion); // ✅ AHORA HttpStatus funciona
-    } catch (Exception e) {
-        // Este catch solo capturará excepciones de servicio, no de validación
-        Map<String, Object> errorResponse = new HashMap<>(); // ✅ AHORA HashMap funciona
-        errorResponse.put("error", e.getMessage());
-        errorResponse.put("timestamp", java.time.LocalDateTime.now());
-        return ResponseEntity.badRequest().body(errorResponse);
+    @PostMapping
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<?> guardarDireccion(@Valid @RequestBody DireccionRequest request) {
+        try {
+            Integer idUsuario = getCurrentUserId();
+            DireccionResponse nuevaDireccion = direccionService.guardarDireccion(idUsuario, request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevaDireccion);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            errorResponse.put("timestamp", java.time.LocalDateTime.now());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
-}
 
     /**
      * PUT /api/usuarios/direcciones/{idDireccion}
@@ -86,7 +84,8 @@ public ResponseEntity<?> guardarDireccion(@Valid @RequestBody DireccionRequest r
      */
     @PutMapping("/{idDireccion}")
     @PreAuthorize("hasRole('CLIENTE')")
-    public ResponseEntity<DireccionResponse> actualizarDireccion(@PathVariable Integer idDireccion, @Valid @RequestBody DireccionRequest request) {
+    public ResponseEntity<DireccionResponse> actualizarDireccion(@PathVariable Integer idDireccion,
+            @Valid @RequestBody DireccionRequest request) {
         Integer idUsuario = getCurrentUserId();
         DireccionResponse actualizada = direccionService.actualizarDireccion(idDireccion, idUsuario, request);
         return ResponseEntity.ok(actualizada);
@@ -94,13 +93,13 @@ public ResponseEntity<?> guardarDireccion(@Valid @RequestBody DireccionRequest r
 
     /**
      * PUT /api/usuarios/direcciones/{idDireccion}/principal
-     * Actualiza una dirección existente marcándola como principal (con lógica de negocio).
+     * Actualiza una dirección existente marcándola como principal
      */
     @PutMapping("/{idDireccion}/principal")
     @PreAuthorize("hasRole('CLIENTE')")
-    public ResponseEntity<DireccionResponse> actualizarDireccionPrincipal(@PathVariable Integer idDireccion, @Valid @RequestBody DireccionRequest request) {
+    public ResponseEntity<DireccionResponse> actualizarDireccionPrincipal(@PathVariable Integer idDireccion,
+            @Valid @RequestBody DireccionRequest request) {
         Integer idUsuario = getCurrentUserId();
-        // Llamada a la función con lógica de negocio
         DireccionResponse actualizada = direccionService.actualizarDireccionPrincipal(idDireccion, idUsuario, request);
         return ResponseEntity.ok(actualizada);
     }

@@ -26,7 +26,7 @@ public class Pago{
     private Pedido pedido;
 
     @Column(name = "id_metodo")
-    private Long idMetodo; // FK a metodos_pago (nullable)
+    private Long idMetodo;
 
     @Column(name = "monto", nullable = false, precision = 10, scale = 2)
     private BigDecimal monto;
@@ -45,7 +45,6 @@ public class Pago{
     @Column(name = "referencia_pasarela", length = 150)
     private String referenciaPasarela;
 
-    // Datos de tarjeta (snapshot)
     @Column(name = "ultimos_4_digitos", length = 4)
     private String ultimos4Digitos;
 
@@ -55,7 +54,6 @@ public class Pago{
     @Column(name = "banco_emisor", length = 30)
     private String bancoEmisor;
 
-    // Metadata
     @Column(name = "datos_pasarela_json", columnDefinition = "TEXT")
     private String datosPasarelaJson;
 

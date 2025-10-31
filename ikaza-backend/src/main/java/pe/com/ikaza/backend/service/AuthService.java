@@ -16,14 +16,14 @@ import pe.com.ikaza.backend.dto.request.LoginRequest;
 import pe.com.ikaza.backend.dto.request.RegistroRequest;
 import pe.com.ikaza.backend.dto.response.AuthResponse;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
+import pe.com.ikaza.backend.repository.UsuarioRepository;
 import pe.com.ikaza.backend.security.JwtUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * Servicio de autenticación sin Firebase
+ * Servicio de autenticación
  * Maneja registro, login y tokens JWT propios
  */
 @Service
@@ -51,7 +51,7 @@ public class AuthService {
      * REGISTRO: Crear nuevo usuario con email y password
      */
     public AuthResponse registrarUsuario(RegistroRequest request) {
-        logger.info("📝 Iniciando registro para: {}", request.getEmail());
+        logger.info("Iniciando registro para: {}", request.getEmail());
 
         // Validar si el email ya existe
         if (usuarioRepository.existsByEmail(request.getEmail())) {
@@ -67,9 +67,15 @@ public class AuthService {
         if (request.getPassword().length() < 6) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
         }
+        
+        // Validar username si se proporciona
+        if (request.getUsername() != null && !request.getUsername().trim().isEmpty()) {
+            if (usuarioRepository.existsByUsername(request.getUsername())) {
+                throw new IllegalArgumentException("El nombre de usuario ya está en uso");
+            }
+        }
 
         try {
-            // Crear usuario
             Usuario usuario = new Usuario();
             usuario.setEmail(request.getEmail());
             usuario.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -77,15 +83,21 @@ public class AuthService {
             usuario.setActivo(true);
             usuario.setEmailVerificado(false);
             usuario.setProveedorAuth("LOCAL");
+            
+            if (request.getUsername() != null && !request.getUsername().trim().isEmpty()) {
+                usuario.setUsername(request.getUsername().trim());
+            } else {
+                //Si no se proporciona, usar parte del email (se maneja en @PrePersist)
+                usuario.setUsername(request.getEmail().split("@")[0]);
+            }
 
             Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
-            logger.info("✅ Usuario registrado exitosamente - ID: {}", usuarioGuardado.getIdUsuario());
+            logger.info("Usuario registrado exitosamente - ID: {}", usuarioGuardado.getIdUsuario());
 
             clienteService.crearPerfilInicial(usuarioGuardado.getEmail()); 
-            logger.info("✅ Perfil Cliente inicial creado automáticamente para: {}", usuarioGuardado.getEmail());
+            logger.info("Perfil Cliente inicial creado automáticamente para: {}", usuarioGuardado.getEmail());
             
-            // Generar tokens
             String accessToken = jwtUtils.generateTokenFromUsername(usuarioGuardado.getEmail());
             String refreshToken = jwtUtils.generateRefreshToken(usuarioGuardado.getEmail());
 
@@ -98,7 +110,7 @@ public class AuthService {
                     "Usuario registrado exitosamente. Complete su perfil para continuar.");
 
         } catch (Exception e) {
-            logger.error("❌ Error al registrar usuario: {}", e.getMessage());
+            logger.error("Error al registrar usuario: {}", e.getMessage());
             throw new RuntimeException("Error al registrar usuario: " + e.getMessage());
         }
     }
@@ -107,25 +119,21 @@ public class AuthService {
      * LOGIN: Autenticar con email y password
      */
     public AuthResponse login(LoginRequest request) {
-        logger.info("🔐 Intento de login para: {}", request.getEmail());
+        logger.info("Intento de login para: {}", request.getEmail());
 
         try {
-            // Buscar usuario
             Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
 
-            // Verificar si está bloqueado
             if (usuario.estaBloqueado()) {
                 throw new RuntimeException("Usuario bloqueado temporalmente. Intente más tarde.");
             }
 
-            // Verificar si está activo
             if (!usuario.getActivo()) {
                 throw new DisabledException("Usuario inactivo. Contacte al administrador.");
             }
 
             try {
-                // Autenticar
                 Authentication authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(
                                 request.getEmail(),
@@ -133,32 +141,27 @@ public class AuthService {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                // Resetear intentos fallidos
                 usuario.resetearIntentosFallidos();
 
-                // Actualizar último acceso
                 usuario.setUltimoAcceso(LocalDateTime.now());
 
-                // Generar tokens
                 String accessToken = jwtUtils.generateJwtToken(authentication);
                 String refreshToken = jwtUtils.generateRefreshToken(usuario.getEmail());
 
-                // Guardar refresh token
                 usuario.setRefreshToken(refreshToken);
                 usuario.setTokenExpiracion(LocalDateTime.now().plusDays(7));
                 usuarioRepository.save(usuario);
 
-                logger.info("✅ Login exitoso para: {}", request.getEmail());
+                logger.info("Login exitoso para: {}", request.getEmail());
 
                 return construirAuthResponse(usuario, accessToken, refreshToken, "Login exitoso");
 
             } catch (BadCredentialsException e) {
-                // Incrementar intentos fallidos
                 usuario.incrementarIntentosFallidos();
                 usuarioRepository.save(usuario);
 
-                logger.warn("⚠️ Credenciales inválidas para: {}", request.getEmail());
-                throw new BadCredentialsException("Credenciales inválidas");
+                logger.warn("Credenciales inválidas para: {}", request.getEmail());
+                throw new BadCredentialsException("La contraseña es incorrecta");
             }
 
         } catch (BadCredentialsException e) {
@@ -166,7 +169,7 @@ public class AuthService {
         } catch (DisabledException e) {
             throw e;
         } catch (Exception e) {
-            logger.error("❌ Error inesperado en login: {}", e.getMessage());
+            logger.error("Error inesperado en login: {}", e.getMessage());
             throw new RuntimeException("Error al iniciar sesión: " + e.getMessage());
         }
     }
@@ -175,40 +178,34 @@ public class AuthService {
      * REFRESH: Renovar access token usando refresh token
      */
     public AuthResponse refreshToken(String refreshToken) {
-        logger.info("🔄 Solicitando renovación de token");
+        logger.info("Solicitando renovación de token");
 
         try {
-            // Validar refresh token
             if (!jwtUtils.validateJwtToken(refreshToken)) {
                 throw new RuntimeException("Refresh token inválido o expirado");
             }
 
-            // Obtener email del token
             String email = jwtUtils.getUserEmailFromJwtToken(refreshToken);
 
-            // Buscar usuario
             Usuario usuario = usuarioRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            // Verificar que el refresh token coincida
             if (!refreshToken.equals(usuario.getRefreshToken())) {
                 throw new RuntimeException("Refresh token no coincide");
             }
 
-            // Verificar expiración
             if (usuario.getTokenExpiracion().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("Refresh token expirado");
             }
 
-            // Generar nuevo access token
             String newAccessToken = jwtUtils.generateTokenFromUsername(usuario.getEmail());
 
-            logger.info("✅ Token renovado para: {}", email);
+            logger.info("Token renovado para: {}", email);
 
             return construirAuthResponse(usuario, newAccessToken, refreshToken, "Token renovado exitosamente");
 
         } catch (Exception e) {
-            logger.error("❌ Error al renovar token: {}", e.getMessage());
+            logger.error("Error al renovar token: {}", e.getMessage());
             throw new RuntimeException("Error al renovar token: " + e.getMessage());
         }
     }
@@ -231,14 +228,13 @@ public class AuthService {
                 throw new RuntimeException("Usuario inactivo");
             }
 
-            // Actualizar último acceso
             usuario.setUltimoAcceso(LocalDateTime.now());
             usuarioRepository.save(usuario);
 
             return construirAuthResponse(usuario, token, usuario.getRefreshToken(), "Token válido");
 
         } catch (Exception e) {
-            logger.error("❌ Error al verificar token: {}", e.getMessage());
+            logger.error("Error al verificar token: {}", e.getMessage());
             throw new RuntimeException("Token inválido o expirado");
         }
     }
@@ -256,10 +252,10 @@ public class AuthService {
                 usuario.setUltimoAcceso(LocalDateTime.now());
                 usuarioRepository.save(usuario);
 
-                logger.info("👋 Logout exitoso para: {}", email);
+                logger.info("Logout exitoso para: {}", email);
             }
         } catch (Exception e) {
-            logger.error("❌ Error en logout: {}", e.getMessage());
+            logger.error("Error en logout: {}", e.getMessage());
         }
     }
 
@@ -281,6 +277,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .idUsuario(usuario.getIdUsuario())
                 .email(usuario.getEmail())
+                .username(usuario.getUsername())
                 .rol(usuario.getRol())
                 .isAdmin("ADMINISTRADOR".equals(usuario.getRol()))
                 .activo(usuario.getActivo())

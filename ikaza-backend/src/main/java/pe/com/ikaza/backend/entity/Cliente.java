@@ -21,7 +21,7 @@ public class Cliente {
     @Column(name = "id_cliente")
     private Integer idCliente;
 
-    // RELACIÓN UNO A UNO con Usuario (FK)
+    // RELACIÓN UNO A UNO con Usuario
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", unique = true, nullable = false)
     private Usuario usuario;
@@ -59,7 +59,7 @@ public class Cliente {
     public String getNombreCompleto() {
         return nombresCliente + " " + apellidosCliente;
     }
-    @PrePersist // <--- ESTO ES CRÍTICO
+    @PrePersist
     protected void onCreate() {
         if (fechaActualizacion == null) {
             fechaActualizacion = LocalDateTime.now();

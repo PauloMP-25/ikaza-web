@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Filtro JWT que reemplaza FirebaseAuthTokenFilter
+ * Filtro JWT
  * Intercepta requests y valida tokens JWT propios
  */
 @Component
@@ -41,8 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/verificar-email",
             "/api/public",
             "/api/google-maps/",
-            "/api/productos",
-            "/api/categorias"
+            "/api/categorias/"
     );
 
     @Override
@@ -65,20 +64,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Si no hay token, dejar que Spring Security maneje
             if (jwt == null) {
-                logger.debug("🔓 No hay token Bearer en la petición - URI: {}", requestURI);
+                logger.debug("No hay token Bearer en la petición - URI: {}", requestURI);
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // Validar token
             if (jwtUtils.validateJwtToken(jwt)) {
-                // Obtener email del token
                 String email = jwtUtils.getUserEmailFromJwtToken(jwt);
 
-                // Cargar detalles del usuario
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                // Crear autenticación
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
@@ -93,13 +88,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Establecer en contexto de seguridad
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                logger.debug("✅ Usuario autenticado: {} - URI: {}", email, requestURI);
+                logger.debug("Usuario autenticado: {} - URI: {}", email, requestURI);
             } else {
-                logger.warn("⚠️ Token JWT inválido - URI: {}", requestURI);
+                logger.warn("Token JWT inválido - URI: {}", requestURI);
             }
 
         } catch (Exception e) {
-            logger.error("❌ Error al procesar autenticación JWT: {}", e.getMessage());
+            logger.error("Error al procesar autenticación JWT: {}", e.getMessage());
             SecurityContextHolder.clearContext();
         }
 

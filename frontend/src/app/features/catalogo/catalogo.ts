@@ -1,201 +1,162 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { ProductoService } from '@core/services/productos/producto.service';
-import { CategoriaService } from '@core/services/categorias/categoria.service';
-import { Producto, PageResponse } from '@core/models/productos/producto-backend.model';
+import { ProductoDetalle, Producto } from '@core/models/productos/producto-backend.model';
 import { ProductDetailModalComponent } from '@shared/components/product-detail-modal/product-detail-modal';
 import { CartService } from '@core/services/carrito/cart';
 import { ProductUtilsService } from '@core/services/productos/product-utils.service';
-import { CategorySectionComponent } from './category-section/category-section';
-import { Subscription } from 'rxjs';
-import { Categoria } from '@core/models/categoria/categoria.model';
-import { ToastNotificationComponent } from "@shared/components/notificacion-carrito/toast-notification";
+import { ProductCardComponent } from '@shared/components/producto/product-card/product-card';
 
 @Component({
   selector: 'app-catalogo',
   standalone: true,
   imports: [
     CommonModule,
-    ProductDetailModalComponent,
-    CategorySectionComponent,
-    ToastNotificationComponent
-],
+    FormsModule,
+    ProductCardComponent
+  ],
   templateUrl: './catalogo.html',
   styleUrls: ['./catalogo.scss']
 })
-export class CatalogoComponent implements OnInit, OnDestroy {
+export class CatalogoComponent implements OnInit {
+
   allProducts: Producto[] = [];
-  filteredCategory: string = 'todos';
-  categories: { name: string; value: string }[] = [{ name: 'Todos', value: 'todos' }];
+  filteredProducts: Producto[] = [];
   selectedProduct?: Producto;
-  isLoading: boolean = false;
-  errorMessage: string = '';
-  
-  private productsSubscription?: Subscription;
-  private categoriesSubscription?: Subscription;
+
+  categories: { name: string; value: string }[] = [];
+
+  filteredCategory: string = 'todos';
+  searchTerm: string = '';
+  minPrice: number = 0;
+  maxPrice: number = 3000;
+  stockFilter: string = 'all';
+  sortOption: string = 'featured';
 
   constructor(
-    private productService: ProductoService,
-    private categoriaService: CategoriaService,
+    private productoService: ProductoService,
     private cartService: CartService,
     private productUtils: ProductUtilsService,
     private router: Router
-  ) { 
-    console.log('🔧 CatalogoComponent: Constructor ejecutado');
-  }
+  ) { }
 
   ngOnInit() {
-    console.log('🚀 CatalogoComponent: ngOnInit ejecutado');
-    this.loadCategories();
-    this.loadAllProducts();
+    this.loadProducts();
   }
 
-  /**
-   * Cargar todas las categorías activas
-   */
-  loadCategories(): void {
-    console.log('📂 Iniciando carga de categorías...');
-    
-    this.categoriesSubscription = this.categoriaService.obtenerCategoriasActivas().subscribe({
-      next: (categorias: Categoria[]) => {
-        console.log('✅ Categorías recibidas del backend:', categorias);
-        console.log('📊 Cantidad de categorías:', categorias.length);
-        
-        // Mapear categorías del backend a formato del componente
-        const categoriasMapeadas = categorias.map(cat => {
-          console.log(`   - Categoría: ${cat.nombreCategoria} (ID: ${cat.idCategoria})`);
-          return {
-            name: cat.nombreCategoria,
-            value: cat.nombreCategoria.toLowerCase()
-          };
-        });
-        
-        // Agregar "Todos" al inicio
+  loadProducts() {
+    this.productoService.obtenerProductos(0, 50).subscribe({
+      next: (response) => {
+        this.allProducts = response.content;
+
+        // generar categorías dinámicamente
         this.categories = [
           { name: 'Todos', value: 'todos' },
-          ...categoriasMapeadas
+          ...Array.from(new Set(this.allProducts.map(p => p.nombreCategoria)))
+            .map(cat => ({ name: cat, value: cat }))
         ];
-        
-        console.log('✅ Categorías finales procesadas:', this.categories);
+
+        this.applyAllFilters();
       },
-      error: (error) => {
-        console.error('❌ Error al cargar categorías:', error);
-        this.errorMessage = 'Error al cargar las categorías';
-      }
+      error: (err) => console.error('Error cargando productos', err)
     });
   }
 
-  /**
-   * Cargar todos los productos sin paginación para el catálogo
-   */
-  loadAllProducts(): void {
-    console.log('📦 Iniciando carga de productos...');
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    // Obtener todos los productos (página 0, tamaño grande para obtener todo)
-    this.productsSubscription = this.productService.obtenerProductos(
-      0,
-      1000, // Tamaño grande para obtener todos
-      'nombreProducto',
-      'ASC'
-    ).subscribe({
-      next: (response: PageResponse<Producto>) => {
-        console.log('✅ Respuesta completa del backend:', response);
-        console.log('📊 Total de productos en BD:', response.totalElements);
-        console.log('📄 Productos en esta página:', response.content.length);
-        console.log('📦 Productos recibidos:', response.content);
-        
-        this.allProducts = response.content;
-        this.isLoading = false;
-        
-        // Log detallado de cada producto
-        if (this.allProducts.length > 0) {
-          console.log('🎯 Primeros 3 productos:');
-          this.allProducts.slice(0, 3).forEach((p, index) => {
-            console.log(`   ${index + 1}. ${p.nombreProducto} - Categoría: "${p.nombreCategoria}"`);
-          });
-        } else {
-          console.warn('⚠️ No se recibieron productos del backend');
-        }
-        
-        console.log('✅ allProducts actualizado. Total:', this.allProducts.length);
-      },
-      error: (error) => {
-        console.error('❌ Error al cargar productos:', error);
-        console.error('❌ Detalles del error:', {
-          message: error.message,
-          status: error.status,
-          statusText: error.statusText,
-          error: error.error
-        });
-        this.errorMessage = 'Error al cargar los productos. Por favor, intenta nuevamente.';
-        this.isLoading = false;
-      }
-    });
-  }
-
-  /**
-   * Filtrar productos por categoría
-   */
-  filterByCategory(category: string): void {
-    console.log('🔍 Filtrando por categoría:', category);
+  filterByCategory(category: string) {
     this.filteredCategory = category;
-    
-    // Log de productos filtrados
-    if (category === 'todos') {
-      console.log('📋 Mostrando todos los productos:', this.allProducts.length);
-    } else {
-      const filtered = this.allProducts.filter(p => 
-        p.nombreCategoria.toLowerCase() === category.toLowerCase()
+    this.applyAllFilters();
+  }
+
+  onSearch(event: any) {
+    this.searchTerm = event.target.value.toLowerCase();
+    this.applyAllFilters();
+  }
+
+  applyPriceFilter() { this.applyAllFilters(); }
+  applyStockFilter() { this.applyAllFilters(); }
+  applySort() { this.applyAllFilters(); }
+
+  applyAllFilters() {
+    let filtered = [...this.allProducts];
+
+    if (this.searchTerm) {
+      filtered = filtered.filter(p =>
+        p.nombreProducto.toLowerCase().includes(this.searchTerm)
       );
-      console.log(`📋 Productos en categoría "${category}":`, filtered.length);
-      if (filtered.length > 0) {
-        console.log('   Productos:', filtered.map(p => p.nombreProducto));
-      }
+    }
+
+    if (this.filteredCategory !== 'todos') {
+      filtered = filtered.filter(p => p.nombreCategoria === this.filteredCategory);
+    }
+
+    filtered = filtered.filter(p =>
+      p.precio >= this.minPrice && p.precio <= this.maxPrice
+    );
+
+    if (this.stockFilter === 'available')
+      filtered = filtered.filter(p => p.stock > 0);
+
+    if (this.stockFilter === 'low')
+      filtered = filtered.filter(p => p.stock <= 10);
+
+    filtered = this.sortProducts(filtered);
+
+    this.filteredProducts = filtered;
+  }
+
+  sortProducts(products: Producto[]): Producto[] {
+    switch (this.sortOption) {
+      case 'price-low':
+        return products.sort((a, b) => a.precio - b.precio);
+      case 'price-high':
+        return products.sort((a, b) => b.precio - a.precio);
+      case 'name':
+        return products.sort((a, b) => a.nombreProducto.localeCompare(b.nombreProducto));
+      case 'rating':
+        return products.sort((a, b) =>
+          (b.calificacionPromedio || 0) - (a.calificacionPromedio || 0));
+      default: return products;
     }
   }
 
-  /**
-   * Abrir modal de vista rápida (desde click en imagen)
-   */
-  onQuickView(product: Producto): void {
-    console.log('👁️ Vista rápida (modal):', product.nombreProducto);
+  clearFilters() {
+    this.filteredCategory = 'todos';
+    this.searchTerm = '';
+    this.minPrice = 0;
+    this.maxPrice = 3000;
+    this.stockFilter = 'all';
+    this.sortOption = 'featured';
+    this.applyAllFilters();
+  }
+
+  onQuickView(product: Producto) {
     this.selectedProduct = product;
   }
 
-  /**
-   * Ver detalles completos (navega a página dedicada)
-   */
-  onViewDetails(product: Producto): void {
-    console.log('🔗 Navegando a detalles completos:', product.nombreProducto);
-    this.router.navigate(['/productos', product.idProducto]);
+  onViewDetails(product: Producto) {
+    this.selectedProduct = product;
   }
 
-  /**
-   * Cerrar modal
-   */
-  closeModal(): void {
-    console.log('❌ Cerrando modal');
-    this.selectedProduct = undefined;
-  }
-
-  /**
-   * Agregar producto al carrito
-   */
-  onAddToCart(product: Producto): void {
-    console.log('🛒 Agregando al carrito:', product.nombreProducto);
+  onAddToCart(product: Producto) {
     const cartProduct = this.productUtils.buildCartProduct(product);
     this.cartService.addToCart(cartProduct);
-    // Mostrar toast de confirmación
-    this.productUtils.showToast(product.nombreProducto)
+    this.showToast(`${product.nombreProducto} añadido al carrito!`);
   }
 
+  showToast(message: string) {
+    const toastElement = document.getElementById('successToast');
+    const messageElement = document.getElementById('toastMessage');
+    if (toastElement && messageElement) {
+      messageElement.textContent = message;
+      new (window as any).bootstrap.Toast(toastElement).show();
+    }
+  }
 
-  ngOnDestroy(): void {
-    console.log('🧹 CatalogoComponent: Destruyendo componente y limpiando suscripciones');
-    this.productsSubscription?.unsubscribe();
-    this.categoriesSubscription?.unsubscribe();
+  getCategoryName(categoryValue: string): string {
+    const category = this.categories.find(cat => cat.value === categoryValue);
+    return category ? category.name : 'Categoría';
   }
 }

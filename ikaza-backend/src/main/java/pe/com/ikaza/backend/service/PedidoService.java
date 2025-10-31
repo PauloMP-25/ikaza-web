@@ -21,8 +21,14 @@ import pe.com.ikaza.backend.entity.HistorialEstadoPedido;
 import pe.com.ikaza.backend.enums.EstadoPago;
 import pe.com.ikaza.backend.enums.EstadoPedido;
 import pe.com.ikaza.backend.enums.MetodoPago;
-import pe.com.ikaza.backend.model.internal.ResultadoPago;
-import pe.com.ikaza.backend.repository.jpa.*;
+import pe.com.ikaza.backend.enums.ResultadoPago;
+import pe.com.ikaza.backend.repository.ClienteRepository;
+import pe.com.ikaza.backend.repository.DetallePedidoRepository;
+import pe.com.ikaza.backend.repository.HistorialEstadoPedidoRepository;
+import pe.com.ikaza.backend.repository.PagoRepository;
+import pe.com.ikaza.backend.repository.PedidoRepository;
+import pe.com.ikaza.backend.repository.ProductoRepository;
+import pe.com.ikaza.backend.repository.UsuarioRepository;
 import pe.com.ikaza.backend.service.InventarioService.StockInsuficienteException;
 
 import java.time.LocalDateTime;
@@ -32,7 +38,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Servicio refactorizado de Pedidos
  * Responsabilidades:
  * - Orquestación del proceso de pedidos
  * - Gestión del ciclo de vida de pedidos
@@ -62,63 +67,6 @@ public class PedidoService {
     // ==================== MÉTODOS PRINCIPALES ====================
 
     /**
-     * FLUJO SÍNCRONO: Para pagos inmediatos (Culqi, Transferencia, Efectivo)
-     * 1. Valida stock
-     * 2. Procesa pago
-     * 3. Crea pedido
-     * 4. Confirma venta (reduce stock)
-     * 5. Notifica
-     */
-    @Transactional
-    public PedidoResponse procesarPedidoSincrono(PedidoRequest request, Integer idUsuario, String emailUsuario) {
-        try {
-            log.info("🔄 Iniciando pedido SÍNCRONO para usuario: {}", idUsuario);
-
-            // 1. Validar stock disponible
-            inventarioService.validarStockDisponible(request.getCartItems());
-
-            // 2. Procesar pago
-            ResultadoPago resultadoPago = procesadorPagoService.procesarPago(request, idUsuario, null);
-
-            // 3. Crear pedido
-            Pedido pedido = crearPedido(request, idUsuario, resultadoPago);
-
-            // 4. Crear detalles
-            crearDetallesPedido(pedido, request.getCartItems());
-
-            // 5. Crear registro de pago
-            crearRegistroPago(pedido, resultadoPago, request.getIdTarjetaGuardada());
-
-            // 6. Confirmar venta (reduce stock)
-            Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
-            inventarioService.confirmarVenta(request.getCartItems(), pedido.getIdPedido(), usuario);
-
-            // 7. Registrar historial
-            registrarHistorialInicial(pedido);
-
-            // 8. Notificar por email
-            if (resultadoPago.isExitoso()) {
-                emailService.enviarConfirmacionPedido(pedido, emailUsuario);
-            }
-
-            log.info("✅ Pedido síncrono procesado: {}", pedido.getNumeroPedido());
-
-            return PedidoResponse.exitoSincrono(
-                    pedido.getIdPedido(),
-                    pedido.getNumeroPedido(),
-                    resultadoPago.getTransaccionId(),
-                    "Pedido procesado exitosamente");
-
-        } catch (StockInsuficienteException e) {
-            log.error("❌ Stock insuficiente: {}", e.getMessage());
-            return PedidoResponse.error("Stock insuficiente: " + e.getMessage());
-        } catch (Exception e) {
-            log.error("❌ Error al procesar pedido síncrono", e);
-            return PedidoResponse.error("Error al procesar el pedido: " + e.getMessage());
-        }
-    }
-
-    /**
      * FLUJO ASÍNCRONO: Para MercadoPago
      * 1. Valida stock
      * 2. Crea pedido preliminar
@@ -129,7 +77,7 @@ public class PedidoService {
     @Transactional
     public PedidoResponse procesarPedidoMercadoPago(PedidoRequest request, Integer idUsuario, String emailUsuario) {
         try {
-            log.info("🔄 Iniciando pedido MERCADO PAGO para usuario: {}", idUsuario);
+            log.info("Iniciando pedido MERCADO PAGO para usuario: {}", idUsuario);
 
             // 1. Validar stock
             inventarioService.validarStockDisponible(request.getCartItems());
@@ -154,7 +102,7 @@ public class PedidoService {
             pedido.setTransaccionId(resultadoPago.getTransaccionId());
             pedidoRepository.save(pedido);
 
-            log.info("✅ Pedido MercadoPago creado: {}", pedido.getNumeroPedido());
+            log.info("Pedido MercadoPago creado: {}", pedido.getNumeroPedido());
 
             return PedidoResponse.exitoConRedireccion(
                     pedido.getIdPedido(),
@@ -163,10 +111,10 @@ public class PedidoService {
                     "Redirigiendo a Mercado Pago...");
 
         } catch (StockInsuficienteException e) {
-            log.error("❌ Stock insuficiente: {}", e.getMessage());
+            log.error("Stock insuficiente: {}", e.getMessage());
             return PedidoResponse.error("Stock insuficiente: " + e.getMessage());
         } catch (Exception e) {
-            log.error("❌ Error al procesar pedido MercadoPago", e);
+            log.error("Error al procesar pedido MercadoPago", e);
             return PedidoResponse.error("Error al procesar el pedido: " + e.getMessage());
         }
     }
@@ -177,7 +125,7 @@ public class PedidoService {
     @Transactional
     public PedidoResponse confirmarPagoMercadoPago(Long pedidoId, String paymentId, String status, Integer idUsuario) {
         try {
-            log.info("🔄 Confirmando pago MercadoPago. PedidoId: {}, PaymentId: {}", pedidoId, paymentId);
+            log.info("Confirmando pago MercadoPago. PedidoId: {}, PaymentId: {}", pedidoId, paymentId);
 
             Pedido pedido = validarPedidoUsuario(pedidoId, idUsuario);
 
@@ -197,7 +145,7 @@ public class PedidoService {
             return construirRespuestaConfirmacion(pedido, estadoMP);
 
         } catch (Exception e) {
-            log.error("❌ Error al confirmar pago MercadoPago", e);
+            log.error("Error al confirmar pago MercadoPago", e);
             return PedidoResponse.error("Error al confirmar el pago: " + e.getMessage());
         }
     }
@@ -208,11 +156,11 @@ public class PedidoService {
     @Transactional
     public void procesarWebhookMercadoPago(String paymentId, String action) {
         try {
-            log.info("📥 Procesando webhook MercadoPago. PaymentId: {}", paymentId);
+            log.info("Procesando webhook MercadoPago. PaymentId: {}", paymentId);
 
             Pago pago = pagoRepository.findByTransaccionExternaId(paymentId).orElse(null);
             if (pago == null) {
-                log.warn("⚠️ No se encontró pago para paymentId: {}", paymentId);
+                log.warn("No se encontró pago para paymentId: {}", paymentId);
                 return;
             }
 
@@ -222,10 +170,10 @@ public class PedidoService {
             Pedido pedido = pago.getPedido();
             actualizarPedidoSegunEstadoMP(pedido, estadoMP, paymentId, paymentInfo);
 
-            log.info("✅ Webhook procesado exitosamente");
+            log.info("Webhook procesado exitosamente");
 
         } catch (Exception e) {
-            log.error("❌ Error al procesar webhook", e);
+            log.error("Error al procesar webhook", e);
         }
     }
 
@@ -294,29 +242,6 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
-    /**
-     * Crea un pedido confirmado (para pagos síncronos)
-     */
-    private Pedido crearPedido(PedidoRequest request, Integer idUsuario, ResultadoPago resultado) {
-        Pedido pedido = new Pedido();
-        pedido.setNumeroPedido(generarNumeroPedido());
-        pedido.setIdUsuario(idUsuario);
-        pedido.setTotal(request.getTotal());
-        pedido.setSubtotal(request.getSubtotal());
-        pedido.setMetodoPago(resultado.getMetodoPago());
-        pedido.setEstadoPago(resultado.getEstadoPago());
-        pedido.setTransaccionId(resultado.getTransaccionId());
-        pedido.setFechaPedido(LocalDateTime.now());
-
-        if (resultado.isExitoso() && !resultado.isRequiereRedireccion()) {
-            pedido.setEstado(EstadoPedido.CONFIRMADO);
-            pedido.setFechaPago(LocalDateTime.now());
-        } else {
-            pedido.setEstado(EstadoPedido.PENDIENTE);
-        }
-
-        return pedidoRepository.save(pedido);
-    }
 
     /**
      * Crea los detalles del pedido
@@ -337,31 +262,7 @@ public class PedidoService {
 
             detallePedidoRepository.save(detalle);
         }
-        log.info("✅ Detalles del pedido creados: {} items", items.size());
-    }
-
-    /**
-     * Crea el registro de pago
-     */
-    private void crearRegistroPago(Pedido pedido, ResultadoPago resultado, Integer idTarjetaGuardada) {
-        Pago pago = new Pago();
-        pago.setPedido(pedido);
-        pago.setMonto(pedido.getTotal());
-        pago.setMetodoUsado(resultado.getMetodoPago());
-        pago.setEstado(resultado.getEstadoPago());
-        pago.setTransaccionExternaId(resultado.getTransaccionId());
-        pago.setDatosPasarelaJson(resultado.getDatosJson());
-
-        if (idTarjetaGuardada != null) {
-            pago.setIdMetodo(idTarjetaGuardada.longValue());
-        }
-
-        if (resultado.isExitoso() && !resultado.isRequiereRedireccion()) {
-            pago.setFechaPago(LocalDateTime.now());
-        }
-
-        pagoRepository.save(pago);
-        log.info("✅ Registro de pago creado");
+        log.info("Detalles del pedido creados: {} items", items.size());
     }
 
     /**
@@ -421,7 +322,7 @@ public class PedidoService {
                 break;
 
             default:
-                log.warn("⚠️ Estado de MercadoPago no manejado: {}", estadoMP);
+                log.warn("Estado de MercadoPago no manejado: {}", estadoMP);
                 return;
         }
 
@@ -436,7 +337,7 @@ public class PedidoService {
             registrarCambioEstado(pedido, estadoAnterior, pedido.getEstado());
         }
 
-        log.info("📝 Pedido {} actualizado: {} -> {}, Pago: {} -> {}",
+        log.info("Pedido {} actualizado: {} -> {}, Pago: {} -> {}",
                 pedido.getNumeroPedido(), estadoAnterior, pedido.getEstado(),
                 estadoPagoAnterior, pedido.getEstadoPago());
     }
@@ -593,7 +494,7 @@ public class PedidoService {
     @Scheduled(initialDelay = 1800000, fixedRate = 1800000)
     @Transactional
     public void limpiarPedidosPreliminaresAntiguos() {
-        log.info("🧹 Iniciando limpieza de pedidos preliminares antiguos...");
+        log.info("Iniciando limpieza de pedidos preliminares antiguos...");
 
         LocalDateTime umbral = LocalDateTime.now().minus(1, ChronoUnit.HOURS);
 
@@ -619,13 +520,13 @@ public class PedidoService {
                 pedidoRepository.delete(pedido);
                 pedidosLimpiados++;
 
-                log.info("🗑️ Pedido {} eliminado (sin pago por más de 1 hora)", pedido.getNumeroPedido());
+                log.info("Pedido {} eliminado (sin pago por más de 1 hora)", pedido.getNumeroPedido());
 
             } catch (Exception e) {
-                log.error("❌ Error al limpiar pedido {}: {}", pedido.getNumeroPedido(), e.getMessage());
+                log.error("Error al limpiar pedido {}: {}", pedido.getNumeroPedido(), e.getMessage());
             }
         }
 
-        log.info("✅ Limpieza finalizada. Pedidos eliminados: {}", pedidosLimpiados);
+        log.info("Limpieza finalizada. Pedidos eliminados: {}", pedidosLimpiados);
     }
 }

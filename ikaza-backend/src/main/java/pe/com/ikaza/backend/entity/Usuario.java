@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 /**
  * Entidad Usuario (Core de Autenticación)
- * Sistema nativo sin Firebase
  */
 @Entity
 @Table(name = "usuarios")
@@ -27,10 +26,13 @@ public class Usuario {
     private String email;
 
     @Column(name = "password", nullable = false)
-    private String password; // Hash BCrypt
+    private String password;
 
     @Column(name = "rol", nullable = false, length = 50)
-    private String rol = "CLIENTE"; // CLIENTE o ADMINISTRADOR
+    private String rol = "CLIENTE";
+    
+    @Column(name = "username", length = 100)
+    private String username;
 
     // =========================================
     // TOKENS Y SEGURIDAD
@@ -57,7 +59,7 @@ public class Usuario {
     private String fotoPerfil; // URL de la imagen
 
     @Column(name = "proveedor_auth", length = 50)
-    private String proveedorAuth = "LOCAL"; // LOCAL, GOOGLE, FACEBOOK (para futuro)
+    private String proveedorAuth = "LOCAL";
 
     // =========================================
     // METADATOS

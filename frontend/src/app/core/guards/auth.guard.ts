@@ -22,6 +22,7 @@ export const AuthGuard: CanActivateFn = (route, state) => {
         // Verificar que el token no esté expirado
         const token = tokenService.getToken();
         if (token && !tokenService.isTokenExpired(token)) {
+          console.log("token : " ,token)
           console.log('✅ Auth Guard: Acceso permitido');
           return true;
         }

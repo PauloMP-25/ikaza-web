@@ -111,6 +111,8 @@
                                             <input type="text" class="form-control" [(ngModel)]="formData.marca"
                                                 name="editMarca" placeholder="Marca del producto" />
                                         </div>
+
+                                        
                                     </div>
                                 </div>
 
@@ -160,6 +162,8 @@
                                                 name="editStockMinimo" min="1" />
                                             <div class="form-text">Alerta cuando el stock sea ≤ este valor</div>
                                         </div>
+
+                                        
                                     </div>
                                 </div>
 
@@ -172,8 +176,8 @@
                                         (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
                                         (drop)="onDrop($event)" [class.border-success]="formData.imagenPreview">
 
-                                        <input type="file" #fileInput (change)="onFileSelected($event)"
-                                            accept="image/*" />
+                                        <input type="file" #fileInput
+                                            (change)="onFileSelected($event)" accept="image/*" />
 
                                         <!-- Preview existente o nueva -->
                                         <img *ngIf="formData.imagenPreview" [src]="formData.imagenPreview"
@@ -359,7 +363,8 @@
                         [disabled]="isLoading">
                         <i class="bi bi-x-lg me-2"></i>Cancelar
                     </button>
-                    <button type="submit" class="btn text-white shadow-sm" [disabled]="!editForm.valid || isLoading">
+                    <button type="submit" class="btn text-white shadow-sm" style="background-color: #28a745;"
+                        [disabled]="!editForm.valid || isLoading">
                         <span *ngIf="!isLoading">
                             <i class="bi bi-check-lg me-2"></i>Guardar Cambios
                         </span>

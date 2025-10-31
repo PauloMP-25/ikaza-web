@@ -1,5 +1,4 @@
 // src/app/components/productos/producto-detalle/producto-detalle.component.ts
-// src/app/components/productos/producto-detalle/producto-detalle.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'; // [cite: 2]

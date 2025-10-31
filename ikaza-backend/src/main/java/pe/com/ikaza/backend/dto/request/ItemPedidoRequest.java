@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 
 /**
  * DTO que representa un item en el carrito de compras.
- * Equivalente al CartItem del frontend Angular.
  */
 @Data
 @NoArgsConstructor

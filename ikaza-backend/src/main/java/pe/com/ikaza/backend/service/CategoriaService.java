@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.com.ikaza.backend.dto.request.CategoriaRequest;
 import pe.com.ikaza.backend.dto.response.CategoriaResponse;
 import pe.com.ikaza.backend.entity.Categoria;
-import pe.com.ikaza.backend.repository.jpa.CategoriaRepository;
-import pe.com.ikaza.backend.repository.jpa.ProductoRepository;
+import pe.com.ikaza.backend.repository.CategoriaRepository;
+import pe.com.ikaza.backend.repository.ProductoRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
  * Servicio para gestionar categorías
  */
 @Service
-@Transactional(readOnly = true)
 public class CategoriaService {
 
     @Autowired
@@ -60,6 +59,7 @@ public class CategoriaService {
     /**
      * Crea una nueva categoría
      */
+    @Transactional
     public CategoriaResponse crearCategoria(CategoriaRequest request) {
         // Validar que no exista una categoría con el mismo nombre
         if (categoriaRepository.existsByNombreCategoria(request.getNombreCategoria())) {
@@ -78,6 +78,7 @@ public class CategoriaService {
     /**
      * Actualiza una categoría existente
      */
+    @Transactional
     public CategoriaResponse actualizarCategoria(Long id, CategoriaRequest request) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + id));
@@ -100,8 +101,9 @@ public class CategoriaService {
     }
 
     /**
-     * Elimina una categoría (soft delete - marca como inactiva)
+     * Elimina una categoría (marca como inactiva)
      */
+    @Transactional
     public void eliminarCategoria(Long id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + id));
@@ -120,6 +122,7 @@ public class CategoriaService {
     /**
      * Elimina definitivamente una categoría
      */
+    @Transactional
     public void eliminarCategoriaDefinitivo(Long id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + id));

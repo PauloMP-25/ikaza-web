@@ -65,8 +65,8 @@
                     <select class="form-select" aria-label="Filtrar por categoría" [(ngModel)]="categoriaSeleccionada"
                         (change)="filtrarProductos()" [disabled]="isLoading">
                         <option value="">Todas las Categorías</option>
-                        <option *ngFor="let cat of categoriasMaestras" [value]="cat">
-                            {{ cat }}
+                        <option *ngFor="let cat of categoriasMaestras" [value]="cat.idCategoria">
+                            {{ cat.nombreCategoria }}
                         </option>
                     </select>
                 </div>
@@ -144,16 +144,17 @@
 
                             <!-- Imagen -->
                             <td>
-                                <img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/placeholder.png'"
+
+                                <img [src]="prod.imagenPrincipal || prod.imagenes?.[0]?.url || 'assets/images/Accesorios/Mascara_electro.jpg'"
                                     [alt]="prod.nombreProducto" class="img-fluid rounded shadow-sm"
-                                    aria-label="Immagen producto" onerror="this.src='assets/images/placeholder.png'" />
+                                    aria-label="Immagen producto"
+                                    onerror="this.src='assets/images/Accesorios/Mascara_electro.jpg'" />
                             </td>
 
                             <!-- Nombre -->
                             <td>
                                 <div class="d-flex flex-column">
-                                    <span class="fw-semibold text-truncate"
-                                        [title]="prod.nombreProducto">
+                                    <span class="fw-semibold text-truncate" [title]="prod.nombreProducto">
                                         {{ prod.nombreProducto }}
                                     </span>
                                     <small class="text-muted" *ngIf="prod.marca">

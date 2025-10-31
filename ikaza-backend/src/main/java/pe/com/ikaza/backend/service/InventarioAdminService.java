@@ -12,11 +12,11 @@ import pe.com.ikaza.backend.entity.Inventario;
 import pe.com.ikaza.backend.entity.MovimientoInventario;
 import pe.com.ikaza.backend.entity.Producto;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.InventarioRepository;
-import pe.com.ikaza.backend.repository.jpa.ClienteRepository;
-import pe.com.ikaza.backend.repository.jpa.MovimientoInventarioRepository;
-import pe.com.ikaza.backend.repository.jpa.ProductoRepository;
-import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
+import pe.com.ikaza.backend.repository.ClienteRepository;
+import pe.com.ikaza.backend.repository.InventarioRepository;
+import pe.com.ikaza.backend.repository.MovimientoInventarioRepository;
+import pe.com.ikaza.backend.repository.ProductoRepository;
+import pe.com.ikaza.backend.repository.UsuarioRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,7 +80,7 @@ public class InventarioAdminService {
         Inventario inventario = inventarioRepository.findByProductoIdProducto(idProducto)
                 .orElseGet(() -> crearInventarioInicial(producto));
 
-        // Obtener usuario (puede ser null si es un proceso automático)
+        // Obtener usuario
         Usuario usuario = idUsuario != null ? 
                 usuarioRepository.findById(idUsuario).orElse(null) : null;
 
@@ -104,12 +104,9 @@ public class InventarioAdminService {
                 break;
                 
             case AJUSTE:
-                // Para ajustes, determinamos si es entrada o salida
                 if (request.getCantidad() > stockAnterior) {
-                    // Es un ajuste hacia arriba (entrada)
                     inventario.agregarStock(request.getCantidad() - stockAnterior);
                 } else {
-                    // Es un ajuste hacia abajo (salida)
                     inventario.reducirStock(stockAnterior - request.getCantidad());
                 }
                 break;
@@ -118,14 +115,11 @@ public class InventarioAdminService {
                 throw new IllegalArgumentException("Tipo de movimiento no válido: " + request.getTipo());
         }
 
-        // Guardar inventario actualizado
         inventario = inventarioRepository.save(inventario);
 
-        // Actualizar stock en tabla productos (para compatibilidad)
         producto.setStock(inventario.getStockActual());
         productoRepository.save(producto);
 
-        // Registrar movimiento en el historial
         MovimientoInventario movimiento = new MovimientoInventario(
                 usuario,
                 producto,
@@ -232,13 +226,11 @@ public class InventarioAdminService {
         
         if (movimiento.getUsuario() != null) {
             Usuario usuario = movimiento.getUsuario();
-            // Buscar la información de perfil en la entidad Cliente
             Cliente cliente = clienteRepository.findByUsuarioIdUsuario(usuario.getIdUsuario()).orElse(null);
             
             if (cliente != null) {
                 nombreCompleto = cliente.getNombreCompleto();
             } else {
-                // Si el Cliente no existe, usamos el email de Usuario como fallback
                 nombreCompleto = usuario.getEmail(); 
             }
         }

@@ -83,15 +83,6 @@ export const routes: Routes = [
         canActivate: [AdminGuard]
     },
 
-    // PROCESO DE PAGO / CHECKOUT
-    {
-        path: 'carrito/pago',
-        // Carga el componente que contendrá el modal o la lógica principal de checkout
-        loadComponent: () => import('./shared/components/checkout/checkout').then(m => m.CheckoutComponent),
-        canActivate: [checkoutGuard]
-    },
-
-
     // RUTA DE LOGIN
     {
         path: 'login',

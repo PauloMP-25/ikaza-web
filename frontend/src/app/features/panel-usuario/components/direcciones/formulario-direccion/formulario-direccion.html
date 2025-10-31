@@ -1,54 +1,6 @@
 <form [formGroup]="direccionForm" (ngSubmit)="onSubmit()" class="card p-4 mb-3">
     <h5 class="mb-4">{{ editMode ? 'Editar Dirección' : 'Nueva Dirección' }}</h5>
 
-    <!-- MÉTODO 1: Botón para abrir mapa interactivo -->
-    <div class="mb-3">
-        <label class="form-label">Buscar en el mapa interactivo</label>
-        <button type="button" class="btn btn-outline-primary w-100" (click)="abrirModalMapa()">
-            <i class="bi bi-map"></i>
-            📍 Abrir Mapa
-        </button>
-        <small class="form-text text-muted d-block mt-2">
-            Usa el mapa interactivo para encontrar tu dirección exacta con marcador arrastrable
-        </small>
-    </div>
-
-    <div class="alert alert-info">
-        <small>
-            <strong>💡 Tip:</strong> También puedes llenar el formulario manualmente si conoces tu dirección
-            completa.
-        </small>
-    </div>
-
-    <hr class="my-4">
-
-    <!-- MÉTODO 1: Botón para abrir mapa interactivo -->
-    <div class="mb-3">
-        <label class="form-label">Escribe ubicaciones especificas</label>
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Escribe tu dirección..." [value]="searchQuery"
-                (input)="onSearchInput($event)" (focus)="onSearchFocus()" #searchInput>
-            <span class="input-group-text">
-                <i class="bi bi-search"></i>
-            </span>
-        </div>
-
-        <!-- Resultados de búsqueda -->
-        <div *ngIf="showSearchResults" class="search-results dropdown-menu show w-100" #searchResults>
-            <div *ngFor="let place of placePredictions" class="dropdown-item cursor-pointer"
-                (click)="selectPlace(place)">
-                <small>{{ place.description }}</small>
-            </div>
-            <div *ngIf="placePredictions.length === 0" class="dropdown-item text-muted">
-                No se encontraron resultados
-            </div>
-        </div>
-
-        <small class="form-text text-muted">
-            Busca tu ubicacion para autocompletar los campos automáticamente
-        </small>
-    </div>
-
     <!-- MÉTODO 3: Formulario Manual -->
     <h6 class="mb-3 text-muted">Completa o edita los datos manualmente</h6>
 
@@ -129,7 +81,3 @@
         </button>
     </div>
 </form>
-
-<!-- Modal del Mapa -->
-<app-mapa-modal *ngIf="mostrarModalMapa" [coordenadasIniciales]="coordenadasActuales"
-    (onConfirmar)="onDireccionConfirmada($event)" (onCerrar)="cerrarModalMapa()">></app-mapa-modal>

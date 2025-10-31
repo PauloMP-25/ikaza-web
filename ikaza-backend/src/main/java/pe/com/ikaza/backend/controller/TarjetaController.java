@@ -28,19 +28,13 @@ public class TarjetaController {
     
     /**
      * Obtiene el ID del usuario autenticado a partir del token JWT.
-     * ESTA ES LA FUNCIÓN CORREGIDA
      */
     private Integer getCurrentUserId() {
-        // 1. Obtener el email (username) del contexto de seguridad
         String email = securityUtils.getCurrentUserEmail();
         
         if (email == null) {
-            // Esto no debería ocurrir en una ruta @PreAuthorize, pero es buena práctica
             throw new RuntimeException("Usuario no autenticado o token no contiene email.");
         }
-        
-        // 2. Usar el email para buscar el id_usuario en la BD
-        // ** NOTA: Reemplazar el 6 por una llamada a usuarioService.obtenerIdPorEmail(email)
         return clienteService.obtenerIdPorEmail(email);
     }
 
@@ -63,10 +57,7 @@ public class TarjetaController {
     @PostMapping
     @PreAuthorize("hasRole('CLIENTE')")
     public ResponseEntity<TarjetaResponse> guardarTarjeta(@Valid @RequestBody TarjetaRequest request) {
-        Integer idUsuario = getCurrentUserId();
-        // NOTA: Aquí iría la lógica de integración final con la pasarela de pago 
-        // para obtener el 'token_pago' si no viene en el request.
-        
+        Integer idUsuario = getCurrentUserId();        
         TarjetaResponse nuevaTarjeta = metodoPagoService.guardarTarjeta(idUsuario, request);
         return ResponseEntity.ok(nuevaTarjeta);
     }
@@ -91,7 +82,6 @@ public class TarjetaController {
     @PreAuthorize("hasRole('CLIENTE')")
     public ResponseEntity<TarjetaResponse> actualizarDireccionPrincipal(@PathVariable Integer idMetodo, @Valid @RequestBody TarjetaRequest request) {
         Integer idUsuario = getCurrentUserId();
-        // Llamada a la función con lógica de negocio
         TarjetaResponse actualizada = metodoPagoService.actualizarTarjetaPrincipal(idMetodo, idUsuario, request);
         return ResponseEntity.ok(actualizada);
     }

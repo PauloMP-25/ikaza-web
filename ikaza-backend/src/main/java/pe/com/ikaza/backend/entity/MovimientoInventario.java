@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 /**
  * Entidad que registra todos los movimientos de inventario
  * Sirve para auditoría y trazabilidad
- * Mapea a la tabla "movimientos_inventario" de PostgreSQL
  */
 @Entity
 @Table(name = "movimientos_inventario")
@@ -24,23 +23,16 @@ public class MovimientoInventario {
     @Column(name = "id_movimiento")
     private Long idMovimiento;
 
-    /**
-     * Usuario que realizó el movimiento (puede ser null si es automático)
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
-    /**
-     * Producto afectado por el movimiento
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
 
     @Column(name = "tipo_movimiento", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
-    // @Enumerated: convierte el enum a String en la BD
     private TipoMovimiento tipoMovimiento;
 
     @Column(name = "cantidad", nullable = false)
@@ -63,10 +55,6 @@ public class MovimientoInventario {
         fechaMovimiento = LocalDateTime.now();
     }
 
-    /**
-     * Enum para tipos de movimiento
-     * Coincide con el CHECK constraint de la BD
-     */
     public enum TipoMovimiento {
         ENTRADA("Entrada de mercancía"),
         SALIDA("Salida por venta"),
@@ -100,40 +88,3 @@ public class MovimientoInventario {
         this.motivo = motivo;
     }
 }
-
-/**
- * EJEMPLO DE USO:
- * 
- * // Entrada de mercancía
- * MovimientoInventario entrada = new MovimientoInventario(
- *     usuarioAdmin,              // Quien hizo el movimiento
- *     producto,                  // Producto afectado
- *     TipoMovimiento.ENTRADA,    // Tipo
- *     50,                        // Cantidad
- *     100,                       // Stock antes
- *     150,                       // Stock después
- *     "Compra a proveedor XYZ"   // Motivo
- * );
- * 
- * // Salida por venta (automática)
- * MovimientoInventario salida = new MovimientoInventario(
- *     null,                      // Sistema (sin usuario)
- *     producto,
- *     TipoMovimiento.SALIDA,
- *     5,
- *     150,
- *     145,
- *     "Venta pedido #12345"
- * );
- * 
- * // Ajuste de inventario
- * MovimientoInventario ajuste = new MovimientoInventario(
- *     usuarioAdmin,
- *     producto,
- *     TipoMovimiento.AJUSTE,
- *     -10,                       // Negativo = reducción
- *     145,
- *     135,
- *     "Productos dañados"
- * );
- */

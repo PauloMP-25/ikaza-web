@@ -9,13 +9,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.com.ikaza.backend.entity.Usuario;
-import pe.com.ikaza.backend.repository.jpa.UsuarioRepository;
+import pe.com.ikaza.backend.repository.UsuarioRepository;
 
 import java.util.List;
 
 /**
  * Implementación de UserDetailsService para autenticación JWT
- * Sin dependencias de Firebase
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -29,22 +28,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         @Override
         @Transactional(readOnly = true)
         public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-                // Buscar usuario por email
                 Usuario usuario = usuarioRepository.findByEmail(email)
                                 .orElseThrow(() -> new UsernameNotFoundException(
                                                 "Usuario no encontrado con email: " + email));
 
-                // Verificar si está activo
                 if (!usuario.getActivo()) {
                         throw new UsernameNotFoundException("Usuario inactivo: " + email);
                 }
 
-                // Verificar si está bloqueado
                 if (usuario.estaBloqueado()) {
                         throw new UsernameNotFoundException("Usuario bloqueado temporalmente: " + email);
                 }
 
-                // Convertir rol a GrantedAuthority
                 List<GrantedAuthority> authorities = List.of(
                                 new SimpleGrantedAuthority(usuario.getRol()));
 

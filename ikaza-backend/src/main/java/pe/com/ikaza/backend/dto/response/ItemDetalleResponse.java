@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import java.math.BigDecimal;
 
+/**
+ * DTO de respuesta de un item de carrito
+ */
 @Data
 @Builder
 public class ItemDetalleResponse {

@@ -41,7 +41,6 @@ public class DetallePedido{
     @Column(name = "subtotal", nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
 
-    // Método de utilidad para calcular subtotal
     public void calcularSubtotal() {
         if (cantidad != null && precioUnitario != null) {
             this.subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidad));

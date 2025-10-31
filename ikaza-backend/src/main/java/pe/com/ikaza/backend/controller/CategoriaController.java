@@ -35,14 +35,14 @@ public class CategoriaController {
     }
 
     /**
-     * GET /api/categorias/todas
-     * Obtiene todas las categorías incluyendo inactivas (solo admin)
+     * GET /api/categorias/buscar?texto=nombre
+     * Busca categorías por nombre (público)
      */
-    @GetMapping("/todas")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    // @PreAuthorize: requiere que el usuario tenga el rol ADMINISTRADOR
-    public ResponseEntity<List<CategoriaResponse>> obtenerTodasLasCategorias() {
-        List<CategoriaResponse> categorias = categoriaService.obtenerTodasLasCategorias();
+    @GetMapping("/buscar")
+    public ResponseEntity<List<CategoriaResponse>> buscarCategorias(
+            @RequestParam String texto) {
+        // @RequestParam: captura parámetros de la URL (?texto=...)
+        List<CategoriaResponse> categorias = categoriaService.buscarCategorias(texto);
         return ResponseEntity.ok(categorias);
     }
 
@@ -63,9 +63,11 @@ public class CategoriaController {
         }
     }
 
+    // ========== ENDPOINTS PARA ADMINISTRADORES ==========
+
     /**
      * POST /api/categorias
-     * Crea una nueva categoría (solo admin)
+     * Crea una nueva categoría
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -84,7 +86,7 @@ public class CategoriaController {
 
     /**
      * PUT /api/categorias/{id}
-     * Actualiza una categoría existente (solo admin)
+     * Actualiza una categoría existente
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -103,7 +105,7 @@ public class CategoriaController {
 
     /**
      * DELETE /api/categorias/{id}
-     * Desactiva una categoría (soft delete - solo admin)
+     * Desactiva una categoría
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -111,8 +113,7 @@ public class CategoriaController {
         try {
             categoriaService.eliminarCategoria(id);
             return ResponseEntity.ok(
-                    new MessageResponse("Categoría desactivada exitosamente", true)
-            );
+                    new MessageResponse("Categoría desactivada exitosamente", true));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -122,7 +123,7 @@ public class CategoriaController {
 
     /**
      * DELETE /api/categorias/{id}/definitivo
-     * Elimina definitivamente una categoría (solo admin)
+     * Elimina definitivamente una categoría
      */
     @DeleteMapping("/{id}/definitivo")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -130,8 +131,7 @@ public class CategoriaController {
         try {
             categoriaService.eliminarCategoriaDefinitivo(id);
             return ResponseEntity.ok(
-                    new MessageResponse("Categoría eliminada definitivamente", true)
-            );
+                    new MessageResponse("Categoría eliminada definitivamente", true));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -140,45 +140,14 @@ public class CategoriaController {
     }
 
     /**
-     * GET /api/categorias/buscar?texto=nombre
-     * Busca categorías por nombre (público)
+     * GET /api/categorias/todas
+     * Obtiene todas las categorías incluyendo inactivas (solo admin)
      */
-    @GetMapping("/buscar")
-    public ResponseEntity<List<CategoriaResponse>> buscarCategorias(
-            @RequestParam String texto) {
-        // @RequestParam: captura parámetros de la URL (?texto=...)
-        List<CategoriaResponse> categorias = categoriaService.buscarCategorias(texto);
+    @GetMapping("/todas")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    // @PreAuthorize: requiere que el usuario tenga el rol ADMINISTRADOR
+    public ResponseEntity<List<CategoriaResponse>> obtenerTodasLasCategorias() {
+        List<CategoriaResponse> categorias = categoriaService.obtenerTodasLasCategorias();
         return ResponseEntity.ok(categorias);
     }
 }
-
-/**
- * EJEMPLOS DE USO DESDE ANGULAR:
- * 
- * 1. Obtener todas las categorías:
- *    GET http://localhost:8080/api/categorias
- * 
- * 2. Obtener categoría por ID:
- *    GET http://localhost:8080/api/categorias/1
- * 
- * 3. Crear categoría (requiere token de admin):
- *    POST http://localhost:8080/api/categorias
- *    Headers: { Authorization: "Bearer <token>" }
- *    Body: {
- *      "nombreCategoria": "Electrónica",
- *      "descripcionCategoria": "Productos electrónicos",
- *      "activo": true
- *    }
- * 
- * 4. Actualizar categoría (requiere token de admin):
- *    PUT http://localhost:8080/api/categorias/1
- *    Headers: { Authorization: "Bearer <token>" }
- *    Body: {
- *      "nombreCategoria": "Electrónica Actualizada",
- *      "descripcionCategoria": "Nueva descripción",
- *      "activo": true
- *    }
- * 
- * 5. Buscar categorías:
- *    GET http://localhost:8080/api/categorias/buscar?texto=electro
- */

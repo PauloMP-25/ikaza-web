@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.com.ikaza.backend.dto.request.DireccionRequest;
 import pe.com.ikaza.backend.dto.response.DireccionResponse;
 import pe.com.ikaza.backend.entity.Direccion;
-import pe.com.ikaza.backend.repository.jpa.DireccionRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import pe.com.ikaza.backend.exception.ResourceNotFoundException;
+import pe.com.ikaza.backend.repository.DireccionRepository;
 
 @Service
 public class DireccionService {
@@ -32,16 +32,13 @@ public class DireccionService {
         response.setProvincia(entity.getProvincia());
         response.setRegion(entity.getRegion());
         response.setReferencia(entity.getReferencia());
-        response.setCodigoPostal(entity.getCodigoPostal());
         response.setEsPrincipal(entity.getEsPrincipal());
-        response.setLatitud(entity.getLatitud());
-        response.setLongitud(entity.getLongitud());
         response.setFechaCreacion(entity.getFechaCreacion());
         return response;
     }
 
     /**
-     * Convierte Request DTO a Entity. Agregado setPais y mapeo postal si existe.
+     * Convierte Request DTO a Entity.
      */
     private Direccion toEntity(DireccionRequest request, Integer idUsuario) {
         Direccion entity = new Direccion();
@@ -53,10 +50,7 @@ public class DireccionService {
         entity.setRegion(request.getRegion());
         entity.setReferencia(request.getReferencia());
         entity.setPais(request.getPais());
-        entity.setCodigoPostal(request.getCodigoPostal());
         entity.setEsPrincipal(request.getEsPrincipal() != null ? request.getEsPrincipal() : false);
-        entity.setLatitud(request.getLatitud());
-        entity.setLongitud(request.getLongitud());
         return entity;
     }
 
@@ -70,7 +64,7 @@ public class DireccionService {
     }
 
     /**
-     * Guarda una nueva dirección. @Transactional y manejo de excepción.
+     * Guarda una nueva dirección
      */
     @Transactional
     public DireccionResponse guardarDireccion(Integer idUsuario, DireccionRequest request) {
@@ -83,8 +77,8 @@ public class DireccionService {
             Direccion guardada = direccionRepository.save(direccion);
             return toResponse(guardada);
         } catch (DataIntegrityViolationException e) {
-            if (e.getMessage().contains("pais") || e.getMessage().contains("codigo_postal")) {  // ← Actualizado: Incluye codigo_postal si viola
-                throw new IllegalArgumentException("Campos obligatorios faltantes: " + (e.getMessage().contains("pais") ? "'pais'" : "'codigo_postal'") + " no puede ser nulo.");
+            if (e.getMessage().contains("pais")) {
+                throw new IllegalArgumentException("Campos obligatorios faltantes: " + (e.getMessage().contains("pais") ? "'pais'" : "'direccion'") + " no puede ser nulo.");
             }
             throw new IllegalArgumentException("Error de integridad en la base de datos: " + e.getMessage());
         }
@@ -98,7 +92,6 @@ public class DireccionService {
         Direccion existente = direccionRepository.findByIdDireccionAndIdUsuario(idDireccion, idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Dirección no encontrada para este usuario."));
 
-        // Actualizar campos
         if (request.getAlias() != null) existente.setAlias(request.getAlias());
         if (request.getDireccion() != null) existente.setDireccion(request.getDireccion());
         if (request.getDistrito() != null) existente.setDistrito(request.getDistrito());
@@ -106,17 +99,14 @@ public class DireccionService {
         if (request.getRegion() != null) existente.setRegion(request.getRegion());
         if (request.getReferencia() != null) existente.setReferencia(request.getReferencia());
         if (request.getPais() != null) existente.setPais(request.getPais());
-        if (request.getCodigoPostal() != null) existente.setCodigoPostal(request.getCodigoPostal());
         if (request.getEsPrincipal() != null) existente.setEsPrincipal(request.getEsPrincipal());
-        if (request.getLatitud() != null) existente.setLatitud(request.getLatitud());
-        if (request.getLongitud() != null) existente.setLongitud(request.getLongitud());
 
         Direccion actualizada = direccionRepository.save(existente);
         return toResponse(actualizada);
     }
 
     /**
-     * Actualiza una dirección existente marcándola como principal. ← FIX: getDireccion() y setPais
+     * Actualiza una dirección existente marcándola como principal.
      */
     @Transactional
     public DireccionResponse actualizarDireccionPrincipal(Integer idDireccion, Integer idUsuario, DireccionRequest request) {
@@ -130,7 +120,6 @@ public class DireccionService {
             existente.setEsPrincipal(request.getEsPrincipal() != null ? request.getEsPrincipal() : existente.getEsPrincipal());
         }
 
-        // Actualizar otros campos condicionalmente
         if (request.getAlias() != null) existente.setAlias(request.getAlias());
         if (request.getDireccion() != null) existente.setDireccion(request.getDireccion());
         if (request.getDistrito() != null) existente.setDistrito(request.getDistrito());
@@ -138,11 +127,7 @@ public class DireccionService {
         if (request.getRegion() != null) existente.setRegion(request.getRegion());
         if (request.getReferencia() != null) existente.setReferencia(request.getReferencia());
         if (request.getPais() != null) existente.setPais(request.getPais());
-        if (request.getCodigoPostal() != null) existente.setCodigoPostal(request.getCodigoPostal());
-        if (request.getLatitud() != null) existente.setLatitud(request.getLatitud());
-        if (request.getLongitud() != null) existente.setLongitud(request.getLongitud());
 
-        // Validación de integridad
         int principalesCount = direccionRepository.countDireccionesPrincipales(idUsuario);
         if (principalesCount > 1) {
             throw new IllegalStateException("Error de integridad: se detectaron múltiples direcciones principales");
@@ -158,7 +143,6 @@ public class DireccionService {
     public void eliminarDireccion(Integer idDireccion, Integer idUsuario) {
         Direccion existente = direccionRepository.findByIdDireccionAndIdUsuario(idDireccion, idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Dirección no encontrada para este usuario."));
-
         direccionRepository.delete(existente);
     }
 }

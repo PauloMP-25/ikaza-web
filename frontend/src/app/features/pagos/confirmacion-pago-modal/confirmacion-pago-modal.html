@@ -55,13 +55,6 @@
                     Cancelar
                 </button>
 
-                <!-- MODIFICADO: Los botones ejecutan la verificación antes de proceder -->
-                <button type="button" class="btn btn-success px-4" (click)="proceedToCulqui()"
-                    [title]="!isAuthenticated$ ? 'Debes iniciar sesión primero' : 'Pagar con Culqi'">
-                    <i class="bi bi-shield-lock me-2"></i>
-                    Culqi
-                </button>
-
                 <button type="button" class="btn btn-success px-4" (click)="proceedToMercadoPago()"
                     [title]="!isAuthenticated$ ? 'Debes iniciar sesión primero' : 'Pagar con Mercado Pago'">
                     <i class="bi bi-shield-lock me-2"></i>

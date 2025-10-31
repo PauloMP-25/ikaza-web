@@ -33,12 +33,6 @@ public class ProductoController {
     /**
      * GET /api/productos
      * Obtiene productos con paginación (público)
-     * 
-     * Parámetros opcionales:
-     * - page: número de página (default 0)
-     * - size: elementos por página (default 20)
-     * - sort: campo para ordenar (default nombreProducto)
-     * - direction: ASC o DESC (default ASC)
      */
     @GetMapping
     public ResponseEntity<Page<ProductoResponse>> obtenerProductos(
@@ -77,7 +71,7 @@ public class ProductoController {
 
     /**
      * GET /api/productos/{id}
-     * Obtiene un producto por ID (vista simple - público)
+     * Obtiene un producto por ID (público)
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerProductoPorId(@PathVariable Long id) {
@@ -93,7 +87,7 @@ public class ProductoController {
 
     /**
      * GET /api/productos/{id}/detalle
-     * Obtiene el detalle completo de un producto (incluye MongoDB - público)
+     * Obtiene el detalle completo de un producto (público)
      */
     @GetMapping("/{id}/detalle")
     public ResponseEntity<?> obtenerDetalleProducto(@PathVariable Long id) {
@@ -121,62 +115,6 @@ public class ProductoController {
         Page<ProductoResponse> productos = productoService.buscarProductos(texto, pageable);
 
         return ResponseEntity.ok(productos);
-    }
-
-    /**
-     * POST /api/productos
-     * Crea un nuevo producto (solo admin)
-     */
-    @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> crearProducto(@Valid @RequestBody ProductoRequest request) {
-        try {
-            ProductoResponse producto = productoService.crearProducto(request);
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(producto);
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new MessageResponse(e.getMessage(), false));
-        }
-    }
-
-    /**
-     * PUT /api/productos/{id}
-     * Actualiza un producto existente (solo admin)
-     */
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> actualizarProducto(
-            @PathVariable Long id,
-            @Valid @RequestBody ProductoUpdateRequest request) {
-        try {
-            ProductoResponse producto = productoService.actualizarProducto(id, request);
-            return ResponseEntity.ok(producto);
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new MessageResponse(e.getMessage(), false));
-        }
-    }
-
-    /**
-     * DELETE /api/productos/{id}
-     * Elimina un producto (solo admin)
-     */
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> eliminarProducto(@PathVariable Long id) {
-        try {
-            productoService.eliminarProducto(id);
-            return ResponseEntity.ok(
-                    new MessageResponse("Producto eliminado exitosamente", true));
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new MessageResponse(e.getMessage(), false));
-        }
     }
 
     /**
@@ -229,52 +167,62 @@ public class ProductoController {
         List<ProductoResponse> productos = productoService.obtenerProductosPorAgotarse(limite);
         return ResponseEntity.ok(productos);
     }
-}
 
-/**
- * EJEMPLOS DE USO DESDE ANGULAR:
- * 
- * 1. Obtener productos paginados:
- * GET
- * http://localhost:8080/api/productos?page=0&size=20&sort=nombreProducto&direction=ASC
- * 
- * 2. Obtener productos de una categoría:
- * GET http://localhost:8080/api/productos/categoria/1?page=0&size=20
- * 
- * 3. Obtener detalle de un producto:
- * GET http://localhost:8080/api/productos/1/detalle
- * 
- * 4. Buscar productos:
- * GET http://localhost:8080/api/productos/buscar?texto=camisa&page=0&size=20
- * 
- * 5. Crear producto (requiere token de admin):
- * POST http://localhost:8080/api/productos
- * Headers: { Authorization: "Bearer <token>" }
- * Body: {
- * "idCategoria": 1,
- * "nombreProducto": "Camisa Roja",
- * "descripcionProducto": "Camisa de algodón",
- * "precio": 49.90,
- * "stock": 100,
- * "stockMinimo": 10,
- * "codigo": "CAM-001",
- * "marca": "Fashion",
- * "imagenesUrls": [
- * "https://ejemplo.com/img1.jpg",
- * "https://ejemplo.com/img2.jpg"
- * ],
- * "atributos": {
- * "material": "Algodón 100%",
- * "color": "Rojo"
- * }
- * }
- * 
- * 6. Actualizar producto (requiere token de admin):
- * PUT http://localhost:8080/api/productos/1
- * Headers: { Authorization: "Bearer <token>" }
- * Body: {
- * "nombreProducto": "Camisa Roja Actualizada",
- * "precio": 59.90,
- * "stock": 150
- * }
- */
+    // ========== ENDPOINTS PARA ADMINISTRADORES ==========
+
+    /**
+     * POST /api/productos
+     * Crea un nuevo producto
+     */
+    @PostMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<?> crearProducto(@Valid @RequestBody ProductoRequest request) {
+        try {
+            ProductoResponse producto = productoService.crearProducto(request);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(producto);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new MessageResponse(e.getMessage(), false));
+        }
+    }
+
+    /**
+     * PUT /api/productos/{id}
+     * Actualiza un producto existente
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<?> actualizarProducto(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductoUpdateRequest request) {
+        try {
+            ProductoResponse producto = productoService.actualizarProducto(id, request);
+            return ResponseEntity.ok(producto);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new MessageResponse(e.getMessage(), false));
+        }
+    }
+
+    /**
+     * DELETE /api/productos/{id}
+     * Elimina un producto (solo admin)
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<?> eliminarProducto(@PathVariable Long id) {
+        try {
+            productoService.eliminarProducto(id);
+            return ResponseEntity.ok(
+                    new MessageResponse("Producto eliminado exitosamente", true));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new MessageResponse(e.getMessage(), false));
+        }
+    }
+}

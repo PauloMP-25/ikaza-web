@@ -3,8 +3,7 @@
     <small>Debes iniciar sesión para completar tu compra</small>
 </div>
 
-<div class="alert alert-info mb-3"
-    *ngIf="isAuthenticated && !userHasCompleteData && cartItems.length > 0">
+<div class="alert alert-info mb-3" *ngIf="isAuthenticated && !userHasCompleteData && cartItems.length > 0">
     <i class="bi bi-info-circle-fill me-2"></i>
     <small class="fw-semibold">Faltan datos en tu perfil:</small>
     <ul class="mb-0 small ps-4 pt-1">
@@ -82,10 +81,8 @@
     </div>
 
     <div class="d-grid gap-2">
-        <button class="btn btn-success btn-lg" (click)="onCheckout()"
-            [disabled]="!isAuthenticated || !userHasCompleteData || cartItems.length === 0">
-            <i class="bi" [ngClass]="paymentButtonIcon"></i>
-            {{ paymentButtonText }}
+        <button class="btn btn-success btn-lg" (click)="onCheckout()" [disabled]="cartItems.length === 0">
+            <i class="bi" [ngClass]="paymentButtonIcon"></i>{{ paymentButtonText }}
         </button>
 
         <button class="btn btn-outline-danger" (click)="onClearCart()" *ngIf="cartItems.length > 0">

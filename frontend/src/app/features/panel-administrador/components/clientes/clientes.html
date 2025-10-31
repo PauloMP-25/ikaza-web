@@ -1,1 +1,280 @@
-<p>clientes works!</p>
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="header-section">
+        <h1>Panel de Administración de Clientes</h1>
+        <p>Gestiona y monitorea todos los usuarios del sistema</p>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card stat-blue">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-title">Total Clientes</p>
+                    <p class="stat-value">{{ estadisticas.usuariosTotales | number }}</p>
+                    <p class="stat-subtitle">{{ estadisticas.usuariosRegistradosMes }} nuevos este mes</p>
+                </div>
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card stat-green">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-title">Usuarios Activos</p>
+                    <p class="stat-value">{{ estadisticas.usuariosActivos | number }}</p>
+                    <p class="stat-subtitle">{{ calcularPorcentaje(estadisticas.usuariosActivos,
+                        estadisticas.usuariosTotales) }}% del total</p>
+                </div>
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <polyline points="16 11 18 13 22 9" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card stat-purple">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-title">Teléfonos Verificados</p>
+                    <p class="stat-value">{{ estadisticas.clientesConTelefonoVerificado | number }}</p>
+                    <p class="stat-subtitle">{{ calcularPorcentaje(estadisticas.clientesConTelefonoVerificado,
+                        estadisticas.usuariosTotales) }}% verificados</p>
+                </div>
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card stat-orange">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <p class="stat-title">Perfiles Incompletos</p>
+                    <p class="stat-value">{{ estadisticas.clientesConDatosIncompletos }}</p>
+                    <p class="stat-subtitle">Requieren atención</p>
+                </div>
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Clientes -->
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Lista de Clientes</h2>
+
+            <div class="filters">
+                <div class="search-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" placeholder="Buscar por nombre, email, DNI..." [(ngModel)]="searchTerm"
+                        (ngModelChange)="onSearchChange()" />
+                </div>
+
+                <select [(ngModel)]="filterActivo" (ngModelChange)="onFilterChange()">
+                    <option value="todos">Todos</option>
+                    <option value="activos">Activos</option>
+                    <option value="inactivos">Inactivos</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>DNI</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Estado</th>
+                        <th>Verificación</th>
+                        <th class="text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cliente of filteredClientes">
+                        <td>
+                            <div class="cliente-info">
+                                <div class="avatar">{{ getInitial(cliente.nombreCompleto) }}</div>
+                                <div>
+                                    <div class="cliente-name">{{ cliente.nombreCompleto }}</div>
+                                    <div class="cliente-id">ID: {{ cliente.idUsuario }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ cliente.numeroDocumento }}</td>
+                        <td>{{ cliente.telefono }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>
+                            <span [ngClass]="cliente.activo ? 'badge-success' : 'badge-danger'">
+                                {{ cliente.activo ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="badges">
+                                <span [ngClass]="cliente.telefonoVerificado ? 'badge-success-sm' : 'badge-warning-sm'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                    </svg>
+                                    {{ cliente.telefonoVerificado ? 'Verificado' : 'Pendiente' }}
+                                </span>
+                                <span *ngIf="!cliente.datosCompletos" class="badge-orange-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                    </svg>
+                                    Incompleto
+                                </span>
+                            </div>
+                        </td>
+                        <td class="text-right">
+                            <button class="btn-link" (click)="openModal(cliente)">Ver Detalles</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div *ngIf="filteredClientes.length === 0" class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <p>No se encontraron clientes</p>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <div class="pagination-info">
+                Mostrando <strong>{{ filteredClientes.length }}</strong> de <strong>{{ totalItems }}</strong> resultados
+            </div>
+            <div class="pagination-buttons">
+                <button (click)="previousPage()" [disabled]="currentPage === 0">Anterior</button>
+                <button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Siguiente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal && selectedCliente" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Detalles del Cliente</h3>
+            <button class="close-btn" (click)="closeModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <div class="modal-section">
+                <h4>Información Personal</h4>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <p class="info-label">Nombre Completo</p>
+                        <p class="info-value">{{ selectedCliente.nombreCompleto }}</p>
+                    </div>
+                    <div class="info-item">
+                        <p class="info-label">Email</p>
+                        <p class="info-value">{{ selectedCliente.email }}</p>
+                    </div>
+                    <div class="info-item">
+                        <p class="info-label">DNI</p>
+                        <p class="info-value">{{ selectedCliente.numeroDocumento }}</p>
+                    </div>
+                    <div class="info-item">
+                        <p class="info-label">Teléfono</p>
+                        <p class="info-value">{{ selectedCliente.telefono }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4>Estado de la Cuenta</h4>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <p class="info-label">Estado</p>
+                        <span [ngClass]="selectedCliente.activo ? 'badge-success' : 'badge-danger'">
+                            {{ selectedCliente.activo ? 'Activo' : 'Inactivo' }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <p class="info-label">Teléfono Verificado</p>
+                        <span [ngClass]="selectedCliente.telefonoVerificado ? 'badge-success' : 'badge-warning'">
+                            {{ selectedCliente.telefonoVerificado ? 'Verificado' : 'Pendiente' }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <p class="info-label">Datos Completos</p>
+                        <span [ngClass]="selectedCliente.datosCompletos ? 'badge-success' : 'badge-warning'">
+                            {{ selectedCliente.datosCompletos ? 'Completos' : 'Incompletos' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4>Actividad</h4>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <p class="info-label">Fecha de Registro</p>
+                        <p class="info-value">{{ formatDate(selectedCliente.fechaCreacion) }}</p>
+                    </div>
+                    <div class="info-item">
+                        <p class="info-label">Último Acceso</p>
+                        <p class="info-value">{{ formatDate(selectedCliente.ultimoAcceso) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button [ngClass]="selectedCliente.activo ? 'btn-danger' : 'btn-success'"
+                    (click)="toggleActivoUsuario(selectedCliente.idUsuario, selectedCliente.activo)">
+                    {{ selectedCliente.activo ? 'Desactivar Usuario' : 'Activar Usuario' }}
+                </button>
+                <button class="btn-primary">Editar Información</button>
+            </div>
+        </div>
+    </div>
+</div>
