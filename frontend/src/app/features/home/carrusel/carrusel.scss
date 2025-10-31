@@ -1,17 +1,7 @@
 // 💚 Estilo elegante del carrusel ✅
 .home-categories-section {
   padding: 4rem 0;
-  
   background: #ffffff;
-}
-
-// Título centrado
-.section-title {
-  text-align: center;
-  font-size: 2.3rem;
-  font-weight: 800;
-  color: #198754;
-  margin-bottom: 3rem;
 }
 
 // Contenedor tarjetas
@@ -38,7 +28,7 @@
   overflow: hidden;
   box-shadow: 0 6px 18px rgba(0,0,0,.15);
   transition: .35s ease;
-  background: #fff; /* Fondo blanco para el título */
+  background: #fff; // Fondo blanco por si la imagen no carga
 
   &:hover {
     transform: scale(1.07);
@@ -46,21 +36,12 @@
   }
 }
 
-// Título arriba de la imagen
-.category-title {
-  margin: 0;
-  padding: 1rem;
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #198754; /* Color verde para el título */
-  text-align: center;
-  background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
-}
-
+// Imagen que ocupa todo el cuadro
 .category-image {
   width: 100%;
-  height: calc(100% - 4rem); /* Ajustar altura para dejar espacio al título */
+  height: 100%; // Ocupa toda la tarjeta
   object-fit: cover;
+  display: block;
 }
 
 // ✅ Flechas del carrusel BONITAS

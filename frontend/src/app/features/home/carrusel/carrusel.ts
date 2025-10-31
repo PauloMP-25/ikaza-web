@@ -12,13 +12,15 @@ import { CommonModule } from '@angular/common';
 export class Carrusel implements OnInit {
 
   categorias = [
-    { id: 1, nombre: 'Utensilios', imagen: 'assets/banners/tiktok.png' },
-    { id: 2, nombre: 'Juguetes', imagen: 'assets/banners/tiktok.png' },
-    { id: 3, nombre: 'Ropa', imagen: 'assets/banners/tiktok.png' },
-    { id: 4, nombre: 'Decoración', imagen: 'assets/banners/tiktok.png' },
-    { id: 5, nombre: 'Electrónica', imagen: 'assets/banners/tiktok.png' },
-    { id: 6, nombre: 'Cocina', imagen: 'assets/banners/tiktok.png' },
-    { id: 7, nombre: 'Mascotas', imagen: 'assets/banners/tiktok.png' }
+    { id: 1,  imagen: 'assets/banners/categoria/cocina.jpg' },
+    { id: 2,  imagen: 'assets/banners/categoria/herramienta.jpg' },
+    { id: 3,  imagen: 'assets/banners/categoria/fiesta.jpg' },
+    { id: 4,  imagen: 'assets/banners/categoria/utiles.jpg' },
+    { id: 5,  imagen: 'assets/banners/categoria/hogar.jpg' },
+    { id: 6,  imagen: 'assets/banners/categoria/niños.jpg' },
+    { id: 7,  imagen: 'assets/banners/categoria/tecnologia.jpg' },
+    { id: 8,  imagen: 'assets/banners/categoria/moda.jpg' },
+    { id: 9,  imagen: 'assets/banners/categoria/abrigo.jpg' }
   ];
 
   categoriaGrupos: any[] = [];

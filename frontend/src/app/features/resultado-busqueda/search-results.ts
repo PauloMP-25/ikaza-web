@@ -1,18 +1,18 @@
 // src/app/pages/search-results/search-results.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router'; // Para leer la URL
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProductUtilsService } from '@core/services/productos/product-utils.service';
 import { ProductoService } from '@core/services/productos/producto.service';
 import { CartService } from '@core/services/carrito/cart';
 import { Producto, PageResponse, ProductoDetalle } from '@core/models/productos/producto-backend.model';
-import { ProductDetailModalComponent } from '@shared/components/product-detail-modal/product-detail-modal';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-search-results',
   standalone: true,
-  imports: [CommonModule, ProductDetailModalComponent],
+  imports: [CommonModule],
   templateUrl: './search-results.html',
   styleUrls: ['./search-results.scss']
 })
@@ -21,84 +21,74 @@ export class SearchResultsComponent implements OnInit {
   allProducts: Producto[] = [];
   filteredProducts: Producto[] = [];
   searchTerm: string = '';
+  minPrice: number = 0;
+  maxPrice: number = 3000;
+
   private productsSubscription?: Subscription;
   public selectedProduct?: ProductoDetalle;
 
-
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private productUtils: ProductUtilsService,
-    private productService: ProductoService, // Inyecta el servicio de productos
+    private productService: ProductoService,
     private cartService: CartService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.productsSubscription = this.productService.obtenerProductos().subscribe({
       next: (response: PageResponse<Producto>) => {
-        this.allProducts = response.content; // Extrae el array de productos
-        // Ahora aplica el filtrado inicial basado en la URL (si hay searchTerm)
+        this.allProducts = response.content;
         this.applySearchFilter();
       },
-      error: (error) => {
-        console.error('Error cargando productos:', error);
-        // Opcional: muestra un toast o mensaje de error al usuario
-        this.allProducts = []; // Evita errores downstream
+      error: () => {
+        this.allProducts = [];
         this.filteredProducts = [];
       }
     });
 
-    // Escuchamos los cambios en los parámetros de la URL (por si el usuario busca de nuevo).
     this.route.queryParamMap.subscribe(params => {
-      this.searchTerm = params.get('q') || ''; // Obtenemos el valor del parámetro 'q'.
-      if (this.searchTerm) {
-        this.filteredProducts = this.productUtils.filterProducts(this.allProducts, this.searchTerm);
-      } else {
-        this.filteredProducts = []; // O mostrar todos, como prefieras.
-      }
+      this.searchTerm = params.get('q') || '';
+      this.applyAllFilters();
     });
   }
 
-  /**
-   * Método helper para aplicar el filtro de búsqueda.
-   * Se llama después de cargar productos o cuando cambia searchTerm.
-   */
   private applySearchFilter(): void {
     if (this.searchTerm) {
       this.filteredProducts = this.productUtils.filterProducts(this.allProducts, this.searchTerm);
     } else {
-      this.filteredProducts = this.allProducts; // Muestra todos si no hay búsqueda
+      this.filteredProducts = this.allProducts;
     }
   }
 
-  /**
-  * Método para ver los detalles del producto en el modal.
-  * Requiere cargar el ProductoDetalle completo.
-  */
-  public onViewDetails(product: Producto): void {
-    //Llamar a un servicio para obtener el detalle completo
-    this.productService.obtenerProductoPorId(product.idProducto).subscribe({
-      next: (detalle: ProductoDetalle) => {
-        this.selectedProduct = detalle; //Asignamos el objeto ProductoDetalle completo
-        // this.isLoadingDetails = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar detalle:', error);
-        // this.isLoadingDetails = false;
-      }
-    });
+  applyAllFilters(): void {
+    this.applySearchFilter();
+    this.filteredProducts = this.filteredProducts.filter(p =>
+      p.precio >= this.minPrice && p.precio <= this.maxPrice
+    );
   }
 
-  /**
-  * Método para agregar un producto al carrito.
-  * Mantenemos la lógica de producto base (asumiendo que no tiene variantes seleccionadas aquí).
-  */
-  public onAddToCart(product: Producto): void {
-    console.log('SearchResults: Enviando a carrito', product.nombreProducto);
+// src/app/pages/search-results/search-results.component.ts
+setPriceRange(min: number, max: number) {
+  // Si ya está activo, desactívalo (mostrar todos)
+  if (this.minPrice === min && this.maxPrice === max) {
+    this.minPrice = 0;
+    this.maxPrice = 3000; // rango completo
+  } else {
+    this.minPrice = min;
+    this.maxPrice = max;
+  }
+  this.applyAllFilters();
+}
 
-    // buildCartProduct ahora acepta la variante como opcional (undefined)
+
+  onViewDetails(product: Producto): void {
+    this.router.navigate(['/producto', product.idProducto]);
+  }
+
+  public onAddToCart(product: Producto): void {
     const cartProduct = this.productUtils.buildCartProduct(product, undefined, 1);
     this.cartService.addToCart(cartProduct);
-
     this.productUtils.showToast(product.nombreProducto);
   }
 }

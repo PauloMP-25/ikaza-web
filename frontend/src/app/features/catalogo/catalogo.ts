@@ -5,7 +5,6 @@ import { Router } from '@angular/router'; // 👈 Asegúrate de que esta importa
 
 import { ProductoService } from '@core/services/productos/producto.service';
 import { ProductoDetalle, Producto } from '@core/models/productos/producto-backend.model';
-import { ProductDetailModalComponent } from '@shared/components/product-detail-modal/product-detail-modal';
 import { CartService } from '@core/services/carrito/cart';
 import { ProductUtilsService } from '@core/services/productos/product-utils.service';
 import { ProductCardComponent } from '@shared/components/producto/product-card/product-card';
@@ -137,16 +136,12 @@ export class CatalogoComponent implements OnInit {
     this.selectedProduct = product;
   }
 
-  // 🚨 MÉTODO CORREGIDO PARA NAVEGACIÓN 🚨
-  onViewDetails(product: Producto) {
-    // Lógica de navegación: usa el router para ir a la página de detalles
-    // Se asume que la propiedad de identificación del producto es 'id'
-    console.log('Navegando a detalles del producto:', product.idProducto);
-    this.router.navigate(['/producto', product.idProducto]); 
-    
-    // Si la propiedad es 'idProducto', cámbialo a:
-    // this.router.navigate(['/producto', product.idProducto]); 
-  }
+ 
+onViewDetails(product: Producto) {
+  console.log('Navegando a detalles del producto:', product.idProducto);
+  this.router.navigate(['/producto', product.idProducto]);
+}
+
 
   onAddToCart(product: Producto) {
     const cartProduct = this.productUtils.buildCartProduct(product);

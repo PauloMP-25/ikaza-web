@@ -1,40 +1,95 @@
 <div class="container mt-4">
-    <div *ngIf="searchTerm; else noSearch">
-        <h2>Resultados para: "{{ searchTerm }}"</h2>
 
-        <div *ngIf="filteredProducts.length > 0; else noResults" class="row">
-            <div class="col-md-4 mb-3" *ngFor="let product of filteredProducts">
-                <div class="card">
-                    <img [src]="product.imagenPrincipal" class="card-img-top" alt="{{product.nombreProducto}}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.nombreProducto }}</h5>
-                        <p class="card-text">{{ product.descripcionProducto }}</p>
-                        <p class="card-text"><strong>Precio: ${{ product.precio }}</strong></p>
-                        <!-- --- BOTONES NUEVOS --- -->
-                        <div class="mt-auto d-grid gap-2">
-                            <button class="btn btn-outline-secondary btn-sm" (click)="onViewDetails(product)">
-                                Ver Detalles
-                            </button>
-                            <button class="btn btn-primary btn-sm" (click)="onAddToCart(product)">
-                                Añadir al Carrito
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="content-header d-flex justify-content-between align-items-center">
+    
+  <!-- Lado derecho: botones de rango de precios -->
+  <div class="price-filters d-flex gap-2">
+    <button class="btn btn-outline-primary btn-sm"
+      [ngClass]="{ 'active': minPrice===0 && maxPrice===50 }"
+      (click)="setPriceRange(0,50)">
+      S/. 0 - 50
+    </button>
 
-        <ng-template #noResults>
-            <div class="alert alert-warning" role="alert">
-                😕 No se encontraron productos que coincidan con tu búsqueda.
-            </div>
-        </ng-template>
+    <button class="btn btn-outline-primary btn-sm"
+      [ngClass]="{ 'active': minPrice===50 && maxPrice===150 }"
+      (click)="setPriceRange(50,150)">
+      S/. 50 - 150
+    </button>
 
-    </div>
+    <button class="btn btn-outline-primary btn-sm"
+      [ngClass]="{ 'active': minPrice===150 && maxPrice===500 }"
+      (click)="setPriceRange(150,500)">
+      S/. 150 - 500
+    </button>
 
-    <ng-template #noSearch>
-        <p>Por favor, utiliza la barra de búsqueda para encontrar productos.</p>
-    </ng-template>
+    <button class="btn btn-outline-primary btn-sm"
+      [ngClass]="{ 'active': minPrice===500 && maxPrice===3000 }"
+      (click)="setPriceRange(500,3000)">
+      S/. 500+
+    </button>
+  </div>
 </div>
 
-<app-product-detail-modal [product]="selectedProduct" [showModal]="!!selectedProduct"></app-product-detail-modal>
+  <!-- RESULTADOS DE BÚSQUEDA -->
+  <div *ngIf="searchTerm; else noSearch">
+    <h2>Resultados para: "{{ searchTerm }}"</h2>
+
+    <div *ngIf="filteredProducts.length > 0; else noResults" class="row">
+      
+      <div class="col-md-3 col-sm-6 mb-3" *ngFor="let product of filteredProducts">
+        
+        <div class="card single-product">
+          
+          <!-- IMAGEN -->
+          <div class="product-image card-img-top">
+            <img [src]="product.imagenPrincipal" alt="{{product.nombreProducto}}" class="first-image">
+            <ul class="product-meta">
+              <li title="Agregar a carrito" (click)="onAddToCart(product)">
+                <a><i class="fa fa-cart-plus"></i></a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- CONTENIDO -->
+          <div class="product-content card-body">
+            <h4 class="product-title card-title">
+              <a href="#">{{ product.nombreProducto }}</a>
+            </h4>
+
+            <p class="card-text">{{ product.descripcionProducto }}</p>
+
+            <div class="product-price">
+              <p class="card-text"><strong>Precio: S/.{{ product.precio }}</strong></p>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="mt-auto d-grid gap-2">
+              <button class="btn btn-outline-secondary btn-sm" (click)="onViewDetails(product)">
+                Ver Detalles
+              </button>
+              <button class="btn btn-primary btn-sm"
+                (click)="onAddToCart(product)"
+                [disabled]="!product.disponible || product.stock <= 0">
+                Añadir al Carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- MENSAJE NO RESULTADOS -->
+    <ng-template #noResults>
+      <div class="alert alert-warning" role="alert">
+        😕 No se encontraron productos que coincidan con tu búsqueda.
+      </div>
+    </ng-template>
+
+  </div>
+
+  <!-- MENSAJE SIN BÚSQUEDA -->
+  <ng-template #noSearch>
+    <p>Por favor, utiliza la barra de búsqueda para encontrar productos.</p>
+  </ng-template>
+</div>

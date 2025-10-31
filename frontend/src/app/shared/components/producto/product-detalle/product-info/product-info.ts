@@ -24,7 +24,12 @@ export class ProductInfoComponent {
   @Output() addToCart = new EventEmitter<number>();
   quantity: number = 1;
   varianteSeleccionada: any = null;
-
+ngOnInit() {
+  console.log('Product Data:', this.product);
+  console.log('Stock Disponible:', this.product?.stockDisponible);
+  console.log('Stock:', this.product?.stock);
+  console.log('Disponible:', this.product?.disponible);
+}
   // Lógica para incremento/decremento basada en el stock disponible del padre
   increaseQuantity() { // [cite: 127]
     const maxStock = this.product.stockDisponible || 0; // Usar stockDisponible
